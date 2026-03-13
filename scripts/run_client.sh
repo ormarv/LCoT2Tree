@@ -11,7 +11,6 @@ echo "Starting job on node: $(hostname)"
 echo "Job started at: $(date)"
 
 # Define variables for your job
-HF_ACCESS_TOKEN="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"
 
 module load python/3.10.12
 
