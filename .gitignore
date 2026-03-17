@@ -2,3 +2,5 @@ job_outputs
 job_outputs/*
 src/cot2tree/__pycache__/*
 src/cot2tree/__pycache__
+lcot2tree
+lcot2tree/*
