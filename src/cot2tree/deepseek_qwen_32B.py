@@ -7,7 +7,7 @@ llm = Llama.from_pretrained(
 	repo_id="bartowski/DeepSeek-R1-Distill-Qwen-32B-GGUF",
 	filename="DeepSeek-R1-Distill-Qwen-32B-IQ2_M.gguf",
 )
-llm.create_chat_completion(
+response = llm.create_chat_completion(
 	messages = [
 		{
 			"role": "user",
@@ -15,3 +15,5 @@ llm.create_chat_completion(
 		}
 	]
 )
+
+print(response["choices"][0]["message"]["content"])
