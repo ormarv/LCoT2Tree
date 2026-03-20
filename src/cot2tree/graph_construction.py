@@ -10,8 +10,8 @@ def get_all_new_paths(graph:nx.DiGraph, node:int):
     # suboptimal, we could just add the nodes to the paths of their parents
     #TODO: rewrite
     new_paths = nx.all_simple_paths(graph, source=0, target=node)
-    print(new_paths) 
-    return new_paths  
+    print(list(new_paths)) 
+    return list(new_paths)  
 
 
 def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[str]]:
