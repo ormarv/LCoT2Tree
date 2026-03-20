@@ -51,7 +51,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
                 parent = list(k)[:-1]
                 graph.add_edge(parent, step)
         if not has_parent:
-            graph.add_edge(sorted_scores.items[0][0], step)
+            graph.add_edge(sorted_scores.items()[0][0], step)
             print(f"No satisfactory entailment. Adding {sorted_scores.items[0][0]} as parent of {step}")
         # add to highest: what if no path gives satisfactory results?
         new_paths = get_all_new_paths(graph, step)
