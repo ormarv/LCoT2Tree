@@ -27,6 +27,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
     paths = {}  # key: int (node index); value: List of paths
     nli_client = NLI_client(MODEL_ID)
     for step in steps:
+        print(f"Inserting step {step}")
         graph.add_node(step)
         branch_scores = {}
         for node in list(graph.nodes):
@@ -50,7 +51,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
                 has_parent = True
                 parent = list(k)[:-1]
                 graph.add_edge(parent, step)
-        if not has_parent:
+        if not has_parent and step!=0:
             graph.add_edge(list(sorted_scores.items())[0][0], step)
             print(f"No satisfactory entailment. Adding {sorted_scores.items[0][0]} as parent of {step}")
         # add to highest: what if no path gives satisfactory results?
