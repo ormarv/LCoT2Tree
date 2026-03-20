@@ -9,6 +9,8 @@ class NLI_client():
         self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
     
     def run(self,premise:str, hypothesis:str):
+        print(f"Premise: {premise}")
+        print(f"Hypothesis: {hypothesis}")
         input = self.tokenizer(premise, hypothesis, truncation=True, return_tensors="pt")
         output = self.model(input["input_ids"].to(self.device))  # device = "cuda:0" or "cpu"
         prediction = torch.softmax(output["logits"][0], -1).tolist()
