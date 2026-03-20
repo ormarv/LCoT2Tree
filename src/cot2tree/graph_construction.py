@@ -36,7 +36,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
                 print(f"Relevant paths: {paths}")
                 for path in relevant_paths:
                     # run NLI model
-                    prediction = NLI_client.run(premise=path, hypothesis=step)
+                    prediction = nli_client.run(premise=path, hypothesis=step)
                     # get entailment probability
                     # add to branch_scores
                     branch_scores[tuple(path)] = prediction
