@@ -16,6 +16,12 @@ def get_all_new_paths(graph:nx.DiGraph, node:int):
     print(list(new_paths)) 
     return list(new_paths)  
 
+def get_path_content(path:List[int],steps:Dict[int,str]):
+    path_content = ""
+    for node in path:
+        path_content = path_content + steps[node]
+    return path_content
+
 
 def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[str]]:
     """
@@ -39,7 +45,8 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
                 print(f"Relevant paths: {paths}")
                 for path in relevant_paths:
                     # run NLI model
-                    prediction = nli_client.run(premise=path, hypothesis=step)
+                    path_content = get_path_content(path, steps)
+                    prediction = nli_client.run(premise=path_content, hypothesis=steps[step])
                     # get entailment probability
                     # add to branch_scores
                     branch_scores[tuple(path)] = prediction
