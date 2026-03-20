@@ -1,4 +1,5 @@
 import re
+import string
 from graph_construction import construct_graph
 
 def length_regularity(steps):
@@ -12,6 +13,13 @@ def length_regularity(steps):
 
     print(lengths)
 
+def contains_alphanumeric(separator:str)->bool:
+    alnum = set(string.letters+string.digits)
+    intersection = alnum.intersection(set(separator))
+    if len(intersection)>0:
+        return True
+    return False
+
 def intelligent_split(lcot:str, n_first:int):
     first_words = {}
     raw_steps = lcot.split("\n\n")
@@ -19,7 +27,7 @@ def intelligent_split(lcot:str, n_first:int):
     #length_regularity(raw_steps)
     for raw_step in raw_steps:
         words = raw_step.split(' ')
-        if words[0] not in first_words:
+        if words[0] not in first_words and contains_alphanumeric(words[0]):
             first_words[words[0]] = 0
         first_words[words[0]] += 1
     print(f"There are {len(first_words)} prefixes.")
