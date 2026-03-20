@@ -6,6 +6,8 @@ llm = Llama.from_pretrained(
 	filename="UD-IQ1_S/DeepSeek-V3.2-UD-IQ1_S-00001-of-00004.gguf",
 )
 
-llm.create_chat_completion(
+response = llm.create_chat_completion(
 	messages = "No input example has been defined for this model task."
 )
+
+print(response["choices"][0]["message"]["content"])

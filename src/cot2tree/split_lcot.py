@@ -14,7 +14,7 @@ def length_regularity(steps):
     print(lengths)
 
 def contains_alphanumeric(separator:str)->bool:
-    alnum = set(string.letters+string.digits)
+    alnum = set(string.ascii_letters+string.digits)
     intersection = alnum.intersection(set(separator))
     if len(intersection)>0:
         return True
