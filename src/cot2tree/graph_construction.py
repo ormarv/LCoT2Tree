@@ -9,7 +9,10 @@ MODEL_ID = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/mode
 def get_all_new_paths(graph:nx.DiGraph, node:int):
     # suboptimal, we could just add the nodes to the paths of their parents
     #TODO: rewrite
-    new_paths = nx.all_simple_paths(graph, source=0, target=node)
+    if node!=0:
+        new_paths = nx.all_simple_paths(graph, source=0, target=node)
+    else:
+        return [[0]]
     print(list(new_paths)) 
     return list(new_paths)  
 
