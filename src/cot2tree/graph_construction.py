@@ -30,14 +30,15 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         graph.add_node(step)
         branch_scores = {}
         for node in list(graph.nodes):
-            relevant_paths = paths[node]
-            print(f"Relevant paths: {paths}")
-            for path in relevant_paths:
-                # run NLI model
-                prediction = NLI_client.run(premise=path, hypothesis=step)
-                # get entailment probability
-                # add to branch_scores
-                branch_scores[tuple(path)] = prediction
+            if node!=step:
+                relevant_paths = paths[node]
+                print(f"Relevant paths: {paths}")
+                for path in relevant_paths:
+                    # run NLI model
+                    prediction = NLI_client.run(premise=path, hypothesis=step)
+                    # get entailment probability
+                    # add to branch_scores
+                    branch_scores[tuple(path)] = prediction
         # get three highest scored paths (if there are at least three paths)
         sorted_scores = {key:value for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)}
         if len(sorted_scores)>3:
