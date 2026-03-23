@@ -70,6 +70,6 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         dict_graph = nx.to_dict_of_dicts(graph)
         print(f"The new graph is: {dict_graph}")
         new_paths = get_all_new_paths(graph, step)
-        paths[node] = new_paths
+        paths[step] = new_paths
     return graph
 
