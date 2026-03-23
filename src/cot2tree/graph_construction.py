@@ -11,9 +11,9 @@ def get_all_new_paths(graph:nx.DiGraph, node:int):
     #TODO: rewrite
     if node==0:
         return [[0]]
-    new_paths = nx.all_simple_paths(graph, source=0, target=node)
-    print(f"New paths: {list(new_paths)}") 
-    return list(new_paths)  
+    new_paths = list(nx.all_simple_paths(graph, source=0, target=node))
+    print(f"New paths: {new_paths}") 
+    return new_paths
 
 def get_path_content(path:List[int],steps:Dict[int,str]):
     path_content = ""
