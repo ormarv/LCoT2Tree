@@ -28,9 +28,9 @@ def intelligent_split(lcot:str, n_first:int):
     for raw_step in raw_steps:
         words = raw_step.split(' ')
         if contains_alphanumeric(words[0]):
-            if words[0] not in first_words:
-                first_words[words[0]] = 0
-            first_words[words[0]] += 1
+            if words[0].replace(',','') not in first_words:
+                first_words[words[0].replace(',','')] = 0
+            first_words[words[0].replace(',','')] += 1
     print(f"There are {len(first_words)} prefixes.")
     #print(first_words)
     sorted_words = [k for k,_ in sorted(first_words.items(), key=lambda item: item[1], reverse=True)]
