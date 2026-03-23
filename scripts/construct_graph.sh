@@ -7,7 +7,7 @@
 #SBATCH -C v100
 #SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
-#SBATCH --time=01:00:00
+#SBATCH --time=20:00:00
 #SBATCH --account=rqn@v100
 
 echo "Starting job on node: $(hostname)"
@@ -26,7 +26,7 @@ mamba activate /lustre/fswork/projects/rech/rqn/ugy38tw/lcot2tree
 
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
-
+chmod +x src/cot2tree/split_lcot.py
 srun src/cot2tree/split_lcot.py
 #srun LLM-MindMap/edge_classification.py
 # Print job completion time
