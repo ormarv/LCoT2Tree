@@ -59,6 +59,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         for k,v in sorted_scores:
             if v>=threshold:
                 has_parent = True
+                print(k)
                 parent = list(k)[:-1]
                 print(f"Adding edge between {parent} and {step}.")
                 graph.add_edge(parent, step)
