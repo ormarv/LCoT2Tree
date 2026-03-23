@@ -11,7 +11,7 @@ class NLI_client():
     def run(self,premise:str, hypothesis:str):
         print(f"Premise: {premise}")
         print(f"Hypothesis: {hypothesis}")
-        input = self.tokenizer(premise, hypothesis, truncation=True, return_tensors="pt",device=self.device)
+        input = self.tokenizer(premise, hypothesis, truncation=True, return_tensors="pt").to(self.device)
         output = self.model(input["input_ids"].to(self.device))  # device = "cuda:0" or "cpu"
         prediction = torch.softmax(output["logits"][0], -1).tolist()
         #label_names = ["entailment", "not_entailment"]

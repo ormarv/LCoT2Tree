@@ -21,6 +21,20 @@ def get_path_content(path:List[int],steps:Dict[int,str]):
         path_content = path_content + steps[node]
     return path_content
 
+def get_attachment_pool(new_paths:Dict[int,Dict[int]],last_node:int,leaves):
+    # leaves are a set of integers
+    attachment_pool = set()
+    for path in new_paths:
+        for node in path:
+            attachment_pool.add(node)
+    intersection = attachment_pool.intersection(leaves)
+    for node in intersection:
+        leaves.remove(node)
+    leaves.add(node)
+    for node in leaves:
+        attachment_pool.add(node)
+    return attachment_pool
+
 
 def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[str]]:
     """
