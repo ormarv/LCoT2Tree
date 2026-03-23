@@ -50,6 +50,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
                     # get entailment probability
                     # add to branch_scores
                     branch_scores[tuple(path)] = prediction
+        print(f"Branch scores: {branch_scores}")
         # get three highest scored paths (if there are at least three paths)
         sorted_scores = {key:value for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)}
         if len(sorted_scores)>3:
