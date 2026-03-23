@@ -65,7 +65,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         if not has_parent and step!=0:
             print(f"Sorted_scores: {sorted_scores}")
             graph.add_edge(sorted_scores[0][0][0], step)
-            print(f"No satisfactory entailment. Adding {list(sorted_scores.items())[0][0][0]} as parent of {step}")
+            print(f"No satisfactory entailment. Adding {sorted_scores[0][0][0]} as parent of {step}")
         # add to highest: what if no path gives satisfactory results?
         dict_graph = nx.to_dict_of_dicts(graph)
         print(f"The new graph is: {dict_graph}")
