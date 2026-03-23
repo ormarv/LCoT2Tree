@@ -6,12 +6,12 @@ class NLI_client():
     def __init__(self,model_name:str):
         self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name,device_map="auto")
     
     def run(self,premise:str, hypothesis:str):
         print(f"Premise: {premise}")
         print(f"Hypothesis: {hypothesis}")
-        input = self.tokenizer(premise, hypothesis, truncation=True, return_tensors="pt")
+        input = self.tokenizer(premise, hypothesis, truncation=True, return_tensors="pt",device=self.device)
         output = self.model(input["input_ids"].to(self.device))  # device = "cuda:0" or "cpu"
         prediction = torch.softmax(output["logits"][0], -1).tolist()
         #label_names = ["entailment", "not_entailment"]
