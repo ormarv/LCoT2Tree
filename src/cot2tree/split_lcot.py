@@ -46,11 +46,14 @@ def intelligent_split(lcot:str, n_first:int):
         augmented_keywords.append(capitalized+",")
     print(augmented_keywords)
     string = '|'.join(augmented_keywords)
-    steps = re.split(string,lcot)
+    steps = re.finditer(string,lcot)
+    split_indices = [match.start() for match in steps]
+    start_indices = [0]+split_indices[:-1]
+    end_indices = split_indices+[len(split_indices)]
+    all_indices = zip(start_indices,end_indices)
     full_steps = []
-    for step in steps:
-        if len(step.split(' '))>1:
-            full_steps.append(step)
+    for (i,j) in all_indices:
+        full_steps.append(lcot[i:j].split(' '))
     return full_steps
 
 

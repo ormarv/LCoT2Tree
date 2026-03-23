@@ -51,12 +51,12 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
                     branch_scores[tuple(path)] = prediction
         print(f"Branch scores: {branch_scores}")
         # get three highest scored paths (if there are at least three paths)
-        sorted_scores = {key:value for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)}
+        sorted_scores = [(key,value) for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)]
         if len(sorted_scores)>3:
             sorted_scores = sorted_scores[:3]
         # compare their scores to a threshold
         has_parent = False
-        for k,v in sorted_scores.items():
+        for k,v in sorted_scores:
             if v>=threshold:
                 has_parent = True
                 parent = list(k)[:-1]
