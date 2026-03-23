@@ -53,7 +53,7 @@ def intelligent_split(lcot:str, n_first:int):
     all_indices = zip(start_indices,end_indices)
     full_steps = []
     for (i,j) in all_indices:
-        full_steps.append(lcot[i:j].split(' '))
+        full_steps.append(lcot[i:j])
     return full_steps
 
 
