@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import re
 import string
 from graph_construction import construct_graph
