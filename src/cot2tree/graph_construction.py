@@ -9,10 +9,9 @@ MODEL_ID = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/mode
 def get_all_new_paths(graph:nx.DiGraph, node:int):
     # suboptimal, we could just add the nodes to the paths of their parents
     #TODO: rewrite
-    if node!=0:
-        new_paths = nx.all_simple_paths(graph, source=0, target=node)
-    else:
+    if node==0:
         return [[0]]
+    new_paths = nx.all_simple_paths(graph, source=0, target=node)
     print(f"New paths: {list(new_paths)}") 
     return list(new_paths)  
 
@@ -42,7 +41,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         for node in list(graph.nodes):
             if node!=step:
                 relevant_paths = paths[node]
-                print(f"Relevant paths: {paths}")
+                print(f"Relevant paths: {relevant_paths}")
                 for path in relevant_paths:
                     # run NLI model
                     path_content = get_path_content(path, steps)
