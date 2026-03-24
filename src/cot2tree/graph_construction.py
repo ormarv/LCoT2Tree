@@ -25,15 +25,19 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
     # leaves are a set of integers
     attachment_pool = set()
     for path in new_paths:
-        for node in path:
-            attachment_pool.add(node)
+        for i,node in enumerate(path):
+            # we exclude the leaf of each path
+            if i!=len(path)-1:
+                attachment_pool.add(node)
+    # we find and take out the former leaves
     intersection = attachment_pool.intersection(leaves)
     for node in intersection:
         leaves.remove(node)
-    leaves.add(node)
     for node in leaves:
         attachment_pool.add(node)
-    return attachment_pool
+    # we add the current node to the leaves, for next time
+    leaves.add(last_node)
+    return list(attachment_pool)
 
 
 def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[str]]:
@@ -47,22 +51,24 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
     """
     graph = nx.DiGraph()
     paths = {}  # key: int (node index); value: List of paths
+    new_paths = []
+    leaves = set()
     nli_client = NLI_client(MODEL_ID)
     for step in steps:
         print(f"Inserting step {step}")
         graph.add_node(step)
         branch_scores = {}
-        for node in list(graph.nodes):
-            if node!=step:
-                relevant_paths = paths[node]
-                print(f"Relevant paths: {relevant_paths}")
-                for path in relevant_paths:
-                    # run NLI model
-                    path_content = get_path_content(path, steps)
-                    prediction = nli_client.run(premise=path_content, hypothesis=steps[step])
-                    # get entailment probability
-                    # add to branch_scores
-                    branch_scores[tuple(path)] = prediction
+        attachment_pool = get_attachment_pool(new_paths, step, leaves)
+        for node in attachment_pool:
+            relevant_paths = paths[node]
+            print(f"Relevant paths: {relevant_paths}")
+            for path in relevant_paths:
+                # run NLI model
+                path_content = get_path_content(path, steps)
+                prediction = nli_client.run(premise=path_content, hypothesis=steps[step])
+                # get entailment probability
+                # add to branch_scores
+                branch_scores[tuple(path)] = prediction
         print(f"Branch scores: {branch_scores}")
         # get three highest scored paths (if there are at least three paths)
         sorted_scores = [(key,value) for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)]
