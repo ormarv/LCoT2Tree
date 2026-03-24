@@ -24,6 +24,7 @@ def get_path_content(path:List[int],steps:Dict[int,str]):
 def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
     # leaves are a set of integers
     attachment_pool = set()
+    print(f"Starting attachment pool, the new paths are {new_paths}, the former leaves are {leaves}.")
     for path in new_paths:
         for i,node in enumerate(path):
             # we exclude the leaf of each path
@@ -33,10 +34,12 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
     intersection = attachment_pool.intersection(leaves)
     for node in intersection:
         leaves.remove(node)
+    print(f"The new leaves are {leaves}.")
     for node in leaves:
         attachment_pool.add(node)
     # we add the current node to the leaves, for next time
     leaves.add(last_node)
+    print(f"The attachment pool for {last_node} is {list(attachment_pool)}")
     return list(attachment_pool)
 
 
