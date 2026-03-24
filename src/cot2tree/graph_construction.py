@@ -1,5 +1,6 @@
 from typing import List, Dict
 import networkx as nx
+import matplotlib.pyplot as plt
 
 from download_datasets import  NLI_client
 
@@ -100,5 +101,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         paths[step] += new_paths
         print(f"Sanity check: {paths[step]}")
         print(f"New state of paths: {paths}")
+        nx.draw(graph)
+        plt.savefig(f'graphs/graph{step}.png')
     return graph
 
