@@ -21,7 +21,7 @@ def get_path_content(path:List[int],steps:Dict[int,str]):
         path_content = path_content + steps[node]
     return path_content
 
-def get_attachment_pool(new_paths:Dict[int,Dict[int]],last_node:int,leaves):
+def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
     # leaves are a set of integers
     attachment_pool = set()
     for path in new_paths:
