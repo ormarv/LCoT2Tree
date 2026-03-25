@@ -115,6 +115,6 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         print(f"Sanity check: {paths[step]}")
         print(f"New state of paths: {paths}")
         nx.draw(graph)
-        plt.savefig(f'graph/graph{step}.png')
+        #plt.savefig(f'graph/graph{step}.png')
     return graph
 
