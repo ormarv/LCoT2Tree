@@ -23,19 +23,18 @@ def get_path_content(path:List[int],steps:Dict[int,str]):
         path_content = path_content + steps[node]
     return path_content
 
-def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
+def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_branch):
     # leaves are a set of integers
     attachment_pool = set()
     print(f"Starting attachment pool, the new paths are {new_paths}, the former leaves are {leaves}.")
-    for path in new_paths:
-        for i,node in enumerate(path):
-            # we exclude the leaf of each path
-            if i!=len(path)-1:
-                attachment_pool.add(node)
+    for i,node in enumerate(main_branch):
+        # the main branch doesn't contain a leaf
+        attachment_pool.add(node)
     # we find and take out the former leaves
     intersection = attachment_pool.intersection(leaves)
     for node in intersection:
-        leaves.remove(node)
+        if node in leaves:
+            leaves.remove(node)
     print(f"The new leaves are {leaves}.")
     for node in leaves:
         attachment_pool.add(node)
@@ -47,7 +46,7 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
     return attachment_pool
 
 
-def construct_graph(steps:Dict[int,str], threshold:float = 0.7, nb_active_branches:int=3)->Dict[str,List[str]]:
+def construct_graph(steps:Dict[int,str], threshold:float = 0.7, nb_active_branches:int=3, k1:float=0.01, k2:float=0.02)->Dict[str,List[str]]:
     """
     Construct a reasoning graph from the list of the steps.
     Params:
@@ -56,16 +55,19 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, nb_active_branch
     Return:
     A dictionary giving a list of children for each step.
     """
+    q1 = int(k1*len(steps))
+    q2 = int(k2*len(steps))
     graph = nx.DiGraph()
     paths = {}  # key: int (node index); value: List of paths
     new_paths = []
+    main_branch = []
     leaves = set()
     nli_client = NLI_client(MODEL_ID)
     for step in steps:
         print(f"Inserting step {step}")
         graph.add_node(step)
         branch_scores = {}
-        attachment_pool = get_attachment_pool(new_paths, step, leaves)
+        attachment_pool = get_attachment_pool(new_paths, step, leaves, main_branch)
         while len(attachment_pool)>0:
             node = attachment_pool[0]
             relevant_paths = paths[node]
@@ -84,14 +86,21 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, nb_active_branch
             if is_parent:
                 ascendants = set(itertools.chain.from_iterable(relevant_paths))
                 for ascendant in list(ascendants):
-                    attachment_pool.remove(ascendant)
+                    if ascendant in attachment_pool:
+                        attachment_pool.remove(ascendant)
             if node in attachment_pool:
                 attachment_pool.remove(node)
         print(f"Branch scores: {branch_scores}")
         # get three highest scored paths (if there are at least three paths)
         sorted_scores = [(key,value) for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)]
-        if len(sorted_scores)>3:
-            sorted_scores = sorted_scores[:nb_active_branches]
+        if step<q1:
+            nb_parents = 1
+        elif step<q2:
+            nb_parents = 2
+        else:
+            nb_parents = 3
+        if len(sorted_scores)>nb_parents:
+            sorted_scores = sorted_scores[:nb_parents]
         # compare their scores to a threshold
         has_parent = False
         for k,v in sorted_scores:
@@ -115,6 +124,9 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, nb_active_branch
         paths[step] += new_paths
         print(f"Sanity check: {paths[step]}")
         print(f"New state of paths: {paths}")
+        # Need to find the best new path that will be the new active branch for the attachment pool
+        main_branch, _ = sorted_scores[0]
+        main_branch = list(main_branch)
         nx.draw(graph)
         #plt.savefig(f'graph/graph{step}.png')
     return graph
