@@ -47,7 +47,7 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
     return attachment_pool
 
 
-def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[str]]:
+def construct_graph(steps:Dict[int,str], threshold:float = 0.7, nb_active_branches:int=3)->Dict[str,List[str]]:
     """
     Construct a reasoning graph from the list of the steps.
     Params:
@@ -85,12 +85,13 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
                 ascendants = set(itertools.chain.from_iterable(relevant_paths))
                 for ascendant in list(ascendants):
                     attachment_pool.remove(ascendant)
-            attachment_pool.remove(node)
+            if node in attachment_pool:
+                attachment_pool.remove(node)
         print(f"Branch scores: {branch_scores}")
         # get three highest scored paths (if there are at least three paths)
         sorted_scores = [(key,value) for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)]
         if len(sorted_scores)>3:
-            sorted_scores = sorted_scores[:3]
+            sorted_scores = sorted_scores[:nb_active_branches]
         # compare their scores to a threshold
         has_parent = False
         for k,v in sorted_scores:
