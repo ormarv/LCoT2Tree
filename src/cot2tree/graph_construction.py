@@ -42,7 +42,9 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
     # we add the current node to the leaves, for next time
     leaves.add(last_node)
     print(f"The attachment pool for {last_node} is {list(attachment_pool)}")
-    return list(attachment_pool).sort(reverse=True)
+    attachment_pool = list(attachment_pool)
+    attachment_pool.sort(reverse=True)
+    return attachment_pool
 
 
 def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[str]]:
