@@ -1,6 +1,7 @@
 from typing import List, Dict
 import networkx as nx
 import matplotlib.pyplot as plt
+import itertools
 
 from download_datasets import  NLI_client
 
@@ -41,7 +42,7 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves):
     # we add the current node to the leaves, for next time
     leaves.add(last_node)
     print(f"The attachment pool for {last_node} is {list(attachment_pool)}")
-    return list(attachment_pool)
+    return list(attachment_pool).sort(reverse=True)
 
 
 def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[str]]:
@@ -63,8 +64,10 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         graph.add_node(step)
         branch_scores = {}
         attachment_pool = get_attachment_pool(new_paths, step, leaves)
-        for node in attachment_pool:
+        while len(attachment_pool)>0:
+            node = attachment_pool[0]
             relevant_paths = paths[node]
+            is_parent = False
             print(f"Relevant paths: {relevant_paths}")
             for path in relevant_paths:
                 # run NLI model
@@ -73,6 +76,14 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
                 # get entailment probability
                 # add to branch_scores
                 branch_scores[tuple(path)] = prediction
+                if prediction>=threshold:
+                    is_parent = True
+                    break
+            if is_parent:
+                ascendants = set(itertools.chain.from_iterable(relevant_paths))
+                for ascendant in list(ascendants):
+                    attachment_pool.remove(ascendant)
+            attachment_pool.remove(node)
         print(f"Branch scores: {branch_scores}")
         # get three highest scored paths (if there are at least three paths)
         sorted_scores = [(key,value) for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)]
@@ -102,6 +113,6 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7)->Dict[str,List[s
         print(f"Sanity check: {paths[step]}")
         print(f"New state of paths: {paths}")
         nx.draw(graph)
-        plt.savefig(f'graphs/graph{step}.png')
+        plt.savefig(f'graph/graph{step}.png')
     return graph
 
