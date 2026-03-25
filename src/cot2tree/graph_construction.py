@@ -125,7 +125,10 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, nb_active_branch
         print(f"Sanity check: {paths[step]}")
         print(f"New state of paths: {paths}")
         # Need to find the best new path that will be the new active branch for the attachment pool
-        main_branch, _ = sorted_scores[0]
+        if len(sorted_scores)>0:
+            main_branch, _ = sorted_scores[0]
+        else:
+            main_branch = []
         main_branch = list(main_branch)
         nx.draw(graph)
         #plt.savefig(f'graph/graph{step}.png')
