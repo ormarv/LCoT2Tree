@@ -41,7 +41,7 @@ def intelligent_split(lcot:str, n_first:int):
         if contains_letters(words[0]):
             fw = words[0].replace(',',' ')
             if fw.strip()=="I":
-                fw = '[\.;:\?\!\n]\s+I'
+                fw = r'[\.;:\?\!\n]\s+I'
             if fw not in first_words:
                 first_words[fw] = 0
             first_words[fw] += 1
