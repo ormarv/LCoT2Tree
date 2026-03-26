@@ -68,7 +68,7 @@ def intelligent_split(lcot:str, n_first:int):
             start+=1
             print(match.group())
         split_indices.append(start)
-    split_indices = [match.start() for match in steps]
+    #split_indices = [match.start() for match in steps]
     start_indices = [0]+split_indices[:-1]
     end_indices = split_indices+[len(split_indices)]
     all_indices = zip(start_indices,end_indices)
