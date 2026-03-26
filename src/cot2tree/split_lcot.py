@@ -10,12 +10,10 @@ def length_regularity(steps):
     for i,step in steps.items():
         q = len(step.split(' '))//10
         if q>=20:
+            print(f"Huge step:{step}")
             lengths[200]+=1
         else:
             lengths[q*10]+=1
-        if q==0:
-            print(f"Small step: {step}<end>")
-
     print(lengths)
 
 def contains_alphanumeric(separator:str)->bool:
@@ -66,7 +64,6 @@ def intelligent_split(lcot:str, n_first:int):
         start = match.start()
         if " I," in match.group() or " I " in match.group() or "\nI " in match.group() or "\nI," in match.group() and match.start()<len(string)-1:
             start+=1
-            print(match.group())
         split_indices.append(start)
     #split_indices = [match.start() for match in steps]
     start_indices = [0]+split_indices[:-1]
