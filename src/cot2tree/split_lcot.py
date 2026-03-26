@@ -35,7 +35,7 @@ def intelligent_split(lcot:str, n_first:int):
                 first_words[words[0].replace(',','')] = 0
             first_words[words[0].replace(',','')] += 1
     print(f"There are {len(first_words)} prefixes.")
-    #print(first_words)
+    print(first_words)
     sorted_words = [k for k,_ in sorted(first_words.items(), key=lambda item: item[1], reverse=True)]
     #print(sorted_words)
     keywords = sorted_words[:n_first]
@@ -65,6 +65,6 @@ steps = intelligent_split(LCOT2,5)
 print(len(steps))
 steps = {i:step for i,step in enumerate(steps)}
 #length_regularity(steps)
-graph = construct_graph(steps=steps)
-dict_graph = nx.to_dict_of_dicts(graph)
-print(dict_graph)
+#graph = construct_graph(steps=steps)
+#dict_graph = nx.to_dict_of_dicts(graph)
+#print(dict_graph)
