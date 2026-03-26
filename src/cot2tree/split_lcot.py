@@ -23,6 +23,12 @@ def contains_alphanumeric(separator:str)->bool:
         return True
     return False
 
+def contains_letters(separator:str)->bool:
+    intersection = set(string.ascii_letters).intersection(set(separator))
+    if len(intersection)>0:
+        return True
+    return False
+
 def intelligent_split(lcot:str, n_first:int):
     first_words = {}
     raw_steps = lcot.split("\n\n")
@@ -30,7 +36,7 @@ def intelligent_split(lcot:str, n_first:int):
     #length_regularity(raw_steps)
     for raw_step in raw_steps:
         words = raw_step.split(' ')
-        if contains_alphanumeric(words[0]):
+        if contains_letters(words[0]):
             if words[0].replace(',','') not in first_words:
                 first_words[words[0].replace(',','')] = 0
             first_words[words[0].replace(',','')] += 1
