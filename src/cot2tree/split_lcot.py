@@ -3,6 +3,7 @@ import re
 import string
 from graph_construction import construct_graph
 from lcot_examples import LCOT1, LCOT2
+import networkx as nx
 
 def length_regularity(steps):
     lengths = {0:0, 10:0, 20:0, 30:0, 40:0, 50:0, 60:0, 70:0, 80:0, 90:0, 100:0}
@@ -65,5 +66,5 @@ print(len(steps))
 steps = {i:step for i,step in enumerate(steps)}
 #length_regularity(steps)
 graph = construct_graph(steps=steps)
-dict_graph = graph.to_dict_of_dicts(graph)
+dict_graph = nx.to_dict_of_dicts(graph)
 print(dict_graph)
