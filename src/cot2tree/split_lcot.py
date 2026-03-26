@@ -61,6 +61,12 @@ def intelligent_split(lcot:str, n_first:int):
     print(augmented_keywords)
     string = '|'.join(augmented_keywords)
     steps = re.finditer(string,lcot)
+    split_indices = []
+    for match in steps:
+        start = match.start()
+        if " I," in match.group() or " I " in match.group() and match.start()<len(string)-1:
+            start+=1
+        split_indices.append(start)
     split_indices = [match.start() for match in steps]
     start_indices = [0]+split_indices[:-1]
     end_indices = split_indices+[len(split_indices)]
@@ -72,7 +78,7 @@ def intelligent_split(lcot:str, n_first:int):
 
 
 
-steps = intelligent_split(LCOT2,7)
+steps = intelligent_split(LCOT2,8)
 print(len(steps))
 steps = {i:step for i,step in enumerate(steps)}
 length_regularity(steps)
