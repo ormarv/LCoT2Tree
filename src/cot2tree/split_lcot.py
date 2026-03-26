@@ -6,13 +6,15 @@ from lcot_examples import LCOT1, LCOT2
 import networkx as nx
 
 def length_regularity(steps):
-    lengths = {0:0, 10:0, 20:0, 30:0, 40:0, 50:0, 60:0, 70:0, 80:0, 90:0, 100:0}
+    lengths = {0:0, 10:0, 20:0, 30:0, 40:0, 50:0, 60:0, 70:0, 80:0, 90:0, 100:0, 110: 0, 120:0, 130:0, 140:0, 150:0}
     for i,step in steps.items():
         q = len(step.split(' '))//10
-        if q>=10:
-            lengths[100]+=1
+        if q>=15:
+            lengths[150]+=1
         else:
             lengths[q*10]+=1
+        if q==0:
+            print(f"Small step: {step}<end>")
 
     print(lengths)
 
