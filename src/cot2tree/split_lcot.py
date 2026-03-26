@@ -66,6 +66,7 @@ def intelligent_split(lcot:str, n_first:int):
         start = match.start()
         if " I," in match.group() or " I " in match.group() and match.start()<len(string)-1:
             start+=1
+            print(match.group())
         split_indices.append(start)
     split_indices = [match.start() for match in steps]
     start_indices = [0]+split_indices[:-1]
