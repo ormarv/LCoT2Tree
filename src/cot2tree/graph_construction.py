@@ -2,6 +2,7 @@ from typing import List, Dict
 import networkx as nx
 import matplotlib.pyplot as plt
 import itertools
+from tqdm import tqdm
 
 from download_datasets import  NLI_client
 
@@ -63,7 +64,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
     main_branch = []
     leaves = set()
     nli_client = NLI_client(MODEL_ID)
-    for step in steps:
+    for step in tqdm(steps):
         print(f"Inserting step {step}")
         graph.add_node(step)
         branch_scores = {}
@@ -121,11 +122,11 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
         dict_graph = nx.to_dict_of_dicts(graph)
         print(f"The new graph is: {dict_graph}")
         new_paths = get_all_new_paths(graph, step)
-        print(f"Printing new paths again: {new_paths}")
+        #print(f"Printing new paths again: {new_paths}")
         if step not in paths:
             paths[step] = []
         paths[step] += new_paths
-        print(f"Sanity check: {paths[step]}")
+        #print(f"Sanity check: {paths[step]}")
         print(f"New state of paths: {paths}")
         # Need to find the best new path that will be the new active branch for the attachment pool
         if len(sorted_scores)>0:

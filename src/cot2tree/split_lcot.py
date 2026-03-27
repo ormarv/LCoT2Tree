@@ -10,7 +10,7 @@ def length_regularity(steps):
     for i,step in steps.items():
         q = len(step.split(' '))//10
         if q>=20:
-            print(f"Huge step:{step}")
+            #print(f"Huge step:{step}")
             lengths[200]+=1
         else:
             lengths[q*10]+=1
