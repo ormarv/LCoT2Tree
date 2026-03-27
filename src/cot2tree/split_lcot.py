@@ -79,7 +79,7 @@ def intelligent_split(lcot:str, n_first:int):
 steps = intelligent_split(LCOT2,8)
 print(len(steps))
 steps = {i:step for i,step in enumerate(steps)}
-length_regularity(steps)
-#graph = construct_graph(steps=steps)
-#dict_graph = nx.to_dict_of_dicts(graph)
-#print(dict_graph)
+#length_regularity(steps)
+graph = construct_graph(steps=steps)
+dict_graph = nx.to_dict_of_dicts(graph)
+print(dict_graph)
