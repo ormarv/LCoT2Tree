@@ -80,6 +80,6 @@ steps = intelligent_split(LCOT2,8)
 print(len(steps))
 steps = {i:step for i,step in enumerate(steps)}
 #length_regularity(steps)
-graph = construct_graph(steps=steps)
+graph = construct_graph(steps=steps, max_path_length_for_nli=5)
 dict_graph = nx.to_dict_of_dicts(graph)
 print(dict_graph)
