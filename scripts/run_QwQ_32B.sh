@@ -2,8 +2,9 @@
 #SBATCH --job-name=testclient         # Name of your job
 #SBATCH --output=load_qwq/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=load_qwq/%x_%j.err             # Error file
-#SBATCH --partition=CPU              # Partition to submit to (A100, V100, etc.)
-#SBATCH --nodes=1                    
+#SBATCH --partition=V100              # Partition to submit to (A100, V100, etc.)
+#SBATCH --nodes=1       
+#SBATCH --gpu=1             
 #SBATCH --time=00:05:00               
 # Print job details
 echo "Starting job on node: $(hostname)"
