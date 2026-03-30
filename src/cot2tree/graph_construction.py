@@ -47,7 +47,7 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_bran
     return attachment_pool
 
 
-def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_for_nli=None, k1:float=0.01, k2:float=0.02)->Dict[str,List[str]]:
+def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_for_nli=None, k1:float=0.01, k2:float=0.02, t2:int=None)->Dict[str,List[str]]:
     """
     Construct a reasoning graph from the list of the steps.
     Params:
@@ -116,7 +116,10 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
                 graph.add_edge(parent, step)
         if not has_parent and step!=0:
             print(f"Sorted_scores: {sorted_scores}")
-            graph.add_edge(sorted_scores[0][0][0], step)
+            if t2 is not None and sorted_scores[0][1]>=t2:
+                graph.add_edge(sorted_scores[0][0][-1],step)
+            else:
+                graph.add_edge(sorted_scores[0][0][0], step)
             print(f"No satisfactory entailment. Adding {sorted_scores[0][0][0]} as parent of {step}")
         # add to highest: what if no path gives satisfactory results?
         dict_graph = nx.to_dict_of_dicts(graph)

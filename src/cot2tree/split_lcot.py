@@ -75,11 +75,13 @@ def intelligent_split(lcot:str, n_first:int):
     return full_steps
 
 
-
-steps = intelligent_split(LCOT2,8)
-print(len(steps))
-steps = {i:step for i,step in enumerate(steps)}
-#length_regularity(steps)
-graph = construct_graph(steps=steps, max_path_length_for_nli=5)
-dict_graph = nx.to_dict_of_dicts(graph)
+def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5):
+    steps = intelligent_split(lcot,nb_keywords)
+    print(len(steps))
+    steps = {i:step for i,step in enumerate(steps)}
+    #length_regularity(steps)
+    graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli)
+    dict_graph = nx.to_dict_of_dicts(graph)
+    return dict_graph
+dict_graph = build_graph_from_chain(lcot=LCOT2, nb_keywords=8, max_path_length_for_nli=5)
 print(dict_graph)
