@@ -2,7 +2,7 @@
 #SBATCH --job-name=testclient         # Name of your job
 #SBATCH --output=load_qwq/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=load_qwq/%x_%j.err             # Error file
-#SBATCH --partition=H100              # Partition to submit to (A100, V100, etc.)
+#SBATCH --partition=cpu              # Partition to submit to (A100, V100, etc.)
 #SBATCH --nodes=1
 #SBATCH --gpus=1                     
 #SBATCH --time=00:05:00               
