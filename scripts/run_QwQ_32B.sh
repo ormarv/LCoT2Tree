@@ -15,8 +15,8 @@ echo "Job started at: $(date)"
 module load python/3.10.12
 echo "echo PATH"
 echo $PATH
-echo "which -a python"
-which -a python
+echo "Homemade which -a python"
+./mywhich -a python
 # Activate the environment
 source ~/LCoT2Tree/lcot2tree/bin/activate
 echo "env"
