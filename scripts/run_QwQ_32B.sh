@@ -20,6 +20,8 @@ echo "which python"
 which python
 # Activate the environment
 source ~/LCoT2Tree/lcot2tree/bin/activate
+echo "env"
+env
 echo "echo PATH"
 echo $PATH
 echo "ls -l /home/infres/bjaulmes-22/LCoT2Tree/lcot2tree/bin/py*"
