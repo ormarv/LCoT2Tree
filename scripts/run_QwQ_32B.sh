@@ -15,11 +15,12 @@ echo "Job started at: $(date)"
 module load python/3.10.12
 echo "echo PATH"
 echo $PATH
-echo "Homemade which -a python"
-chmod +x ~/LCoT2Tree/scripts/mywhich
+
 ~/LCoT2Tree/scripts/mywhich -a python
 # Activate the environment
 source ~/LCoT2Tree/lcot2tree/bin/activate
+echo "Homemade which -a python"
+chmod +x ~/LCoT2Tree/scripts/mywhich
 echo "env"
 env
 echo "echo PATH"
