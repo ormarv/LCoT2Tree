@@ -15,8 +15,8 @@ echo "Job started at: $(date)"
 module load python/3.10.12
 echo "echo PATH"
 echo $PATH
-echo "which python"
-which python
+echo "which -a python"
+which -a python
 # Activate the environment
 source ~/LCoT2Tree/lcot2tree/bin/activate
 echo "env"
@@ -25,13 +25,13 @@ echo "echo PATH"
 echo $PATH
 echo "ls -l /home/infres/bjaulmes-22/LCoT2Tree/lcot2tree/bin/py*"
 ls -l /home/infres/bjaulmes-22/LCoT2Tree/lcot2tree/bin/py*
-echo "which python"
-which python
+echo "which -a python"
+which -a python
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
-which python
-echo "which pip"
-which pip
+which -a python
+echo "which -a pip"
+which -a pip
 pip list
 srun src/cot2tree/QwQ_32B.py
 #srun LLM-MindMap/edge_classification.py
