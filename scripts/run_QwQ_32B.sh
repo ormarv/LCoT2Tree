@@ -16,12 +16,12 @@ module load python/3.10.12
 echo "echo PATH"
 echo $PATH
 
-~/LCoT2Tree/scripts/mywhich -a python
 # Activate the environment
 source ~/LCoT2Tree/lcot2tree/bin/activate
 echo "PATH after venv activation: $PATH"
 echo "Homemade which -a python"
 chmod +x ~/LCoT2Tree/scripts/mywhich
+~/LCoT2Tree/scripts/mywhich -a python
 echo "env"
 # env
 echo "echo PATH"
