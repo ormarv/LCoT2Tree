@@ -16,7 +16,7 @@ module load python/3.10.12
 
 # Activate the environment
 source ~/TripleCoT/triplecot2/bin/activate
-
+ls /lib64/libbz2*
 ln -s /lib64/libbz2.so.1 ~/.cache/libz2_alma_linux/libbz2.so.1.0
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.cache/libbz2_alma_linux/
 if test -f /lib64/libbz2.so.1; then
