@@ -10,7 +10,7 @@ else
 		printf '%s\n' "$*"
 	}
 fi
-
+puts "PATH inside which: $PATH"
 ALLMATCHES=0
 
 while getopts a whichopts

@@ -19,10 +19,11 @@ echo $PATH
 ~/LCoT2Tree/scripts/mywhich -a python
 # Activate the environment
 source ~/LCoT2Tree/lcot2tree/bin/activate
+echo "PATH after venv activation: $PATH"
 echo "Homemade which -a python"
 chmod +x ~/LCoT2Tree/scripts/mywhich
 echo "env"
-env
+# env
 echo "echo PATH"
 echo $PATH
 echo "ls -l /home/infres/bjaulmes-22/LCoT2Tree/lcot2tree/bin/py*"
