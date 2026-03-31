@@ -33,7 +33,7 @@ fi
 which python
 which pip
 pip list
-srun src/cot2tree/QwQ_32B.py
+/home/infres/bjaulmes-22/LCoT2Tree/lcot2tree/bin/python src/cot2tree/QwQ_32B.py
 #srun LLM-MindMap/edge_classification.py
 rm ~/.cache/libz2_alma_linux/libbz2.so.1.0
 # Print job completion time

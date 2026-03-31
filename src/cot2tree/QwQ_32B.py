@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Load model directly
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
