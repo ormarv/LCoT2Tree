@@ -13,11 +13,16 @@ echo "Job started at: $(date)"
 # Define variables for your job
 echo $PATH
 module load python/3.10.12
+echo "PATH"
 echo $PATH
+echo "Python"
 which python
 # Activate the environment
 source ~/LCoT2Tree/lcot2tree/bin/activate
+echo "PATH"
 echo $PATH
+echo "ls -l /home/infres/bjaulmes-22/LCoT2Tree/lcot2tree/bin/py*"
+ls -l /home/infres/bjaulmes-22/LCoT2Tree/lcot2tree/bin/py*
 which python
 ls /lib64/libbz2*
 ln -s /lib64/libbz2.so.1 ~/.cache/libz2_alma_linux/libbz2.so.1.0
