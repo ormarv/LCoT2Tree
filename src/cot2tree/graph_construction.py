@@ -74,7 +74,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
             node = attachment_pool[0]
             relevant_paths = paths[node]
             is_parent = False
-            print(f"Relevant paths: {relevant_paths}")
+            #print(f"Relevant paths: {relevant_paths}")
             for path in relevant_paths:
                 # run NLI model
                 if max_path_length_for_nli is not None and len(path)>max_path_length_for_nli:
@@ -95,7 +95,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
                         attachment_pool.remove(ascendant)
             if node in attachment_pool:
                 attachment_pool.remove(node)
-        print(f"Branch scores: {branch_scores}")
+        #print(f"Branch scores: {branch_scores}")
         # get three highest scored paths (if there are at least three paths)
         sorted_scores = [(key,value) for key,value in sorted(branch_scores.items(), key=lambda item: item[1], reverse=True)]
         if step<q1:
@@ -135,7 +135,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
             paths[step] = []
         paths[step] += new_paths
         #print(f"Sanity check: {paths[step]}")
-        print(f"New state of paths: {paths}")
+        #print(f"New state of paths: {paths}")
         # Need to find the best new path that will be the new active branch for the attachment pool
         if len(sorted_scores)>0:
             main_branch, _ = sorted_scores[0]
