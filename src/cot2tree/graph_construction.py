@@ -66,6 +66,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
     nli_client = NLI_client(MODEL_ID)
     for step in tqdm(steps):
         print(f"Inserting step {step}")
+        print(f"The step's content is {steps[step]}")
         graph.add_node(step)
         branch_scores = {}
         attachment_pool = get_attachment_pool(new_paths, step, leaves, main_branch)
@@ -113,14 +114,18 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
                 print(k)
                 parent = list(k)[len(k)-1]
                 print(f"Adding edge between {parent} and {step}.")
+                print(f"Content of parent ({parent}): {steps[parent]}")
                 graph.add_edge(parent, step)
         if not has_parent and step!=0:
             print(f"Sorted_scores: {sorted_scores}")
             if t2 is not None and sorted_scores[0][1]>=t2:
                 graph.add_edge(sorted_scores[0][0][-1],step)
+                print(f"Adding an endge to a semi-default parent ({sorted_scores[0][0][-1]})")
+                print(f"Content of semi-default parent ({sorted_scores[0][0][-1]}): {steps[sorted_scores[0][0][-1]]}")
             else:
                 graph.add_edge(sorted_scores[0][0][0], step)
-            print(f"No satisfactory entailment. Adding {sorted_scores[0][0][0]} as parent of {step}")
+                print(f"No satisfactory entailment. Adding {sorted_scores[0][0][0]} as parent of {step}")
+                print(f"This is the content of the default parent: {steps[sorted_scores[0][0][0]]}")
         # add to highest: what if no path gives satisfactory results?
         dict_graph = nx.to_dict_of_dicts(graph)
         print(f"The new graph is: {dict_graph}")
