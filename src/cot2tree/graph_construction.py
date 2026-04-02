@@ -27,7 +27,7 @@ def get_path_content(path:List[int],steps:Dict[int,str]):
 def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_branch):
     # leaves are a set of integers
     attachment_pool = set()
-    print(f"Starting attachment pool, the new paths are {new_paths}, the former leaves are {leaves}.")
+    #print(f"Starting attachment pool, the new paths are {new_paths}, the former leaves are {leaves}.")
     for i,node in enumerate(main_branch):
         # the main branch doesn't contain a leaf
         attachment_pool.add(node)
@@ -36,12 +36,14 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_bran
     for node in intersection:
         if node in leaves:
             leaves.remove(node)
-    print(f"The new leaves are {leaves}.")
+    #print(f"The new leaves are {leaves}.")
     for node in leaves:
         attachment_pool.add(node)
     # we add the current node to the leaves, for next time
     leaves.add(last_node)
+    print('\n')
     print(f"The attachment pool for {last_node} is {list(attachment_pool)}")
+    print('\n')
     attachment_pool = list(attachment_pool)
     attachment_pool.sort(reverse=True)
     return attachment_pool
@@ -65,8 +67,10 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
     leaves = set()
     nli_client = NLI_client(MODEL_ID)
     for step in tqdm(steps):
-        print(f"Inserting step {step}")
+        print('\n')
+        print(f"---------------------------------Inserting step {step}---------------------------------")
         print(f"The step's content is {steps[step]}")
+        print('\n')
         graph.add_node(step)
         branch_scores = {}
         attachment_pool = get_attachment_pool(new_paths, step, leaves, main_branch)
@@ -113,21 +117,28 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
                 has_parent = True
                 print(k)
                 parent = list(k)[len(k)-1]
+                print('\n')
                 print(f"Adding edge between {parent} and {step}.")
                 print(f"Content of parent ({parent}): {steps[parent]}")
+                print('\n')
                 graph.add_edge(parent, step)
         if not has_parent and step!=0:
             print(f"Sorted_scores: {sorted_scores}")
             if t2 is not None and sorted_scores[0][1]>=t2:
                 graph.add_edge(sorted_scores[0][0][-1],step)
+                print('\n')
                 print(f"Adding an endge to a semi-default parent ({sorted_scores[0][0][-1]})")
                 print(f"Content of semi-default parent ({sorted_scores[0][0][-1]}): {steps[sorted_scores[0][0][-1]]}")
+                print('\n')
             else:
                 graph.add_edge(sorted_scores[0][0][0], step)
+                print('\n')
                 print(f"No satisfactory entailment. Adding {sorted_scores[0][0][0]} as parent of {step}")
                 print(f"This is the content of the default parent: {steps[sorted_scores[0][0][0]]}")
+                print('\n')
         # add to highest: what if no path gives satisfactory results?
         dict_graph = nx.to_dict_of_dicts(graph)
+        print('\n')
         print(f"The new graph is: {dict_graph}")
         new_paths = get_all_new_paths(graph, step)
         #print(f"Printing new paths again: {new_paths}")
