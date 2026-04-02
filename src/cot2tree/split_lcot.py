@@ -76,12 +76,12 @@ def intelligent_split(lcot:str, n_first:int):
     return full_steps
 
 
-def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5):
+def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5, t2:float=None):
     steps = intelligent_split(lcot,nb_keywords)
     print(len(steps))
     steps = {i:step for i,step in enumerate(steps)}
     #length_regularity(steps)
-    graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli)
+    graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2)
     dict_graph = nx.to_dict_of_dicts(graph)
     return dict_graph
 parser = ArgumentParser(prog="Reasoning graph construction", description="Builds a reasoning graph from a reasoning chain.")
