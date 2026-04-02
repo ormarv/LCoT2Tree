@@ -27,9 +27,9 @@ mamba activate /lustre/fswork/projects/rech/rqn/ugy38tw/lcot2tree
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
 chmod +x src/cot2tree/split_lcot.py
-srun src/cot2tree/split_lcot.py -m 5 -t2 None
-#srun src/cot2tree/split_lcot.py -m None -t2 None
-#srun src/cot2tree/split_lcot.py -m None -t2 0.5
+srun src/cot2tree/split_lcot.py -m 5
+#srun src/cot2tree/split_lcot.py
+#srun src/cot2tree/split_lcot.py -t2 0.5
 #srun src/cot2tree/split_lcot.py -m 5 -t2 0.5
 #srun LLM-MindMap/edge_classification.py
 # Print job completion time
