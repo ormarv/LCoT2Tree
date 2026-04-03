@@ -6,7 +6,7 @@ import os
 from split_lcot import build_graph_from_chain
 
 #take 30 deltabench samples
-dataset = load_dataset("~/.cache/huggingface/hub/datasets--OpenStellarTeam--DeltaBench/", split="train")
+dataset = load_dataset("~/.cache/huggingface/hub/datasets--OpenStellarTeam--DeltaBench/snapshots/894d233e5beb06b312b29761cc10e10ca5d2588a/Deltabench_v1.csv", split="train")
 print(dataset)
 gen_reasoning = dataset.filter(lambda sample: sample['task_l1']=='general')
 print(len(gen_reasoning))
@@ -41,4 +41,3 @@ for dir in directories:
     print(f"Average number of edges: {sum(list_edges)/len(list_edges)}")
     print(f"Average number of semi-default parents: {sum(list_semi_default_parents)/len(list_semi_default_parents)}")
     print(f"Average number of default parents: {sum(list_default_parents)/len(list_default_parents)}")
-    
