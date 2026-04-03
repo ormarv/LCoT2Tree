@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import re
 import string
+from io import TextIOWrapper
 from graph_construction import construct_graph
 from lcot_examples import LCOT1, LCOT2
 import networkx as nx
@@ -30,10 +31,10 @@ def contains_letters(separator:str)->bool:
         return True
     return False
 
-def intelligent_split(lcot:str, n_first:int):
+def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
     first_words = {}
     raw_steps = lcot.split("\n\n")
-    print(f"Number of raw steps: {len(raw_steps)}")
+    print(f"Number of raw steps: {len(raw_steps)}", file=logfile)
     #length_regularity(raw_steps)
     for raw_step in raw_steps:
         words = raw_step.split(' ')
@@ -44,8 +45,8 @@ def intelligent_split(lcot:str, n_first:int):
             if fw not in first_words:
                 first_words[fw] = 0
             first_words[fw] += 1
-    print(f"There are {len(first_words)} prefixes.")
-    print(first_words)
+    print(f"There are {len(first_words)} prefixes.", file=logfile)
+    print(first_words, file=logfile)
     sorted_words = [k for k,_ in sorted(first_words.items(), key=lambda item: item[1], reverse=True)]
     #print(sorted_words)
     keywords = sorted_words[:n_first]
@@ -57,7 +58,7 @@ def intelligent_split(lcot:str, n_first:int):
         capitalized = keyword.capitalize()
         augmented_keywords.append(capitalized+" ")
         augmented_keywords.append(capitalized+",")
-    print(augmented_keywords)
+    print(augmented_keywords, file=logfile)
     string = '|'.join(augmented_keywords)
     steps = re.finditer(string,lcot)
     split_indices = []
@@ -76,15 +77,15 @@ def intelligent_split(lcot:str, n_first:int):
     return full_steps
 
 
-def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5, t2:float=None):
-    steps = intelligent_split(lcot,nb_keywords)
-    print(len(steps))
+def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5, t2:float=None, logfile:TextIOWrapper=None):
+    steps = intelligent_split(lcot,nb_keywords,logfile)
+    print(f"There are {len(steps)} steps.",file=logfile)
     steps = {i:step for i,step in enumerate(steps)}
     #length_regularity(steps)
-    graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2)
+    graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2, logfile=logfile)
     dict_graph = nx.to_dict_of_dicts(graph)
     return dict_graph
-parser = ArgumentParser(prog="Reasoning graph construction", description="Builds a reasoning graph from a reasoning chain.")
+"""parser = ArgumentParser(prog="Reasoning graph construction", description="Builds a reasoning graph from a reasoning chain.")
 parser.add_argument("-m","--max_path_length_for_nli", type=int, default=None)
 parser.add_argument("-t2","--secondary_threshold", type=float, default=None)
 args = parser.parse_args()
@@ -92,4 +93,4 @@ max_path_length_for_nli = args.max_path_length_for_nli
 t2 = args.secondary_threshold
 
 dict_graph = build_graph_from_chain(lcot=LCOT2, nb_keywords=8, max_path_length_for_nli=max_path_length_for_nli, t2=t2)
-print(dict_graph)
+print(dict_graph)"""
