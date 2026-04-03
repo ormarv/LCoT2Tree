@@ -14,7 +14,7 @@ random.seed(42)
 indices = [random.random() for _ in range(50)]
 print(type(gen_reasoning))
 print(gen_reasoning[0])
-samples = gen_reasoning.select([indices])
+samples = gen_reasoning.select(indices)
 print(samples)
 #run split_lcot on each and save results in log files
 lcots = [sample['long_cot'] for sample in samples]
