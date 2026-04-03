@@ -9,13 +9,13 @@ from download_datasets import  NLI_client
 MODEL_ID = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--MoritzLaurer--DeBERTa-v3-base-mnli-fever-docnli-ling-2c/snapshots/eff31bcd5e3d26a4246264878a14e937cc5d7fc0"
 
 
-def get_all_new_paths(graph:nx.DiGraph, node:int):
+def get_all_new_paths(graph:nx.DiGraph, node:int, logfile=None):
     # suboptimal, we could just add the nodes to the paths of their parents
     #TODO: rewrite
     if node==0:
         return [[0]]
     new_paths = list(nx.all_simple_paths(graph, source=0, target=node))
-    print(f"New paths: {new_paths}") 
+    print(f"New paths: {new_paths}",file=logfile) 
     return new_paths
 
 def get_path_content(path:List[int],steps:Dict[int,str]):
@@ -24,7 +24,7 @@ def get_path_content(path:List[int],steps:Dict[int,str]):
         path_content = path_content + steps[node]
     return path_content
 
-def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_branch):
+def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_branch, logfile=None):
     # leaves are a set of integers
     attachment_pool = set()
     #print(f"Starting attachment pool, the new paths are {new_paths}, the former leaves are {leaves}.")
@@ -41,9 +41,9 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_bran
         attachment_pool.add(node)
     # we add the current node to the leaves, for next time
     leaves.add(last_node)
-    print('\n')
-    print(f"The attachment pool for {last_node} is {list(attachment_pool)}")
-    print('\n')
+    print('\n',file=logfile)
+    print(f"The attachment pool for {last_node} is {list(attachment_pool)}",file=logfile)
+    print('\n',file=logfile)
     attachment_pool = list(attachment_pool)
     attachment_pool.sort(reverse=True)
     return attachment_pool
@@ -73,7 +73,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
         print('\n',file=logfile)
         graph.add_node(step)
         branch_scores = {}
-        attachment_pool = get_attachment_pool(new_paths, step, leaves, main_branch)
+        attachment_pool = get_attachment_pool(new_paths, step, leaves, main_branch, logfile=logfile)
         while len(attachment_pool)>0:
             node = attachment_pool[0]
             relevant_paths = paths[node]
@@ -140,7 +140,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
         dict_graph = nx.to_dict_of_dicts(graph)
         print('\n',file=logfile)
         print(f"The new graph is: {dict_graph}",file=logfile)
-        new_paths = get_all_new_paths(graph, step)
+        new_paths = get_all_new_paths(graph, step, logfile=logfile)
         #print(f"Printing new paths again: {new_paths}")
         if step not in paths:
             paths[step] = []

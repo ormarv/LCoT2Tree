@@ -23,12 +23,17 @@ for directory in directories:
     if not os.path.isdir(directory):
         os.makedirs(directory)
 graphs_no_max_no_t2 = [build_graph_from_chain(lcot,max_path_length_for_nli=None, logfile=open(f"./no_max_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+print("Done with 0: No max, no t2.")
 graphs_no_max_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=None, t2=0.5, logfile=open(f"./no_max_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+print("Done with 1: No max, t2 = 0.5.")
 graphs_max_5_no_t2 = [build_graph_from_chain(lcot, logfile=open(f"./max_5_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+print("Done with 2: max = 5, no t2.")
 graphs_max_5_t2_0_5 = [build_graph_from_chain(lcot, t2=0.5, logfile=open(f"./max_5_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+print("Done with 3: max = 5, t2 = 0.5.")
 graphs_max_1_no_t2 = [build_graph_from_chain(lcot, max_path_length_for_nli=1, logfile=open(f"./max_1_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+print("Done with 4: max = 1, no t2")
 graphs_max_1_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=1, t2=0.5, logfile=open(f"./max_1_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
-
+print("Done with 5: max = 1, t2 = 0.5.")
 #make statistics
 # For each directory, get the list of files
 # For each file in the list, count the number of "Adding ", "No satisfactory entailment", and "semi-default"
