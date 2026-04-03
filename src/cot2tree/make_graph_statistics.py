@@ -12,7 +12,8 @@ gen_reasoning = dataset.filter(lambda sample: sample['task_l1']=='general')
 print(len(gen_reasoning))
 random.seed(42)
 indices = [random.random() for _ in range(50)]
-samples = gen_reasoning[indices]
+print(type(gen_reasoning))
+samples = gen_reasoning.select([indices])
 print(samples)
 #run split_lcot on each and save results in log files
 lcots = [sample['long_cot'] for sample in samples]
