@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from datasets import Dataset, load_from_disk
 
 #take 30 deltabench samples
