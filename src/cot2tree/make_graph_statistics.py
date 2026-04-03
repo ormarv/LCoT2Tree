@@ -6,7 +6,7 @@ import os
 from split_lcot import build_graph_from_chain
 
 #take 30 deltabench samples
-dataset = load_dataset("~/.cache/huggingface/hub/datasets--OpenStellarTeam--DeltaBench/snapshots/894d233e5beb06b312b29761cc10e10ca5d2588a/Deltabench_v1.csv", split="train")
+dataset = load_dataset("OpenStellarTeam/DeltaBench", split="train", local_files_only=True)
 print(dataset)
 gen_reasoning = dataset.filter(lambda sample: sample['task_l1']=='general')
 print(len(gen_reasoning))
