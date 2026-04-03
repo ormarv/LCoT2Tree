@@ -4,9 +4,11 @@
 #SBATCH --error=statistics/%x_%j_%a.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
+#SBATCH -C a100
+#SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
-#SBATCH --time=01:00:00
-#SBATCH --account=rqn@cpu
+#SBATCH --time=05:00:00
+#SBATCH --account=rqn@a100
 
 echo "Starting job on node: $(hostname)"
 echo "Job started at: $(date)"
