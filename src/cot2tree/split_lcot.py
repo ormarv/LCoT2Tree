@@ -53,13 +53,13 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
     #print(f"Keywords: {keywords}")
     augmented_keywords = []
     for keyword in keywords:
-        augmented_keywords.append(keyword+" ")
-        augmented_keywords.append(keyword+",")
+        augmented_keywords.append(re.escape(keyword)+" ")
+        augmented_keywords.append(re.escape(keyword+","))
         capitalized = keyword.capitalize()
-        augmented_keywords.append(capitalized+" ")
-        augmented_keywords.append(capitalized+",")
+        augmented_keywords.append(re.escape(capitalized+" "))
+        augmented_keywords.append(re.escape(capitalized+","))
     print(augmented_keywords, file=logfile)
-    string = '|'.join(re.escape(augmented_keywords))
+    string = '|'.join(augmented_keywords)
     print(f"Regex string: {string}")
     steps = re.finditer(string,lcot)
     split_indices = []
