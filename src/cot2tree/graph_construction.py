@@ -66,6 +66,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
     main_branch = []
     leaves = set()
     nli_client = NLI_client(MODEL_ID)
+    print(f"There are {len(steps)} steps.")
     for step in tqdm(steps):
         print('\n',file=logfile)
         print(f"---------------------------------Inserting step {step}---------------------------------",file=logfile)

@@ -12,7 +12,7 @@ def length_regularity(steps):
     for i,step in steps.items():
         q = len(step.split(' '))//10
         if q>=20:
-            #print(f"Huge step:{step}")
+            # print(f"Huge step:{step}")
             lengths[200]+=1
         else:
             lengths[q*10]+=1
@@ -81,7 +81,7 @@ def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:in
     steps = intelligent_split(lcot,nb_keywords,logfile)
     print(f"There are {len(steps)} steps.",file=logfile)
     steps = {i:step for i,step in enumerate(steps)}
-    #length_regularity(steps)
+    length_regularity(steps)
     graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2, logfile=logfile)
     dict_graph = nx.to_dict_of_dicts(graph)
     return dict_graph
