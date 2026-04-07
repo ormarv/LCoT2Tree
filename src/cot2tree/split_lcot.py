@@ -53,14 +53,14 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
     #print(f"Keywords: {keywords}")
     augmented_keywords = []
     for keyword in keywords:
-        augmented_keywords.append(re.escape(keyword)+" ")
-        augmented_keywords.append(re.escape(keyword+","))
+        #augmented_keywords.append(re.escape(keyword)+" ")
+        #augmented_keywords.append(re.escape(keyword+","))
         capitalized = keyword.capitalize()
         augmented_keywords.append(re.escape(capitalized+" "))
         augmented_keywords.append(re.escape(capitalized+","))
     print(augmented_keywords, file=logfile)
     string = '|'.join(augmented_keywords)
-    print(f"Regex string: {string}")
+    #print(f"Regex string: {string}")
     steps = re.finditer(string,lcot)
     split_indices = []
     for match in steps:
@@ -80,11 +80,7 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
 
 def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5, t2:float=None, logfile:TextIOWrapper=None):
     steps = intelligent_split(lcot,nb_keywords,logfile)
-    print(f"There are {len(steps)} steps.",file=logfile)
-    print("-----------------------------------------------------------------------------------------------------------Steps-----------------------------------------------------------------------------------------")
     steps = {i:step for i,step in enumerate(steps)}
-    print(steps)
-    print("-----------------------------------------------------------------------------------------------End steps-----------------------------------------------------------------------------------------------")
     length_regularity(steps)
     graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2, logfile=logfile)
     dict_graph = nx.to_dict_of_dicts(graph)

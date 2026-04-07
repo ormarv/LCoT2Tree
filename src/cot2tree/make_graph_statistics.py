@@ -7,30 +7,30 @@ from split_lcot import build_graph_from_chain
 
 #take 30 deltabench samples
 dataset = load_dataset("csv", split="train", data_files="../.cache/huggingface/hub/datasets--OpenStellarTeam--DeltaBench/snapshots/894d233e5beb06b312b29761cc10e10ca5d2588a/Deltabench_v1.csv")
-print(dataset)
+#print(dataset)
 gen_reasoning = dataset.filter(lambda sample: sample['task_l1']=='general')
-print(len(gen_reasoning))
+#print(len(gen_reasoning))
 random.seed(42)
 indices = [int(random.random()*50) for _ in range(50)]
-print(indices)
-print(type(gen_reasoning))
+#print(indices)
+#print(type(gen_reasoning))
 #print(gen_reasoning[0])
 samples = gen_reasoning.select(indices)
-print(samples)
+#print(samples)
 #run split_lcot on each and save results in log files
 lcots = [sample['long_cot'] for sample in samples]
 directories = ["./no_max_no_t2", "./no_max_t2_0_5", "./max_5_no_t2", "./max_5_t2_0_5", "./max_1_no_t2", "./max_1_t2_0_5"]
 for directory in directories:
     if not os.path.isdir(directory):
         os.makedirs(directory)
-print("The first one.")
+"""print("The first one.")
 print(lcots[0])
 print("And the second one")
 print(lcots[1])
 print(f"Are samples 0 and 1 identical?: {lcots[0]==lcots[1]}")
 print(f"Are samples 0 and 2 identical?: {lcots[0]==lcots[2]}")
 print(f"Are samples 0 and 3 identical?: {lcots[0]==lcots[3]}")
-print(f"Are samples 0 and 4 identical?: {lcots[0]==lcots[4]}")
+print(f"Are samples 0 and 4 identical?: {lcots[0]==lcots[4]}")"""
 graphs_no_max_no_t2 = [build_graph_from_chain(lcot,max_path_length_for_nli=None, logfile=open(f"./no_max_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 0: No max, no t2.")
 graphs_no_max_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=None, t2=0.5, logfile=open(f"./no_max_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
