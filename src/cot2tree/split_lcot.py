@@ -60,6 +60,7 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
         augmented_keywords.append(capitalized+",")
     print(augmented_keywords, file=logfile)
     string = '|'.join(augmented_keywords)
+    print(f"Regex string: {string}")
     steps = re.finditer(string,lcot)
     split_indices = []
     for match in steps:
