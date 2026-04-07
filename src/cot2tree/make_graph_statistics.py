@@ -12,8 +12,9 @@ gen_reasoning = dataset.filter(lambda sample: sample['task_l1']=='general')
 print(len(gen_reasoning))
 random.seed(42)
 indices = [random.random() for _ in range(50)]
+print(indices)
 print(type(gen_reasoning))
-print(gen_reasoning[0])
+#print(gen_reasoning[0])
 samples = gen_reasoning.select(indices)
 print(samples)
 #run split_lcot on each and save results in log files
@@ -26,6 +27,10 @@ print("The first one.")
 print(lcots[0])
 print("And the second one")
 print(lcots[1])
+print(f"Are samples 0 and 1 identical?: {lcots[0]==lcots[1]}")
+print(f"Are samples 0 and 2 identical?: {lcots[0]==lcots[2]}")
+print(f"Are samples 0 and 3 identical?: {lcots[0]==lcots[3]}")
+print(f"Are samples 0 and 4 identical?: {lcots[0]==lcots[4]}")
 graphs_no_max_no_t2 = [build_graph_from_chain(lcot,max_path_length_for_nli=None, logfile=open(f"./no_max_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 0: No max, no t2.")
 graphs_no_max_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=None, t2=0.5, logfile=open(f"./no_max_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
