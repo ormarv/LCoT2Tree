@@ -22,6 +22,10 @@ directories = ["./no_max_no_t2", "./no_max_t2_0_5", "./max_5_no_t2", "./max_5_t2
 for directory in directories:
     if not os.path.isdir(directory):
         os.makedirs(directory)
+print("The first one.")
+print(lcots[0])
+print("And the second one")
+print(lcots[1])
 graphs_no_max_no_t2 = [build_graph_from_chain(lcot,max_path_length_for_nli=None, logfile=open(f"./no_max_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 0: No max, no t2.")
 graphs_no_max_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=None, t2=0.5, logfile=open(f"./no_max_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
