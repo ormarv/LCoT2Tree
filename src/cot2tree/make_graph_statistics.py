@@ -11,7 +11,7 @@ print(dataset)
 gen_reasoning = dataset.filter(lambda sample: sample['task_l1']=='general')
 print(len(gen_reasoning))
 random.seed(42)
-indices = [random.random() for _ in range(50)]
+indices = [int(random.random()*50) for _ in range(50)]
 print(indices)
 print(type(gen_reasoning))
 #print(gen_reasoning[0])
