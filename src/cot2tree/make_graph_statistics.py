@@ -44,7 +44,8 @@ for dir in directories:
     list_default_parents = []
     files = os.listdir(dir)
     for file in files:
-        content = file.read()
+        f = open(file,"w+")
+        content = f.read()
         list_edges.append(content.count("Adding "))
         list_semi_default_parents.append(content.count("No satisfactory entailment"))
         list_default_parents.append(content.count("semi-default"))
