@@ -53,7 +53,7 @@ for dir in directories:
     list_default_parents = []
     files = os.listdir(dir)
     for file in files:
-        f = open(file,"w+")
+        f = open(file,"r")
         content = f.read()
         print(f"Content length: {len(content)}")
         n = content.count("Adding ")
@@ -61,6 +61,7 @@ for dir in directories:
         list_edges.append(content.count("Adding "))
         list_semi_default_parents.append(content.count("No satisfactory entailment"))
         list_default_parents.append(content.count("semi-default"))
+        f.close()
     print(f"Average number of edges: {sum(list_edges)/len(list_edges)}")
     print(f"Average number of semi-default parents: {sum(list_semi_default_parents)/len(list_semi_default_parents)}")
     print(f"Average number of default parents: {sum(list_default_parents)/len(list_default_parents)}")
