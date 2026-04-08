@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=statistics
-#SBATCH --output=statistics/%x_%j_%a.out
-#SBATCH --error=statistics/%x_%j_%a.err
+#SBATCH --output=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/statistics/%x_%j_%a.out
+#SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/statistics/%x_%j_%a.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH -C v100

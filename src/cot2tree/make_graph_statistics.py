@@ -31,17 +31,17 @@ print(f"Are samples 0 and 1 identical?: {lcots[0]==lcots[1]}")
 print(f"Are samples 0 and 2 identical?: {lcots[0]==lcots[2]}")
 print(f"Are samples 0 and 3 identical?: {lcots[0]==lcots[3]}")
 print(f"Are samples 0 and 4 identical?: {lcots[0]==lcots[4]}")"""
-graphs_no_max_no_t2 = [build_graph_from_chain(lcot,max_path_length_for_nli=None, logfile=open(f"./no_max_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_no_max_no_t2 = [build_graph_from_chain(lcot,max_path_length_for_nli=None, logfile=open(f"$WORK/.local/no_max_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 0: No max, no t2.")
-graphs_no_max_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=None, t2=0.5, logfile=open(f"./no_max_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_no_max_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=None, t2=0.5, logfile=open(f"$WORK/.local/no_max_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 1: No max, t2 = 0.5.")
-graphs_max_5_no_t2 = [build_graph_from_chain(lcot, logfile=open(f"./max_5_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_5_no_t2 = [build_graph_from_chain(lcot, logfile=open(f"$WORK/.local/max_5_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 2: max = 5, no t2.")
-graphs_max_5_t2_0_5 = [build_graph_from_chain(lcot, t2=0.5, logfile=open(f"./max_5_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_5_t2_0_5 = [build_graph_from_chain(lcot, t2=0.5, logfile=open(f"$WORK/.local/max_5_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 3: max = 5, t2 = 0.5.")
-graphs_max_1_no_t2 = [build_graph_from_chain(lcot, max_path_length_for_nli=1, logfile=open(f"./max_1_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_1_no_t2 = [build_graph_from_chain(lcot, max_path_length_for_nli=1, logfile=open(f"$WORK/.local/max_1_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 4: max = 1, no t2")
-graphs_max_1_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=1, t2=0.5, logfile=open(f"./max_1_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_1_t2_0_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=1, t2=0.5, logfile=open(f"$WORK/.local/max_1_t2_0_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 5: max = 1, t2 = 0.5.")
 #make statistics
 # For each directory, get the list of files
