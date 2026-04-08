@@ -53,7 +53,8 @@ for dir in directories:
     list_default_parents = []
     files = os.listdir(dir)
     for file in files:
-        f = open(file,"r")
+        path = os.path.join(dir, file)
+        f = open(path,"r")
         content = f.read()
         print(f"Content length: {len(content)}")
         n = content.count("Adding ")
