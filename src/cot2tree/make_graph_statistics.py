@@ -55,6 +55,8 @@ for dir in directories:
     for file in files:
         f = open(file,"w+")
         content = f.read()
+        print(f"Content length: {len(content)}")
+        print(f"Counting the \"Adding \" in {file}: {content.count("Adding ")}")
         list_edges.append(content.count("Adding "))
         list_semi_default_parents.append(content.count("No satisfactory entailment"))
         list_default_parents.append(content.count("semi-default"))
