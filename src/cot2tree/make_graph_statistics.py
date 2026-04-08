@@ -19,7 +19,7 @@ samples = gen_reasoning.select(indices)
 #print(samples)
 #run split_lcot on each and save results in log files
 lcots = [sample['long_cot'] for sample in samples]
-directories = ["./no_max_no_t2", "./no_max_t2_0_5", "./max_5_no_t2", "./max_5_t2_0_5", "./max_1_no_t2", "./max_1_t2_0_5"]
+directories = ["$WORK/.local/no_max_no_t2", "$WORK/.local/no_max_t2_0_5", "$WORK/.local/max_5_no_t2", "$WORK/.local/max_5_t2_0_5", "$WORK/.local/max_1_no_t2", "$WORK/.local/max_1_t2_0_5"]
 for directory in directories:
     if not os.path.isdir(directory):
         os.makedirs(directory)
