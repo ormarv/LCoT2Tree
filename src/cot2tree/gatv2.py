@@ -1,7 +1,8 @@
 from torch_geometric.nn.conv.gatv2_conv import GATv2Conv
-from torch_geometric.data import Data
+from torch_geometric.data import Data, DataLoader
 import networkx as nx
 from scipy.sparse import coo_matrix
+from torch_geometric.utils import from_scipy_sparse_matrix, scatter
 import torch
 from torch_geometric.nn import global_mean_pool
 from torch_geometric.loader import DataLoader
@@ -100,3 +101,13 @@ print(type(x))
 #gat = GATv2Conv((4,1), 2)
 #x = gat.forward(x=x, edge_index=coo)
 print(x)
+src = torch.Tensor([[1,2,7,4,6],[12,3,9,8,0]])
+index = torch.tensor([0, 1, 0, 2, 2])
+print(src)
+print(index)
+# Broadcasting in the first and last dim.
+out = scatter(src, index, dim=1, reduce="sum")
+print(out)
+dataloader = DataLoader()
+for data in dataloader:
+    print(type(data))
