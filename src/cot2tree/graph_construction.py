@@ -49,7 +49,7 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_bran
     return attachment_pool
 
 
-def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_for_nli=None, k1:float=0.01, k2:float=0.02, t2:float=None, logfile=None)->Dict[str,List[str]]:
+def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_for_nli=None, k1:float=0.01, k2:float=0.02, t2:float=None, logfile=None, wanted_features:Dict[str,int]=None)->Dict[str,List[str]]:
     """
     Construct a reasoning graph from the list of the steps.
     Params:
@@ -67,7 +67,20 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
     leaves = set()
     nli_client = NLI_client(MODEL_ID)
     print(f"There are {len(steps)} steps.")
+    graph_features = []
+    total_nb_words = sum([len(steps[step].split(' ')) for step in steps])
+    cumulative_tokens = 0  # nb of words, actually: we separate on whitespace
     for step in tqdm(steps):
+        # create the empty features list
+        features = [None]*len(wanted_features)
+        if 'node_index' in wanted_features:
+            features[wanted_features['node_index']] = step
+        if 'distance_to_end' in wanted_features:
+            distance = (total_nb_words - cumulative_tokens)/total_nb_words
+            features[wanted_features['distance_to_end']] = distance
+        if 'nb_tokens_before' in wanted_features:
+                features[wanted_features['nb_tokens_before']] = cumulative_tokens
+                cumulative_tokens+=len(steps[step].split(' '))
         print('\n',file=logfile)
         print(f"---------------------------------Inserting step {step}---------------------------------",file=logfile)
         print(f"The step's content is {steps[step]}",file=logfile)
@@ -123,7 +136,14 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
                 print(f"Content of parent ({parent}): {steps[parent]}",file=logfile)
                 print('\n',file=logfile)
                 graph.add_edge(parent, step)
+                # add the number of parents
+                if 'nb_parents' in wanted_features:
+                    if features[wanted_features['nb_parents']]==None:
+                        features[wanted_features['nb_parents']]=0
+                    features[wanted_features['nb_parents']] += 1
         if not has_parent and step!=0:
+            if 'nb_parents' in wanted_features:
+                features[wanted_features['nb_parents']]=1
             print(f"Sorted_scores: {sorted_scores}",file=logfile)
             if t2 is not None and sorted_scores[0][1]>=t2:
                 graph.add_edge(sorted_scores[0][0][-1],step)
@@ -137,6 +157,12 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
                 print(f"No satisfactory entailment. Adding {sorted_scores[0][0][0]} as parent of {step}",file=logfile)
                 print(f"This is the content of the default parent: {steps[sorted_scores[0][0][0]]}",file=logfile)
                 print('\n',file=logfile)
+        elif not has_parent:
+            # this is the case of the root node
+            if 'nb_parents' in wanted_features:
+                features[wanted_features['nb_parents']]=0
+            
+            
         # add to highest: what if no path gives satisfactory results?
         dict_graph = nx.to_dict_of_dicts(graph)
         print('\n',file=logfile)
@@ -156,5 +182,6 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
         main_branch = list(main_branch)
         nx.draw(graph)
         #plt.savefig(f'graph/graph{step}.png')
-    return graph
+        graph_features.append(features)
+    return graph, graph_features
 
