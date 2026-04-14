@@ -1,5 +1,5 @@
 from torch_geometric.nn.conv.gatv2_conv import GATv2Conv
-from torch_geometric.data import Data, DataLoader
+from torch_geometric.data import Data
 import networkx as nx
 from scipy.sparse import coo_matrix
 from torch_geometric.utils import from_scipy_sparse_matrix, scatter
