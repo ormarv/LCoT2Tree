@@ -180,8 +180,9 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
         else:
             main_branch = []
         main_branch = list(main_branch)
-        nx.draw(graph)
-        #plt.savefig(f'graph/graph{step}.png')
         graph_features.append(features)
+    nx.draw(graph)
+    plt.savefig(f'graph/graph.png')
+        
     return graph, graph_features
 

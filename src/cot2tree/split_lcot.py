@@ -73,8 +73,27 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
     end_indices = split_indices+[len(split_indices)]
     all_indices = zip(start_indices,end_indices)
     full_steps = []
+    current_step = []
+    list_mid_sentence = [',',';',':']
     for (i,j) in all_indices:
-        full_steps.append(lcot[i:j])
+        step = lcot[i:j]
+        if len(step.split(' '))<= 10:
+            if step[-1].islower() or step[-1] in list_mid_sentence:
+                current_step+=step
+            elif step[0].islower() or step[0] in list_mid_sentence:
+                if current_step=="":
+                    full_steps[-1]+=step
+                else:
+                    current_step+=step
+            else:
+                if current_step=="":
+                    full_steps[-1]+=step
+                else:
+                    current_step+=step
+        else:
+            current_step+=step
+            full_steps.append(current_step)
+            current_step = ""
     return full_steps
 
 
@@ -85,6 +104,8 @@ def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:in
     graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2, logfile=logfile)
     dict_graph = nx.to_dict_of_dicts(graph)
     return dict_graph
+
+dict_graph = build_graph_from_chain(LCOT2)
 """parser = ArgumentParser(prog="Reasoning graph construction", description="Builds a reasoning graph from a reasoning chain.")
 parser.add_argument("-m","--max_path_length_for_nli", type=int, default=None)
 parser.add_argument("-t2","--secondary_threshold", type=float, default=None)
