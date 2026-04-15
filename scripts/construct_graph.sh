@@ -28,8 +28,8 @@ module load miniforge/24.9.0
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
 chmod +x src/cot2tree/split_lcot.py
-#srun src/cot2tree/split_lcot.py -m 5
-srun src/cot2tree/split_lcot.py
+srun src/cot2tree/split_lcot.py -m 5
+#srun src/cot2tree/split_lcot.py
 #srun LLM-MindMap/edge_classification.py
 # Print job completion time
 echo "Job finished at: $(date)"
