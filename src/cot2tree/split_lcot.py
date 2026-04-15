@@ -73,13 +73,15 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
     end_indices = split_indices+[len(split_indices)]
     all_indices = zip(start_indices,end_indices)
     full_steps = []
-    current_step = []
+    current_step = ""
     list_mid_sentence = [',',';',':']
     for (i,j) in all_indices:
         step = lcot[i:j]
         if len(step.split(' '))<= 10:
+            
             if step[-1].islower() or step[-1] in list_mid_sentence:
                 current_step+=step
+                
             elif step[0].islower() or step[0] in list_mid_sentence:
                 if current_step=="":
                     full_steps[-1]+=step
@@ -90,16 +92,22 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
                     full_steps[-1]+=step
                 else:
                     current_step+=step
+                print(current_step)
         else:
             current_step+=step
             full_steps.append(current_step)
             current_step = ""
+        if current_step!="":
+            full_steps.append(current_step)
     return full_steps
 
 
 def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5, t2:float=None, logfile:TextIOWrapper=None):
     steps = intelligent_split(lcot,nb_keywords,logfile)
+    print(type(steps))
+    #print(steps[0])
     steps = {i:step for i,step in enumerate(steps)}
+    #print(steps[0])
     length_regularity(steps)
     graph = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2, logfile=logfile)
     dict_graph = nx.to_dict_of_dicts(graph)
