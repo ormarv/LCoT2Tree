@@ -22,6 +22,7 @@ module load miniforge/24.9.0
 
 # 4. Activate your environment
 # Note: On Jean Zay, it is generally safer to use `conda activate` even if you install with mamba
+mamba init
 mamba activate /lustre/fswork/projects/rech/rqn/ugy38tw/lcot2tree
 
 # Execute the Python script with specific arguments
