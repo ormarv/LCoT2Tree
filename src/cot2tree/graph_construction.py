@@ -49,7 +49,7 @@ def get_attachment_pool(new_paths:Dict[int,Dict],last_node:int,leaves, main_bran
     return attachment_pool
 
 
-def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_for_nli=None, k1:float=0.01, k2:float=0.02, t2:float=None, logfile=None, wanted_features:Dict[str,int]=None)->Dict[str,List[str]]:
+def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_for_nli=None, k1:float=0.01, k2:float=0.02, t2:float=None, logfile=None, wanted_features:Dict[str,int]=[])->Dict[str,List[str]]:
     """
     Construct a reasoning graph from the list of the steps.
     Params:
