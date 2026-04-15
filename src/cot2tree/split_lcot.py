@@ -119,3 +119,4 @@ parser.add_argument("-t2","--secondary_threshold", type=float, default=None)
 args = parser.parse_args()
 max_path_length_for_nli = args.max_path_length_for_nli
 t2 = args.secondary_threshold
+dict_graph = build_graph_from_chain(LCOT2, max_path_length_for_nli=max_path_length_for_nli)
