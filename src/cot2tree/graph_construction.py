@@ -182,7 +182,7 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
         main_branch = list(main_branch)
         graph_features.append(features)
     nx.draw(graph)
-    plt.savefig(f'graph/graph.png')
+    plt.savefig(f'graph/graph_no_max.png')
         
     return graph, graph_features
 

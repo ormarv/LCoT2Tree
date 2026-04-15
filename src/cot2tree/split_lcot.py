@@ -113,13 +113,9 @@ def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:in
     dict_graph = nx.to_dict_of_dicts(graph)
     return dict_graph
 
-dict_graph = build_graph_from_chain(LCOT2)
-"""parser = ArgumentParser(prog="Reasoning graph construction", description="Builds a reasoning graph from a reasoning chain.")
+parser = ArgumentParser(prog="Reasoning graph construction", description="Builds a reasoning graph from a reasoning chain.")
 parser.add_argument("-m","--max_path_length_for_nli", type=int, default=None)
 parser.add_argument("-t2","--secondary_threshold", type=float, default=None)
 args = parser.parse_args()
 max_path_length_for_nli = args.max_path_length_for_nli
 t2 = args.secondary_threshold
-
-dict_graph = build_graph_from_chain(lcot=LCOT2, nb_keywords=8, max_path_length_for_nli=max_path_length_for_nli, t2=t2)
-print(dict_graph)"""
