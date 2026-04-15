@@ -23,7 +23,7 @@ module load miniforge/24.9.0
 # 4. Activate your environment
 # Note: On Jean Zay, it is generally safer to use `conda activate` even if you install with mamba
 
-conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/lcot2tree
+#conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/lcot2tree
 
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
