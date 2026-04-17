@@ -29,4 +29,5 @@ conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 #chmod +x src/cot2tree/make_graph_statistics.py
 #srun src/cot2tree/make_graph_statistics.py
 chmod +x src/cot2tree/language_models.py
+ls /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot/lib/python3.10/site-packages/llama_cpp/lib/
 srun src/cot2tree/language_models.py

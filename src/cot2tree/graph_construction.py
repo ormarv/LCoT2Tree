@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import itertools
 from tqdm import tqdm
 
-from download_datasets import  NLI_client
+from cot2tree.language_models import  NLI_client
 
 MODEL_ID = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--MoritzLaurer--DeBERTa-v3-base-mnli-fever-docnli-ling-2c/snapshots/eff31bcd5e3d26a4246264878a14e937cc5d7fc0"
 
@@ -78,8 +78,8 @@ def construct_graph(steps:Dict[int,str], threshold:float = 0.7, max_path_length_
         if 'distance_to_end' in wanted_features:
             distance = (total_nb_words - cumulative_tokens)/total_nb_words
             features[wanted_features['distance_to_end']] = distance
-        if 'nb_tokens_before' in wanted_features:
-                features[wanted_features['nb_tokens_before']] = cumulative_tokens
+        if 'nb_words_before' in wanted_features:
+                features[wanted_features['nb_words_before']] = cumulative_tokens
                 cumulative_tokens+=len(steps[step].split(' '))
         print('\n',file=logfile)
         print(f"---------------------------------Inserting step {step}---------------------------------",file=logfile)
