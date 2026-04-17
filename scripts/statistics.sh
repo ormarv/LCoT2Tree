@@ -28,4 +28,4 @@ conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 #chmod +x src/cot2tree/make_graph_statistics.py
 #srun src/cot2tree/make_graph_statistics.py
 chmod +x src/cot2tree/get_questions.py
-srun src/cot2tree/get_questionss.py
+srun src/cot2tree/get_questions.py
