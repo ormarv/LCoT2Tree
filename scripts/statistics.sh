@@ -7,7 +7,7 @@
 #SBATCH -C v100
 #SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
-#SBATCH --time=04:00:00
+#SBATCH --time=00:02:00
 #SBATCH --account=rqn@v100
 
 echo "Starting job on node: $(hostname)"
@@ -25,5 +25,7 @@ module load miniforge/24.9.0
 conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
 # 5. Run your script with the '-u' (unbuffered) flag
-chmod +x src/cot2tree/make_graph_statistics.py
-srun src/cot2tree/make_graph_statistics.py
+#chmod +x src/cot2tree/make_graph_statistics.py
+#srun src/cot2tree/make_graph_statistics.py
+chmod +x src/cot2tree/get_questions.py
+srun src/cot2tree/get_questionss.py
