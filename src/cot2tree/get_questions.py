@@ -23,7 +23,7 @@ def load_MMLU(nb_samples_per_subj:int, seed:int=42):
     np.random.seed(seed)
     dataset = load_dataset("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/datasets--cais--mmlu/")
     print(dataset)
-    train_split = dataset["auxiliary_train"]
+    train_split = dataset["train"]
     all_train_samples = np.array([(sample['question']+"\nPossible answers: "+"\n".join(sample["choices"]), sample['choices'][sample['answer']]) for sample in train_split])
     indices = np.random.randint(0, len(all_train_samples), nb_samples_per_subj*len(part_names))
     train_samples = all_train_samples[indices].tolist()
