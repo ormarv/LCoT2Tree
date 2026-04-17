@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from datasets import load_dataset, Dataset
 from typing import Dict, List, Tuple
 import numpy as np
