@@ -24,6 +24,7 @@ class NLI_client():
 class LRM_client():
     def __init__(self, name_or_path:str):
         self.model = Llama(name_or_path)
+        print("Model initialized")
 
     def run(self,question:str):
         output = self.model(question)
