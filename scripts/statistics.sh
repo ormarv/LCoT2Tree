@@ -28,5 +28,5 @@ conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 # 5. Run your script with the '-u' (unbuffered) flag
 #chmod +x src/cot2tree/make_graph_statistics.py
 #srun src/cot2tree/make_graph_statistics.py
-chmod +x src/cot2tree/get_questions.py
-srun src/cot2tree/get_questions.py
+chmod +x src/cot2tree/language_models.py
+srun src/cot2tree/language_models.py
