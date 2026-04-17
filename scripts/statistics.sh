@@ -4,6 +4,7 @@
 #SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/statistics/%x_%j_%a.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
+#SBATCH cpus-per-task=2
 #SBATCH -C v100
 #SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
