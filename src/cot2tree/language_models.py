@@ -23,7 +23,7 @@ class NLI_client():
     
 class LRM_client():
     def __init__(self, name_or_path:str):
-        self.model = Llama(name_or_path, n_ctx=2048)
+        self.model = Llama(name_or_path, max_tokens=-1)
         print("Model initialized")
 
     def run(self,question:str):
