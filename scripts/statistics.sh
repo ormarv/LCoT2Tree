@@ -28,6 +28,8 @@ conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 # 5. Run your script with the '-u' (unbuffered) flag
 #chmod +x src/cot2tree/make_graph_statistics.py
 #srun src/cot2tree/make_graph_statistics.py
+echo $LLAMA_CPP_LIB
+export LLAMA_CPP_LIB=/linkhome/rech/genltc01/ugy38tw/triplecot/lib/python3.10/site-packages/llama_cpp/lib/libllama.so
 chmod +x src/cot2tree/language_models.py
 ls /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot/lib/python3.10/site-packages/llama_cpp/lib/
 srun src/cot2tree/language_models.py
