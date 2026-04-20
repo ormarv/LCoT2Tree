@@ -20,7 +20,7 @@ module purge
 # 3. Load Miniforge to restore conda/mamba to your PATH
 # (If 24.9.0 is unavailable, run `module avail miniforge` on the login node to find the latest)
 module load miniforge/24.9.0
-
+module load cuda/12.1
 # 4. Activate your environment
 # Note: On Jean Zay, it is generally safer to use `conda activate` even if you install with mamba
 conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
