@@ -23,11 +23,11 @@ class NLI_client():
     
 class LRM_client():
     def __init__(self, name_or_path:str):
-        self.model = Llama(name_or_path, n_gpu_layers=-1)
+        self.model = Llama(name_or_path, n_gpu_layers=2)
         print("Model initialized")
 
     def run(self,question:str):
-        output = self.model(question, max_tokens=-1)
+        output = self.model(question, max_tokens=10)
         return output
 
 
