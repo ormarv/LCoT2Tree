@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import itertools
 from tqdm import tqdm
 
-from cot2tree.language_models import  NLI_client
+from language_models import  NLI_client
 
 MODEL_ID = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--MoritzLaurer--DeBERTa-v3-base-mnli-fever-docnli-ling-2c/snapshots/eff31bcd5e3d26a4246264878a14e937cc5d7fc0"
 
