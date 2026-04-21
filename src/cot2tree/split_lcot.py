@@ -77,12 +77,12 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
     list_mid_sentence = [',',';',':']
     for (i,j) in all_indices:
         step = lcot[i:j]
-        if len(step.split(' '))<= 10:
+        if len(step.split(' '))<= 10 and len(step)>0:
             print(f"Test print: {step}")
-            if len(step)>0 and step[-1].islower() or step[-1] in list_mid_sentence:
+            if step[-1].islower() or step[-1] in list_mid_sentence:
                 current_step+=step
                 
-            elif len(step)>0 and step[0].islower() or step[0] in list_mid_sentence:
+            elif step[0].islower() or step[0] in list_mid_sentence:
                 if current_step=="":
                     full_steps[-1]+=step
                 else:
@@ -93,6 +93,8 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
                 else:
                     current_step+=step
                 print(current_step)
+        elif len(step.split(' '))<= 10:
+            continue
         else:
             current_step+=step
             full_steps.append(current_step)
