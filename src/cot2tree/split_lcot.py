@@ -78,7 +78,7 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
     for (i,j) in all_indices:
         step = lcot[i:j]
         if len(step.split(' '))<= 10:
-            
+            print(f"Test print: {step}")
             if step[-1].islower() or step[-1] in list_mid_sentence:
                 current_step+=step
                 
