@@ -46,8 +46,8 @@ def load_MMLU(nb_samples_per_subj:int, seed:int=42):
 
 train_samples, eval_samples, test_samples = load_MMLU(3)
 print(len(train_samples))
-print(train_samples)
+#print(train_samples)
 print(len(eval_samples))
-print(len([subject for subject in test_samples]))
+print([len(subject) for subject in test_samples])
 print(len(test_samples['public_relations']))
 print(train_samples[0])

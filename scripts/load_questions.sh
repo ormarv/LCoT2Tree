@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=load_questions
-#SBATCH --output=q%x_%j_%a.out
+#SBATCH --output=%x_%j_%a.out
 #SBATCH --error=%x_%j_%a.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
