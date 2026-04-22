@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-tokenizer = AutoTokenizer.from_pretrained("/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/")
-model = AutoModelForCausalLM.from_pretrained("/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/")
+tokenizer = AutoTokenizer.from_pretrained("/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0")
+model = AutoModelForCausalLM.from_pretrained("/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0")
 messages = [
     {"role": "user", "content": "Who are you?"},
 ]
