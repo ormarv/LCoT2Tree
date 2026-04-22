@@ -1,9 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=load_questions
-#SBATCH --output=questions_%x_%j_%a.out
-#SBATCH --error=questions_%x_%j_%a.err
+#SBATCH --output=q%x_%j_%a.out
+#SBATCH --error=%x_%j_%a.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
 #SBATCH --hint=nomultithread
 #SBATCH --time=00:05:00
 #SBATCH --account=rqn@cpu
