@@ -20,7 +20,7 @@ samples = gen_reasoning.select(indices)
 #print(samples)
 #run split_lcot on each and save results in log files
 lcots = [sample['long_cot'] for sample in samples]
-directories = ["/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_4_fusion", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_5_fusion", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_6_fusion", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_7_fusion", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_8_fusion", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_10_fusion"]
+directories = ["/lustre/fswork/projects/rech/rqn/ugy38tw/.local/no_max", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_3","/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_4", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_5", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_6", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_7", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_8", "/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_10"]
 for directory in directories:
     if not os.path.isdir(directory):
         os.makedirs(directory)
@@ -32,21 +32,21 @@ print(f"Are samples 0 and 1 identical?: {lcots[0]==lcots[1]}")
 print(f"Are samples 0 and 2 identical?: {lcots[0]==lcots[2]}")
 print(f"Are samples 0 and 3 identical?: {lcots[0]==lcots[3]}")
 print(f"Are samples 0 and 4 identical?: {lcots[0]==lcots[4]}")"""
-#graphs_no_max = [build_graph_from_chain(lcot,max_path_length_for_nli=None, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/no_max_fusion/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
-#print("Done with 0: No max")
-#graphs_max_3 = [build_graph_from_chain(lcot, max_path_length_for_nli=3, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_3_fusion/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
-#print("Done with 1: Max 3")
-graphs_max_4 = [build_graph_from_chain(lcot, max_path_length_for_nli=4, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_4_fusion/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_no_max = [build_graph_from_chain(lcot,max_path_length_for_nli=None, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/no_max/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+print("Done with 0: No max")
+graphs_max_3 = [build_graph_from_chain(lcot, max_path_length_for_nli=3, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_3/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+print("Done with 1: Max 3")
+graphs_max_4 = [build_graph_from_chain(lcot, max_path_length_for_nli=4, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_4/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 2: Max 4")
-graphs_max_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=5, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_5_fusion/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_5 = [build_graph_from_chain(lcot, max_path_length_for_nli=5, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_5/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 3: Max 5")
-graphs_max_6 = [build_graph_from_chain(lcot, max_path_length_for_nli=6, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_6_fusion/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_6 = [build_graph_from_chain(lcot, max_path_length_for_nli=6, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_6/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 4: Max 6")
-graphs_max_7 = [build_graph_from_chain(lcot, max_path_length_for_nli=7, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_7_fusion/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_7 = [build_graph_from_chain(lcot, max_path_length_for_nli=7, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_7/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 5: Max 7")
-graphs_max_8 = [build_graph_from_chain(lcot, max_path_length_for_nli=8, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_8_fusion/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_8 = [build_graph_from_chain(lcot, max_path_length_for_nli=8, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_8/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 6: Max 8")
-graphs_max_10 = [build_graph_from_chain(lcot, max_path_length_for_nli=10, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_10_fusion/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
+graphs_max_10 = [build_graph_from_chain(lcot, max_path_length_for_nli=10, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_10/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 print("Done with 7: Max 10")
 #graphs_max_5_no_t2 = [build_graph_from_chain(lcot, logfile=open(f"/lustre/fswork/projects/rech/rqn/ugy38tw/.local/max_5_no_t2/{i}.txt","w+")) for i, lcot in enumerate(lcots)]
 #print("Done with 2: max = 5, no t2.")

@@ -31,7 +31,7 @@ def contains_letters(separator:str)->bool:
         return True
     return False
 
-def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
+def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper, fusion=False):
     first_words = {}
     raw_steps = lcot.split("\n\n")
     print(f"Number of raw steps: {len(raw_steps)}", file=logfile)
@@ -77,30 +77,34 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper):
     list_mid_sentence = [',',';',':']
     for (i,j) in all_indices:
         step = lcot[i:j]
-        if len(step.split(' '))<= 10 and len(step)>0 and len(full_steps)>0:
-            print(f"Test print: {step}")
-            if step[-1].islower() or step[-1] in list_mid_sentence:
-                current_step+=step
-                
-            elif step[0].islower() or step[0] in list_mid_sentence:
-                if current_step=="":
-                    full_steps[-1]+=step
-                else:
+        if fusion:
+            if len(step.split(' '))<= 10 and len(step)>0 and len(full_steps)>0:
+                print(f"Test print: {step}")
+                if step[-1].islower() or step[-1] in list_mid_sentence:
                     current_step+=step
+                    
+                elif step[0].islower() or step[0] in list_mid_sentence:
+                    if current_step=="":
+                        full_steps[-1]+=step
+                    else:
+                        current_step+=step
+                else:
+                    if current_step=="":
+                        full_steps[-1]+=step
+                    else:
+                        current_step+=step
+                    print(current_step)
+            elif len(step.split(' '))<= 10:
+                continue
             else:
-                if current_step=="":
-                    full_steps[-1]+=step
-                else:
-                    current_step+=step
-                print(current_step)
-        elif len(step.split(' '))<= 10:
-            continue
+                current_step+=step
+                full_steps.append(current_step)
+                current_step = ""
+            if current_step!="":
+                full_steps.append(current_step)
         else:
-            current_step+=step
-            full_steps.append(current_step)
-            current_step = ""
-        if current_step!="":
-            full_steps.append(current_step)
+            if len(step)>0:
+                full_steps.append(step)
     return full_steps
 
 
