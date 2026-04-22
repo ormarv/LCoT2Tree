@@ -4,7 +4,6 @@
 #SBATCH --error=questions_%x_%j_%a.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH -C cpu
 #SBATCH --hint=nomultithread
 #SBATCH --time=00:05:00
 #SBATCH --account=rqn@cpu
