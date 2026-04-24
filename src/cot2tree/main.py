@@ -49,6 +49,11 @@ eval_samples = None
 test_samples = None
 test_split = None
 trained_model = None
+wanted_features = {feature:i for i, feature in enumerate(args.F)}
+if verbose:
+    print("The given arguments are:")
+    for arg in args:
+        print(f"\n  {arg}")
 if "train" in actions:
     if args.g:  # If we use pre-existing graphs.
         # We read from the files where the graphs are saved.
