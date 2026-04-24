@@ -73,10 +73,10 @@ def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], l
     loader = DataLoader(datas, batch_size=batch_size)
     return loader
 
-def train(train_dataloader:DataLoader, val_loader:DataLoader, epochs:int=100, lr=1e-3):
+def train(train_dataloader:DataLoader, val_loader:DataLoader, in_channels:int, out_channels:int, hidden:int, epochs:int=100, lr=1e-3):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print('Device', device)
-    model = GAT().to(device)
+    model = GAT(in_channels=in_channels, out_channels=out_channels, hidden=hidden).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     best_evaluation_accuracy = 0
     for i, epoch in enumerate(epochs):
@@ -132,10 +132,10 @@ def train(train_dataloader:DataLoader, val_loader:DataLoader, epochs:int=100, lr
     print(f"Best evaluation accuracy: {best_evaluation_accuracy}")
     return model
     
-def test(test_dataloader:DataLoader):
+def test(test_dataloader:DataLoader, model:GAT):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print('Device', device)
-    model = GAT().to(device)
+    model.to(device)
     total_correct = 0
     total = 0
     prediction_average = 0
@@ -156,9 +156,33 @@ def test(test_dataloader:DataLoader):
     avg_accuracy = total_correct/total
     print(f"Average test accuracy: {avg_accuracy}")
 
-
+def generate_synthetic_graphs(n:int)->List[List[float]]:
+    graphs = []
+    all_features = []
+    labels = np.random.randint(0,1,n).tolist()
+    nb_nodes = np.random.randint(5, 100, n)
+    for i in range(n):
+       features = []
+       graph = nx.DiGraph()
+       for k in range(nb_nodes[i]):
+           graph.add_node(k)
+           parents_indices = np.random.randint(0,k-1,2)
+           graph.add_edge(parents_indices[0], k)
+           graph.add_edge(parents_indices[1], k)
+           node_features = [np.random.random() for _ in range(3)]
+           features.append(node_features)
+       all_features.append(features)
+           
+       graphs.append(graph) 
+       return graphs, all_features, labels
+    
 # in_channels
-g = nx.DiGraph()
+train_graphs, train_features, train_labels = generate_synthetic_graphs(70)
+val_graphs, val_features, val_labels = generate_synthetic_graphs(70)
+train_loader = build_dataloader(train_features, train_graphs, train_labels)
+val_loader = build_dataloader(val_features, val_graphs, val_labels)
+trained_model = train(train_loader, val_loader, in_channels=train_features[1], out_channels=2, hidden=64, epochs=2, lr=0.05)
+"""g = nx.DiGraph()
 g.add_node(1)
 g.add_node(2)
 g.add_node(3)
@@ -187,7 +211,7 @@ y = torch.tensor([[1],[0],[0],[0]],dtype=torch.float)
 #print(x)
 data = Data(x=x, edge_index=coo, y=0)
 d1 = Data(x=y, edge_index=coo_matrix(nx.to_numpy_array(g)), y=1)
-loader = DataLoader([data, d1], batch_size=2)
+loader = DataLoader([data, d1], batch_size=2)"""
 
 #for d in loader:
     # d is a batch, not a Data object
@@ -198,15 +222,15 @@ print(d.y)"""
 #gat = GATv2Conv((4,1), 2)
 #x = gat.forward(x=x, edge_index=coo)
 #print(x)
-src = torch.Tensor([[1,2,7,4,6],[12,3,9,8,0]])
-index = torch.tensor([0, 1, 0, 2, 2])
+"""src = torch.Tensor([[1,2,7,4,6],[12,3,9,8,0]])
+index = torch.tensor([0, 1, 0, 2, 2])"""
 #print(src)
 #print(index)
 # Broadcasting in the first and last dim.
-out = scatter(src, index, dim=1, reduce="sum")
+#out = scatter(src, index, dim=1, reduce="sum")
 #print(out)
 #dataloader = DataLoader()
 """for data in dataloader:
     print(type(data))
 """
-wanted_features = {'nb_parents':0, 'nb_children':1, 'nb_words_before':2, 'node_index':3, 'nb_nodes_per_depth':4, 'distance_to_end':5}
+#wanted_features = {'nb_parents':0, 'nb_children':1, 'nb_words_before':2, 'node_index':3, 'nb_nodes_per_depth':4, 'distance_to_end':5}
