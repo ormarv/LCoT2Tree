@@ -13,6 +13,7 @@ class GAT(torch.nn.Module):
     def __init__(self, in_channels:int, out_channels:int, hidden:int=64):
         super().__init__()
         self.hidden = hidden
+        print(f"in_channels: {in_channels}, out_channels: {out_channels}, hidden: {hidden}")
         self.conv1 = GATv2Conv(in_channels=in_channels, out_channels=self.hidden)
         self.conv2 = GATv2Conv(in_channels=self.hidden, out_channels=self.hidden)
         self.linear = torch.nn.Sequential(
@@ -33,7 +34,7 @@ class GAT(torch.nn.Module):
 def get_edge_index(graph:nx.DiGraph):
     adjacency_matrix = nx.to_numpy_array(graph)
     coo = coo_matrix(adjacency_matrix)
-    edge_index = np.array([coo.row, coo.col])
+    edge_index = torch.tensor(np.array([coo.row, coo.col]), dtype=torch.long)
     return edge_index
 
 def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_features:Dict[str, int])->List[List[float]]:
@@ -79,8 +80,8 @@ def train(train_dataloader:DataLoader, val_loader:DataLoader, in_channels:int, o
     model = GAT(in_channels=in_channels, out_channels=out_channels, hidden=hidden).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     best_evaluation_accuracy = 0
-    for i, epoch in enumerate(epochs):
-        print(f"-------------------------------EPOCH N°{i}-------------------------------")
+    for epoch in range(epochs):
+        print(f"-------------------------------EPOCH N°{epoch}-------------------------------")
         print("    Training")
         model.train()
         loss_all = 0
@@ -90,8 +91,11 @@ def train(train_dataloader:DataLoader, val_loader:DataLoader, in_channels:int, o
             # data is actually is a batch of Data objects (abc.DataBatch)
             # data.batch is a Tensor indicating which graph each node corresponds to
             data = data.to(device)
-            print(type(data))
+            #print(type(data))
             optimizer.zero_grad()
+            print(f"Data.X")
+            print(data.x)
+            print(f"Edge index: {data.edge_index}")
             output = model(data.x, data.edge_index, data.batch)
             prediction = output.argmax(dim=1)
             correct = int((prediction == data.y).sum())
@@ -144,7 +148,7 @@ def test(test_dataloader:DataLoader, model:GAT):
     with torch.no_grad():
         for i, data in enumerate(test_dataloader):
             data = data.to(device)
-            output = model(data.x, data.egde_attribute, data.batch)
+            output = model(data.x, data.edge_index, data.batch)
             predictions = output.argmax(dim=1)
             prediction_average += int(predictions.sum())
             correct = int((predictions==data.y).sum())
@@ -155,33 +159,78 @@ def test(test_dataloader:DataLoader, model:GAT):
             all_predictions.extend(predictions.cpu().tolist())
     avg_accuracy = total_correct/total
     print(f"Average test accuracy: {avg_accuracy}")
+    return avg_accuracy
 
 def generate_synthetic_graphs(n:int)->List[List[float]]:
     graphs = []
     all_features = []
-    labels = np.random.randint(0,1,n).tolist()
+    print(f"First state of all_features: {all_features}")
+    labels = np.random.randint(0,2,n).tolist()
     nb_nodes = np.random.randint(5, 100, n)
     for i in range(n):
+       print(f"----------------Graph n°{i}----------------")
        features = []
        graph = nx.DiGraph()
        for k in range(nb_nodes[i]):
            graph.add_node(k)
-           parents_indices = np.random.randint(0,k-1,2)
-           graph.add_edge(parents_indices[0], k)
-           graph.add_edge(parents_indices[1], k)
+           if k>1:
+            parents_indices = np.random.randint(0,k-1,2)
+            graph.add_edge(parents_indices[0], k)
+            graph.add_edge(parents_indices[1], k)
+           elif k==1:
+               graph.add_edge(0,1)
            node_features = [np.random.random() for _ in range(3)]
            features.append(node_features)
-       all_features.append(features)
+       all_features.append(torch.tensor(features))
+       print(f"State of all_features: {all_features}")
            
        graphs.append(graph) 
-       return graphs, all_features, labels
+    return graphs, all_features, labels
     
 # in_channels
-train_graphs, train_features, train_labels = generate_synthetic_graphs(70)
-val_graphs, val_features, val_labels = generate_synthetic_graphs(70)
+train_graphs, train_features, train_labels = generate_synthetic_graphs(2)
+print(f"Train graphs: {train_graphs}")
+print(f"Train features: {train_features}")
+print(f"Train labels: {train_labels}")
+val_graphs, val_features, val_labels = generate_synthetic_graphs(2)
 train_loader = build_dataloader(train_features, train_graphs, train_labels)
 val_loader = build_dataloader(val_features, val_graphs, val_labels)
-trained_model = train(train_loader, val_loader, in_channels=train_features[1], out_channels=2, hidden=64, epochs=2, lr=0.05)
+# the size of in_channels: nb of features? 
+trained_model = train(train_loader, val_loader, in_channels=3, out_channels=2, hidden=64, epochs=2, lr=0.05)
+print(trained_model)
+# Now let's create synthetic test data.
+all_test_graphs = {}
+all_test_features = {}
+all_test_labels = {}
+features = {'feature1':0, 'feature2':1, 'feature3':2}
+for feature in features:
+    test_graphs, test_features, test_labels = generate_synthetic_graphs(2)
+    all_test_graphs[feature] = test_graphs
+    all_test_features[feature] = test_features
+    all_test_labels[feature] = test_labels
+print(f"Test graphs: {all_test_graphs}")
+print(f"Test features: {all_test_features}")
+print(f"Test labels: {all_test_labels}")
+# Now let's test.
+test_results = {}
+for feature in features:
+    test_loader = build_dataloader(all_test_features[feature], all_test_graphs[feature], all_test_labels[feature])
+    acc = test(test_loader, trained_model)
+    test_results[feature] = acc
+print(test_results)
+
+graphs_path = "../.local/graphs/"
+lcots = "../.local/lcots"
+with open(graphs_path+"/train.txt") as f:
+    print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(train_graphs, train_features, train_labels)]), file=f)
+with open(graphs_path+"/eval.txt") as f:
+    print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(val_graphs, val_features, val_labels)]), file=f)
+for feature in all_test_features:
+    with open(graphs_path+f"/test_{feature}.txt") as f:
+        print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(test_graphs, test_features, test_labels)]), file=f)
+
+
+
 """g = nx.DiGraph()
 g.add_node(1)
 g.add_node(2)
