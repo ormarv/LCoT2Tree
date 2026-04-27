@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from torch_geometric.nn.conv.gatv2_conv import GATv2Conv
 from torch_geometric.data import Data
 import networkx as nx
