@@ -220,7 +220,7 @@ for feature in features:
     test_results[feature] = acc
 print(test_results)
 
-graphs_path = "../.local/graphs/"
+graphs_path = "../.local/graphs"
 lcots = "../.local/lcots"
 with open(graphs_path+"/train.txt") as f:
     print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(train_graphs, train_features, train_labels)]), file=f)
