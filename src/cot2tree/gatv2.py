@@ -226,12 +226,12 @@ parent_dir = "/".join(os.getcwd().split('/')[:-1])
 print(f"Parent_dir: {parent_dir}")
 graphs_path = os.path.join(parent_dir,".local/graphs")
 lcots = os.path.join(parent_dir,".local/lcots")
-with open(graphs_path+"/train.txt") as f:
+with open(graphs_path+"/train.txt","w+") as f:
     print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(train_graphs, train_features, train_labels)]), file=f)
-with open(graphs_path+"/eval.txt") as f:
+with open(graphs_path+"/eval.txt","w+") as f:
     print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(val_graphs, val_features, val_labels)]), file=f)
 for feature in all_test_features:
-    with open(graphs_path+f"/test_{feature}.txt") as f:
+    with open(graphs_path+f"/test_{feature}.txt", "w+") as f:
         print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(test_graphs, test_features, test_labels)]), file=f)
 
 
