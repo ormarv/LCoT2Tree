@@ -18,7 +18,7 @@ parser.add_argument("-f", "--fusion", action="store_true", help="Whether to fuse
 parser.add_argument("-c", "--checkpoint", action="store_true", help="Whether to use checkpoints during training.")
 parser.add_argument("-t", "--threshold", type=float, default=0.7, help="The threshold for a node to be attached to a parent using the NLI model.")
 parser.add_argument("-R", "--resume-training", type=int, default=0, help="Epoch at which to resume training.")
-parser.add_argument("-k", type=int, nargs=2, default=[0.01, 0.02], help="Thresholds before which only 1 or 2 parents (respectively) are allowed for a new node.")
+parser.add_argument("-k", type=float, nargs=2, default=[0.01, 0.02], help="Thresholds before which only 1 or 2 parents (respectively) are allowed for a new node.")
 parser.add_argument("-m", "--max-context-nli", type=int, default=None, help="The maximum number of steps given to the NLI model. Use None or -1 for no maximum.")
 parser.add_argument("-n", "--nb-samples-subject", type=int, default=30, help="The number of samples taken from each subject in MMLU when creating training dataset.")
 parser.add_argument("-L", "--use-existing-lcots", action="store_true", help="Whether to use pre-existing LCoTs to build the graph. This requires setting --lcots-directory (-D).")
@@ -143,7 +143,7 @@ if "train" in actions:
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
     train_loader = build_dataloader(train_features, train_graphs, train_labels)
     eval_loader = build_dataloader(eval_features, eval_graphs, eval_labels)
-    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=args.i, out_channels=args.o, hidden=args.h, epochs=args.e, lr=args.r)
+    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=args.i, out_channels=args.o, hidden=args.H, epochs=args.e, lr=args.r)
 
     # We save the trained model in the specified path.
     if verbose:
