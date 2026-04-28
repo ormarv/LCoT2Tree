@@ -50,6 +50,7 @@ test_samples = None
 test_split = None
 trained_model = None
 wanted_features = {feature:i for i, feature in enumerate(args.F)}
+parent_dir = "/".join(os.getcwd().split["/"][:-1])
 if verbose:
     print("The given arguments are:")
     for arg in args:
@@ -71,7 +72,7 @@ if "train" in actions:
                 if "eval" in file:
                     if verbose:
                         print(f"Loading eval graphs from file {path}.")
-                    eval_graphs_with_full_features = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&(&&&")[2])) for content in f.read().split("############")]
+                    eval_graphs_with_full_features = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
     
     else:
         if args.L:  # If we use pre-existing LCoTs
@@ -93,7 +94,7 @@ if "train" in actions:
             if verbose:
                 print("No existing graphs or LCoTs given, using default.")
                 print("Loading MMLU.")
-            train_split, eval_split, test_split = load_MMLU(args.n, args.s)
+            train_split, eval_split, test_split = load_MMLU(args.n, parent_dir=parent_dir, seed=args.s,)
             train_samples = get_lcots_with_labels(samples=train_split, cross_encoder=args.C, lrms=args.p)
             eval_samples = get_lcots_with_labels(samples=eval_split, cross_encoder=args.C, lrms=args.p)
             # We save those LCoTs and their labels for potential later use.
@@ -183,7 +184,7 @@ if "test" in actions:
             if test_split is None:
                 if verbose:
                     print("Loading MMLU test split.")
-                _, _, test_split = load_MMLU(args.n, args.s)
+                _, _, test_split = load_MMLU(args.n, parent_dir=parent_dir, seed=args.s)
             else:
                 if verbose:
                     print("Using already loaded MMLU test split.")
