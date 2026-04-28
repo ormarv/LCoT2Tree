@@ -2,7 +2,7 @@
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from typing import List
-MODEL_NAME = "cross-encoder/nli-deberta-v3-base"
+MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
 class CrossEncoderClient():
