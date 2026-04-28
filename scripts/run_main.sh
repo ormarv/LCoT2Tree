@@ -30,7 +30,7 @@ chmod +x src/cot2tree/gatv2.py
 chmod +x src/cot2tree/main.py
 chmod -R +x ../.local/graphs
 chmod -R +x ../.local/lcots
-srun src/cot2tree/gatv2
+srun src/cot2tree/gatv2.py
 #srun src/cot2tree/main.py -g -d ~/.local/graphs -v -f nb_parents nb_children node_index distance_to_end nb_words_before nb_nodes_per_depth
 
 echo "Job ended at: $(date)"
