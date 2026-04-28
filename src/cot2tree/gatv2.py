@@ -181,7 +181,7 @@ def generate_synthetic_graphs(n:int)->List[List[float]]:
             graph.add_edge(parents_indices[1], k)
            elif k==1:
                graph.add_edge(0,1)
-           node_features = [np.random.random() for _ in range(3)]
+           node_features = [np.random.random() for _ in range(6)]
            features.append(node_features)
        all_features.append(torch.tensor(features))
        print(f"State of all_features: {all_features}")
@@ -204,7 +204,7 @@ print(trained_model)
 all_test_graphs = {}
 all_test_features = {}
 all_test_labels = {}
-features = {'feature1':0, 'feature2':1, 'feature3':2}
+features = {'nb_parents':0, 'nb_children':1, 'node_index':2, 'distance_to_end':3, 'nb_words_before':4, 'nb_nodes_per_depth':5}
 for feature in features:
     test_graphs, test_features, test_labels = generate_synthetic_graphs(2)
     all_test_graphs[feature] = test_graphs
