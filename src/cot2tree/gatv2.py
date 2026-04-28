@@ -227,12 +227,12 @@ print(f"Parent_dir: {parent_dir}")
 graphs_path = os.path.join(parent_dir,".local/graphs")
 lcots = os.path.join(parent_dir,".local/lcots")
 with open(graphs_path+"/train.txt","w+") as f:
-    print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(train_graphs, train_features, train_labels)]), file=f)
+    print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(train_graphs, train_features, train_labels)]), file=f)
 with open(graphs_path+"/eval.txt","w+") as f:
-    print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(val_graphs, val_features, val_labels)]), file=f)
+    print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(val_graphs, val_features, val_labels)]), file=f)
 for feature in all_test_features:
     with open(graphs_path+f"/test_{feature}.txt", "w+") as f:
-        print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(test_graphs, test_features, test_labels)]), file=f)
+        print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(test_graphs, test_features, test_labels)]), file=f)
 
 
 
