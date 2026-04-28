@@ -27,8 +27,8 @@ conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
 # 5. Run the script
 chmod +x src/cot2tree/gatv2.py
-chmod +x ../.local/graphs/*
-chmod +x ../.local/lcots/*
+chmod -R +x ../.local/graphs
+chmod -R +x ../.local/lcots
 srun src/cot2tree/gatv2.py
 
 echo "Job ended at: $(date)"
