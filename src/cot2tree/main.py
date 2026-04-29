@@ -148,7 +148,7 @@ if "train" in actions:
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
     train_loader = build_dataloader(train_features, train_graphs, train_labels, batch_size=args.batch_size)
     eval_loader = build_dataloader(eval_features, eval_graphs, eval_labels, batch_size=args.batch_size)
-    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=len(wanted_features), out_channels=args.o, hidden=args.hidden_channels, epochs=args.epochs, lr=args.learning_rate)
+    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=len(wanted_features), out_channels=args.out_channels, hidden=args.hidden_channels, epochs=args.epochs, lr=args.learning_rate)
 
     # We save the trained model in the specified path.
     if verbose:
