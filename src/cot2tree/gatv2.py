@@ -76,7 +76,7 @@ def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], l
     loader = DataLoader(datas, batch_size=batch_size)
     return loader
 
-def train(train_dataloader:DataLoader, val_loader:DataLoader, in_channels:int, out_channels:int, hidden:int, epochs:int=100, lr=1e-3):
+def train(train_dataloader:DataLoader, val_loader:DataLoader, in_channels:int, out_channels:int, hidden:int, parent_dir:str, epochs:int=100, lr=1e-3):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print('Device', device)
     model = GAT(in_channels=in_channels, out_channels=out_channels, hidden=hidden).to(device)
@@ -135,6 +135,9 @@ def train(train_dataloader:DataLoader, val_loader:DataLoader, in_channels:int, o
         print(f"Evaluation accuracy: {evaluation_accuracy}")
         best_evaluation_accuracy = max(best_evaluation_accuracy, evaluation_accuracy)
         print("\n\n")
+        # We save a checkpoint of the model
+        filepath = os.path.join(parent_dir, f".local/model/epoch_{epoch}.pth")
+        torch.save(model.state_dict(), filepath)
     print(f"Best evaluation accuracy: {best_evaluation_accuracy}")
     return model
     
