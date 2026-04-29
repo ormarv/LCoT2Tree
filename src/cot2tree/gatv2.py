@@ -190,7 +190,7 @@ def generate_synthetic_graphs(n:int)->List[List[float]]:
     return graphs, all_features, labels
     
 # in_channels
-train_graphs, train_features, train_labels = generate_synthetic_graphs(2)
+"""train_graphs, train_features, train_labels = generate_synthetic_graphs(2)
 print(f"Train graphs: {train_graphs}")
 print(f"Train features: {train_features}")
 print(f"Train labels: {train_labels}")
@@ -235,7 +235,7 @@ for subject in subjects:
     with open(graphs_path+f"/test_{subject}.txt", "w+") as f:
         print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(test_graphs, test_features, test_labels)]), file=f)
 
-
+"""
 
 """g = nx.DiGraph()
 g.add_node(1)
