@@ -50,7 +50,7 @@ test_samples = None
 test_split = None
 trained_model = None
 wanted_features = {feature:i for i, feature in enumerate(args.wanted_features)}
-parent_dir = "/".join(os.getcwd().split["/"][:-1])
+parent_dir = "/".join(os.getcwd().split(["/"])[:-1])
 if verbose:
     print("The given arguments are:")
     for arg in args:
