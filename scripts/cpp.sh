@@ -4,9 +4,9 @@
 #SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/cpp/%x_%j_%a.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=4
 #SBATCH -C h100
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
 #SBATCH --time=00:30:00
 #SBATCH --account=rqn@h100

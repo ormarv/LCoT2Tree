@@ -43,26 +43,26 @@ parser.add_argument("-M", "--trained-model-path",type=str, help="The path to the
 
 args = parser.parse_args()
 actions = args.actions
-verbose = args.v
+verbose = args.verbose
 train_samples = None
 eval_samples = None
 test_samples = None
 test_split = None
 trained_model = None
-wanted_features = {feature:i for i, feature in enumerate(args.F)}
+wanted_features = {feature:i for i, feature in enumerate(args.nb_keywordsanted_features)}
 parent_dir = "/".join(os.getcwd().split["/"][:-1])
 if verbose:
     print("The given arguments are:")
     for arg in args:
         print(f"\n  {arg}")
 if "train" in actions:
-    if args.g:  # If we use pre-existing graphs.
+    if args.use_existing_graphs:  # If we use pre-existing graphs.
         # We read from the files where the graphs are saved.
         if verbose:
-            print(f"Loading existing graphs for training and evaluation from directory {args.d}.")
-        files = os.listdir(args.d)
+            print(f"Loading existing graphs for training and evaluation from directory {args.graphs_directory}.")
+        files = os.listdir(args.graphs_directory)
         for file in files:
-            path = os.path.join(args.d, file)
+            path = os.path.join(args.graphs_directory, file)
             with open(path, "w+") as f:
                 if "train" in file:
                     if verbose:
@@ -75,12 +75,12 @@ if "train" in actions:
                     eval_graphs_with_full_features = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
     
     else:
-        if args.L:  # If we use pre-existing LCoTs
+        if args.use_existing_lcots:  # If we use pre-existing LCoTs
             if verbose:
-                print(f"Loading existing LCoTs for training and evaluation from directory {args.D}.")
-            files = os.listdir(args.D)
+                print(f"Loading existing LCoTs for training and evaluation from directory {args.lcots_directory}.")
+            files = os.listdir(args.lcots_directory)
             for file in files:
-                path = os.path.join(args.D, file)
+                path = os.path.join(args.lcots_directory, file)
                 with open(path, "w+") as f:
                     if "train" in file:
                         if verbose:
@@ -94,16 +94,16 @@ if "train" in actions:
             if verbose:
                 print("No existing graphs or LCoTs given, using default.")
                 print("Loading MMLU.")
-            train_split, eval_split, test_split = load_MMLU(args.n, parent_dir=parent_dir, seed=args.s,)
-            train_samples = get_lcots_with_labels(samples=train_split, cross_encoder=args.C, lrms=args.p)
-            eval_samples = get_lcots_with_labels(samples=eval_split, cross_encoder=args.C, lrms=args.p)
+            train_split, eval_split, test_split = load_MMLU(args.nb_samples_subject, parent_dir=parent_dir, seed=args.dataset_seed,)
+            train_samples = get_lcots_with_labels(samples=train_split, cross_encoder=args.cross_encoder, lrms=args.paths_lrms)
+            eval_samples = get_lcots_with_labels(samples=eval_split, cross_encoder=args.cross_encoder, lrms=args.paths_lrms)
             # We save those LCoTs and their labels for potential later use.
-            if not os.path.isdir(args.D):
+            if not os.path.isdir(args.lcots_directory):
                 if verbose:
-                    print(f"Did not find directory {args.D}. Creating directory.")
-                os.mkdir(args.D)
-            path_train = os.path.join(args.D,"train.txt")
-            path_eval = os.path.join(args.D, "eval.txt")
+                    print(f"Did not find directory {args.lcots_directory}. Creating directory.")
+                os.mkdir(args.lcots_directory)
+            path_train = os.path.join(args.lcots_directory,"train.txt")
+            path_eval = os.path.join(args.lcots_directory, "eval.txt")
             with open(path_train, "w+") as f:
                 if verbose:
                     print(f"Saving train LCoTs to file {path_train}.")
@@ -116,19 +116,19 @@ if "train" in actions:
         # We make the graphs and features from the LCoTs
         train_lcots = [lcot for lcot, _ in train_samples]
         eval_lcots = [lcot for lcot, _ in eval_samples]
-        train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.w, max_path_length_for_nli=args.m, logfile=open(args.G)) for lcot in train_lcots]
-        eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.w, max_path_length_for_nli=args.m, logfile=open(args.G)) for lcot in eval_lcots]
+        train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile)) for lcot in train_lcots]
+        eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile)) for lcot in eval_lcots]
         # These two lines might cause trouble, I am not sure about the way this zip unfolds.
-        train_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=args.F), eval(label)) for (graph,features),(_, label) in zip(train_graphs_features,train_samples)]
-        eval_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=args.F), eval(label)) for (graph,features),(_, label) in zip(eval_graphs_features, eval_samples)]
+        train_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=args.nb_keywordsanted_features), eval(label)) for (graph,features),(_, label) in zip(train_graphs_features,train_samples)]
+        eval_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=args.nb_keywordsanted_features), eval(label)) for (graph,features),(_, label) in zip(eval_graphs_features, eval_samples)]
 
         # We save those graphs, their features, and their labels for potential future use.
-        if not os.path.isdir(args.d):
+        if not os.path.isdir(args.graphs_directory):
                 if verbose:
-                    print(f"Did not find directory {args.d}. Creating directory.")
-                os.mkdir(args.d)
-        path_train = os.path.join(args.d,"train.txt")
-        path_eval = os.path.join(args.d, "eval.txt")
+                    print(f"Did not find directory {args.graphs_directory}. Creating directory.")
+                os.mkdir(args.graphs_directory)
+        path_train = os.path.join(args.graphs_directory,"train.txt")
+        path_eval = os.path.join(args.graphs_directory, "eval.txt")
         with open(path_train, "w+") as f:
             if verbose:
                     print(f"Saving train graphs to file {path_train}.")
@@ -143,38 +143,38 @@ if "train" in actions:
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
     train_loader = build_dataloader(train_features, train_graphs, train_labels)
     eval_loader = build_dataloader(eval_features, eval_graphs, eval_labels)
-    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=args.i, out_channels=args.o, hidden=args.H, epochs=args.e, lr=args.r)
+    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=args.in_channels, out_channels=args.o, hidden=args.hidden_channels, epochs=args.epochs, lr=args.learning_rate)
 
     # We save the trained model in the specified path.
     if verbose:
-        print(f"Saving the trained model to file {args.t}.")
+        print(f"Saving the trained model to file {args.threshold}.")
     
 
 if "test" in actions:
-    if args.g:  # If we use pre-existing graphs.
+    if args.use_existing_graphs:  # If we use pre-existing graphs.
         # We read from the files where the graphs are saved.
-        files = os.listdir(args.d)
+        files = os.listdir(args.graphs_directory)
         if verbose:
-            print(f"Loading existing graphs for training and evaluation from directory {args.d}.")
+            print(f"Loading existing graphs for training and evaluation from directory {args.graphs_directory}.")
         test_graphs_with_full_features = {}
         for file in files:
             if "test" in file:
                 subject = file.split('_')[1].split('.')[0]  # file is of the shape test_subject.txt
-                path = os.path.join(args.d, file)
+                path = os.path.join(args.graphs_directory, file)
                 with open(path, "w+") as f:
                     if verbose:
                         print(f"Loading test graphs on subject {subject} from file {path}.")
                     test_graphs_with_full_features[subject] = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
     else:
-        if args.L:  # If we use pre-existing LCoTs
+        if args.use_existing_lcots:  # If we use pre-existing LCoTs
             if verbose:
-                print(f"Loading existing LCoTs for testing from directory {args.D}.")
-            files = os.listdir(args.D)
+                print(f"Loading existing LCoTs for testing from directory {args.lcots_directory}.")
+            files = os.listdir(args.lcots_directory)
             test_samples = {}
             for file in files:
                 if "test" in file:
                     subject = file.split('_')[1].split('.')[0]
-                    path = os.path.join(args.D, file)
+                    path = os.path.join(args.lcots_directory, file)
                     with open(path, "w+") as f:
                         test_samples[subject] = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in f.read().split("############")]
         else:
@@ -184,43 +184,43 @@ if "test" in actions:
             if test_split is None:
                 if verbose:
                     print("Loading MMLU test split.")
-                _, _, test_split = load_MMLU(args.n, parent_dir=parent_dir, seed=args.s)
+                _, _, test_split = load_MMLU(args.nb_samples_subject, parent_dir=parent_dir, seed=args.dataset_seed)
             else:
                 if verbose:
                     print("Using already loaded MMLU test split.")
-            if not os.path.isdir(args.D):
+            if not os.path.isdir(args.lcots_directory):
                 if verbose:
-                    print(f"Did not find directory {args.D}. Creating directory.")
-                os.mkdir(args.D)
+                    print(f"Did not find directory {args.lcots_directory}. Creating directory.")
+                os.mkdir(args.lcots_directory)
             for subject in test_split:
-                test_samples[subject] = get_lcots_with_labels(samples=test_split[subject], cross_encoder=args.C, lrms=args.p)
-                path_test = os.path.join(args.D,f"test_{subject}.txt")
+                test_samples[subject] = get_lcots_with_labels(samples=test_split[subject], cross_encoder=args.cross_encoder, lrms=args.paths_lrms)
+                path_test = os.path.join(args.lcots_directory,f"test_{subject}.txt")
                 with open(path_test, "w+") as f:
                     if verbose:
                         print(f"Saving test LCoTs for subject {subject} to file {path_test}.")
                     print("############".join([lcot+"&&&&&&&&&&&&"+label for lcot, label in test_samples[subject]]),file=f)
         
         # We produce the test graphs.
-        if not os.path.isdir(args.d):
+        if not os.path.isdir(args.graphs_directory):
                 if verbose:
-                    print(f"Did not find directory {args.d}. Creating directory.")
-                os.mkdir(args.d)
+                    print(f"Did not find directory {args.graphs_directory}. Creating directory.")
+                os.mkdir(args.graphs_directory)
         test_lcots = {}
         for subject in test_samples:
             test_lcots[subject] = [lcot for lcot, _ in test_samples]
         test_graphs_features = {}
         test_graphs_with_full_features = {}
         for subject in test_lcots:
-            test_graphs_features[subject] = [build_graph_from_chain(lcot=lcot, nb_keywords=args.w, max_path_length_for_nli=args.m, logfile=open(args.G)) for lcot in test_lcots[subject]]
+            test_graphs_features[subject] = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile)) for lcot in test_lcots[subject]]
             # These two lines might cause trouble, I am not sure about the way this zip unfolds.
-            test_graphs_with_full_features[subject] = [(graph, build_features(graph=graph, all_features=features, wanted_features=args.F), label) for (graph,features),(_, label) in zip(test_graphs_features[subject],test_samples[subject])]
+            test_graphs_with_full_features[subject] = [(graph, build_features(graph=graph, all_features=features, wanted_features=args.nb_keywordsanted_features), label) for (graph,features),(_, label) in zip(test_graphs_features[subject],test_samples[subject])]
     # Now we need a trained GAT model
     if trained_model is None:
         if verbose:
-            print(f"Loading the trained model from file {args.t}.")
-        trained_model = torch.load(args.t, weights_only=False)
+            print(f"Loading the trained model from file {args.threshold}.")
+        trained_model = torch.load(args.threshold, weights_only=False)
     for subject in test_graphs_with_full_features:
-        path_test = os.path.join(args.d,f"test_{subject}.txt")
+        path_test = os.path.join(args.graphs_directory,f"test_{subject}.txt")
         if verbose:
             print(f"Saving graphs for subject {subject} in file {path_test}")
         print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in test_graphs_with_full_features[subject]]),file=f)
