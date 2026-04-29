@@ -50,7 +50,7 @@ test_samples = None
 test_split = None
 trained_model = None
 wanted_features = {feature:i for i, feature in enumerate(args.wanted_features)}
-parent_dir = "/".join(os.getcwd().split(["/"])[:-1])
+parent_dir = "/".join(os.getcwd().split("/")[:-1])
 if verbose:
     print("The given arguments are:")
     for arg in args:
@@ -141,8 +141,8 @@ if "train" in actions:
     # Now we create the DataLoaders
     train_graphs, train_features, train_labels = zip(*train_graphs_with_full_features)
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
-    train_loader = build_dataloader(train_features, train_graphs, train_labels)
-    eval_loader = build_dataloader(eval_features, eval_graphs, eval_labels)
+    train_loader = build_dataloader(train_features, train_graphs, train_labels, batch_size=args.batch_size)
+    eval_loader = build_dataloader(eval_features, eval_graphs, eval_labels, batch_size=args.batch_size)
     trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=args.in_channels, out_channels=args.o, hidden=args.hidden_channels, epochs=args.epochs, lr=args.learning_rate)
 
     # We save the trained model in the specified path.
@@ -225,7 +225,7 @@ if "test" in actions:
             print(f"Saving graphs for subject {subject} in file {path_test}")
         print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in test_graphs_with_full_features[subject]]),file=f)
         test_graphs, test_features, test_labels = zip(*test_graphs_with_full_features[subject])
-        test_loader = build_dataloader(test_features, test_graphs, test_labels)
+        test_loader = build_dataloader(test_features, test_graphs, test_labels, batch_size=args.batch_size)
         test(test_dataloader=test_loader, model=trained_model)
 
     
