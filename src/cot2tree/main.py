@@ -1,4 +1,5 @@
 #!/bin/env python3
+import ast
 from argparse import ArgumentParser
 import os
 import json
@@ -67,15 +68,15 @@ if "train" in actions:
                         print(f"Loading train graphs from file {path}.")
                     a, b, c = f.read().split("############")[0].split("&&&&&&&&&&&&")
                     print(f"Graph: {a}")
-                    print(f"Trying json.loads: {json.loads(a)}")
+                    print(f"Trying ast.literal_eval: {ast.literal_eval(a)}")
                     print(f"Features: {b}")
                     print(f"Label: {c}")
-                    train_graphs_with_full_features = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
-                    # For each graph, we need a json.loads, for the features a split on "," twice, and for the labels a transformation to boolean form.
+                    train_graphs_with_full_features = [(ast.literal_eval(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    # For each graph, we need a ast.literal_eval, for the features a split on "," twice, and for the labels a transformation to boolean form.
                 if "eval" in file:
                     if verbose:
                         print(f"Loading eval graphs from file {path}.")
-                    eval_graphs_with_full_features = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    eval_graphs_with_full_features = [(ast.literal_eval(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
     
     else:
         if args.use_existing_lcots:  # If we use pre-existing LCoTs
@@ -167,7 +168,7 @@ if "test" in actions:
                 with open(path, "w+") as f:
                     if verbose:
                         print(f"Loading test graphs on subject {subject} from file {path}.")
-                    test_graphs_with_full_features[subject] = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    test_graphs_with_full_features[subject] = [(ast.literal_eval(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
     else:
         if args.use_existing_lcots:  # If we use pre-existing LCoTs
             if verbose:
