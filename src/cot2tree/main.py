@@ -145,8 +145,11 @@ if "train" in actions:
     
     # Now we create the DataLoaders
     train_graphs, train_features, train_labels = zip(*train_graphs_with_full_features)
-    print(train_features)
-    print(train_graphs)
+    print(train_graphs_with_full_features)
+    print(type(train_features[0]))
+    print(type(train_features[0][0]))
+    print(type(train_graphs[0]))
+    print(type(train_graphs[0][0]))
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
     train_loader = build_dataloader(train_features[0], train_graphs[0], list(train_labels), batch_size=args.batch_size)
     eval_loader = build_dataloader(eval_features[0], eval_graphs[0], list(eval_labels), batch_size=args.batch_size)

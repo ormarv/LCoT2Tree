@@ -34,6 +34,8 @@ class GAT(torch.nn.Module):
         return torch.nn.functional.log_softmax(x, dim=1)
 
 def get_edge_index(graph:nx.DiGraph):
+    print(graph)
+    print(type(graph))
     adjacency_matrix = nx.to_numpy_array(graph)
     coo = coo_matrix(adjacency_matrix)
     edge_index = torch.tensor(np.array([coo.row, coo.col]), dtype=torch.long)
