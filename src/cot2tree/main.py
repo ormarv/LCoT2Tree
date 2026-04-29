@@ -61,7 +61,7 @@ if "train" in actions:
         files = os.listdir(args.graphs_directory)
         for file in files:
             path = os.path.join(args.graphs_directory, file)
-            with open(path, "w+") as f:
+            with open(path, "r") as f:
                 if "train" in file:
                     if verbose:
                         print(f"Loading train graphs from file {path}.")
