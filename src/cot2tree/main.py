@@ -65,8 +65,10 @@ if "train" in actions:
                 if "train" in file:
                     if verbose:
                         print(f"Loading train graphs from file {path}.")
-                    c = f.read().split("############")[0].split("&&&&&&&&&&&&")
-                    print(f"Content: {c}")
+                    a, b, c = f.read().split("############")[0].split("&&&&&&&&&&&&")
+                    print(f"Graph: {a}")
+                    print(f"Features: {b}")
+                    print(f"Label: {c}")
                     train_graphs_with_full_features = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
                     # For each graph, we need a json.loads, for the features a split on "," twice, and for the labels a transformation to boolean form.
                 if "eval" in file:
