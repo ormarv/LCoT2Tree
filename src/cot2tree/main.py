@@ -36,7 +36,7 @@ parser.add_argument("-N", "--nli-model-path", type=str, help="Path to the NLI mo
 parser.add_argument("-F", "--wanted-features", type=str, nargs='+', choices=['nb_parents', 'nb_children', 'node_index', 'distance_to_end', 'nb_words_before', 'nb_nodes_per_depth'], help="The list of wanted features for the graph nodes.")
 parser.add_argument("-C", "--cross-encoder", type=str, help="The cross-encoder model that evaluates the answers of the LCoTs.")
 parser.add_argument("-w", "--nb-keywords", type=int, default=8, help="The number of keywords to use when splitting the LCoTs.")
-parser.add_argument("-i", "--in-channels", type=int, help="The input dimension of the graph model.")
+#parser.add_argument("-i", "--in-channels", type=int, help="The input dimension of the graph model.")
 parser.add_argument("-o", "--out-channels", type=int, default=2, help="The output dimension of the graph model.")
 parser.add_argument("-H", "--hidden-channels", type=int, default=64, help="The hidden dimension of the graph model.")
 parser.add_argument("-M", "--trained-model-path",type=str, help="The path to the file containing the model to use, either for training or to continue training from a checkpoint.")
@@ -52,9 +52,7 @@ trained_model = None
 wanted_features = {feature:i for i, feature in enumerate(args.wanted_features)}
 parent_dir = "/".join(os.getcwd().split("/")[:-1])
 if verbose:
-    print("The given arguments are:")
-    for arg in args:
-        print(f"\n  {arg}")
+    print(f"The given arguments are:{args}")
 if "train" in actions:
     if args.use_existing_graphs:  # If we use pre-existing graphs.
         # We read from the files where the graphs are saved.
@@ -143,7 +141,7 @@ if "train" in actions:
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
     train_loader = build_dataloader(train_features, train_graphs, train_labels, batch_size=args.batch_size)
     eval_loader = build_dataloader(eval_features, eval_graphs, eval_labels, batch_size=args.batch_size)
-    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=args.in_channels, out_channels=args.o, hidden=args.hidden_channels, epochs=args.epochs, lr=args.learning_rate)
+    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=len(wanted_features), out_channels=args.o, hidden=args.hidden_channels, epochs=args.epochs, lr=args.learning_rate)
 
     # We save the trained model in the specified path.
     if verbose:
