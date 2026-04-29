@@ -74,6 +74,8 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
 def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], labels:List[int],batch_size:int=32)->List[DataLoader]:
     # build Data objects
     iterator = zip(graphs, all_features, labels)
+    print("Iterator")
+    print(iterator)
     datas = [Data(x=features, edge_index=get_edge_index(graph), y=label) for graph, features, label in iterator]
     loader = DataLoader(datas, batch_size=batch_size)
     return loader
