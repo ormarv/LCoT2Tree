@@ -67,6 +67,7 @@ if "train" in actions:
                         print(f"Loading train graphs from file {path}.")
                     a, b, c = f.read().split("############")[0].split("&&&&&&&&&&&&")
                     print(f"Graph: {a}")
+                    print(f"Trying json.loads: {json.loads(a)}")
                     print(f"Features: {b}")
                     print(f"Label: {c}")
                     train_graphs_with_full_features = [(json.loads(content.split("&&&&&&&&&&&&")[0]), [feature.split(',') for feature in content.split("&&&&&&&&&&&&")[1].split(',')], eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
