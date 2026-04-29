@@ -72,12 +72,12 @@ if "train" in actions:
                     print(f"Trying ast.literal_eval: {ast.literal_eval(a)}")
                     print(f"Features: {b}")
                     print(f"Label: {c}")"""
-                    train_graphs_with_full_features = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), ast.literal_eval(content.split("&&&&&&&&&&&&")[1]), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    train_graphs_with_full_features = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
                     # For each graph, we need a ast.literal_eval, for the features a split on "," twice, and for the labels a transformation to boolean form.
                 if "eval" in file:
                     if verbose:
                         print(f"Loading eval graphs from file {path}.")
-                    eval_graphs_with_full_features = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), ast.literal_eval(content.split("&&&&&&&&&&&&")[1]), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    eval_graphs_with_full_features = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
     
     else:
         if args.use_existing_lcots:  # If we use pre-existing LCoTs
@@ -145,13 +145,11 @@ if "train" in actions:
     
     # Now we create the DataLoaders
     train_graphs, train_features, train_labels = zip(*train_graphs_with_full_features)
-    print(train_labels)
-    print(type(train_features[0]))
-    print("Trying conversion to tensor")
-    print(torch.tensor(train_features[0]))
+    print(train_features)
+    print(train_graphs)
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
-    train_loader = build_dataloader(torch.tensor(train_features[0]), train_graphs[0], list(train_labels), batch_size=args.batch_size)
-    eval_loader = build_dataloader(torch.tensor(eval_features), eval_graphs, eval_labels, batch_size=args.batch_size)
+    train_loader = build_dataloader(train_features[0], train_graphs[0], list(train_labels), batch_size=args.batch_size)
+    eval_loader = build_dataloader(eval_features[0], eval_graphs[0], list(eval_labels), batch_size=args.batch_size)
     trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=len(wanted_features), out_channels=args.out_channels, hidden=args.hidden_channels, epochs=args.epochs, lr=args.learning_rate)
 
     # We save the trained model in the specified path.
@@ -173,7 +171,7 @@ if "test" in actions:
                 with open(path, "w+") as f:
                     if verbose:
                         print(f"Loading test graphs on subject {subject} from file {path}.")
-                    test_graphs_with_full_features[subject] = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), ast.literal_eval(content.split("&&&&&&&&&&&&")[1]), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    test_graphs_with_full_features[subject] = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
     else:
         if args.use_existing_lcots:  # If we use pre-existing LCoTs
             if verbose:
