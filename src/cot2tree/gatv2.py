@@ -82,7 +82,7 @@ def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], l
     print("Iterator")
     print(iterator)
     print(f"First rank of iterator (graph, features, label): {[(g,f,l) for g,f,l in iterator]}")
-    print(f"Corresponding types: {type(iterator[0])}")
+    #print(f"Corresponding types: {type(iterator[0])}")
     datas = [Data(x=features, edge_index=get_edge_index(graph), y=label) for graph, features, label in iterator]
     loader = DataLoader(datas, batch_size=batch_size)
     return loader
