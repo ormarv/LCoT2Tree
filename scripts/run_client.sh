@@ -16,10 +16,9 @@ module load python/3.10.12
 
 # Activate the environment
 source ~/TripleCoT/triplecot2/bin/activate
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 #source ~/LCoT2Tree/lcot2tree/bin/activate
-which pip
-pip list
-which python
+ln ~/.cache/libz2_alma_linux/libbz2.so.1.0
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
 chmod +x src/cot2tree/main.py
