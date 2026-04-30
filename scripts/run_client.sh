@@ -15,8 +15,8 @@ echo "Job started at: $(date)"
 module load python/3.10.12
 
 # Activate the environment
-#source ~/TripleCoT/triplecot2/bin/activate
-source ~/LCoT2Tree/lcot2tree/bin/activate
+source ~/TripleCoT/triplecot2/bin/activate
+#source ~/LCoT2Tree/lcot2tree/bin/activate
 which pip
 pip list
 which python
