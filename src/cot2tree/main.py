@@ -151,9 +151,9 @@ if "train" in actions:
     print(type(train_features[0][0]))
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
     print(f"Eval_graphs: {eval_graphs}")
-    train_loader = build_dataloader(train_features[0], list(train_graphs), list(train_labels), batch_size=args.batch_size)
+    train_loader = build_dataloader(list(train_features), list(train_graphs), list(train_labels), batch_size=args.batch_size)
     print(f"Train loader: {train_loader}")
-    eval_loader = build_dataloader(eval_features[0], list(eval_graphs), list(eval_labels), batch_size=args.batch_size)
+    eval_loader = build_dataloader(list(eval_features), list(eval_graphs), list(eval_labels), batch_size=args.batch_size)
     print(f"Eval loader: {eval_loader}")
     trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=len(wanted_features), out_channels=args.out_channels, hidden=args.hidden_channels, parent_dir=parent_dir, epochs=args.epochs, lr=args.learning_rate)
 
