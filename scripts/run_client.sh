@@ -2,9 +2,9 @@
 #SBATCH --job-name=create_synth_data         # Name of your job
 #SBATCH --output=job_outputs/%x_%j.out            # Output file (%x for job name, %j for job ID)
 #SBATCH --error=job_outputs/%x_%j.err             # Error file
-#SBATCH --partition=H100              # Partition to submit to (A100, V100, etc.)
+#SBATCH --partition=V100              # Partition to submit to (A100, V100, etc.)
 #SBATCH --nodes=1
-#SBATCH --gpus=3                     
+#SBATCH --gpus=1                     
 #SBATCH --time=00:30:00               
 # Print job details
 echo "Starting job on node: $(hostname)"
