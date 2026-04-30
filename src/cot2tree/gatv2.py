@@ -34,8 +34,9 @@ class GAT(torch.nn.Module):
         return torch.nn.functional.log_softmax(x, dim=1)
 
 def get_edge_index(graph:nx.DiGraph):
-    print(graph)
-    print(type(graph))
+    print("Inside get_edge_index")
+    print(f"Graph: {graph}")
+    print(f"Type of graph: {type(graph)}")
     adjacency_matrix = nx.to_numpy_array(graph)
     coo = coo_matrix(adjacency_matrix)
     edge_index = torch.tensor(np.array([coo.row, coo.col]), dtype=torch.long)
@@ -73,9 +74,15 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
 
 def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], labels:List[int],batch_size:int=32)->List[DataLoader]:
     # build Data objects
+    print("Inside build_dataloader")
+    print(f"All_features: {all_features}")
+    print(f"Graphs: {graphs}")
+    print(f"Labels: {labels}")
     iterator = zip(graphs, all_features, labels)
     print("Iterator")
     print(iterator)
+    print(f"First rank of iterator (graph, features, label): {iterator[0]}")
+    print(f"Corresponding types: {type(iterator[0])}")
     datas = [Data(x=features, edge_index=get_edge_index(graph), y=label) for graph, features, label in iterator]
     loader = DataLoader(datas, batch_size=batch_size)
     return loader
