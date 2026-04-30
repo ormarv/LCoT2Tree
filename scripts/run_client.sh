@@ -16,7 +16,8 @@ module load python/3.10.12
 
 # Activate the environment
 source ~/TripleCoT/triplecot2/bin/activate
-
+pip list
+which python
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
 chmod +x src/cot2tree/main.py
