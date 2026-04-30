@@ -205,18 +205,18 @@ def generate_synthetic_graphs(n:int)->List[List[float]]:
     return graphs, all_features, labels
     
 # in_channels
-"""train_graphs, train_features, train_labels = generate_synthetic_graphs(2)
+train_graphs, train_features, train_labels = generate_synthetic_graphs(2)
 print(f"Train graphs: {train_graphs}")
 print(f"Train features: {train_features}")
 print(f"Train labels: {train_labels}")
 #val_graphs, val_features, val_labels = generate_synthetic_graphs(2)
-train_loader = build_dataloader(train_features, train_graphs, train_labels)"""
+#train_loader = build_dataloader(train_features, train_graphs, train_labels)
 #val_loader = build_dataloader(val_features, val_graphs, val_labels)
 # the size of in_channels: nb of features? 
 #trained_model = train(train_loader, val_loader, in_channels=6, out_channels=2, hidden=64, epochs=2, lr=0.05)
 #print(trained_model)
 # Now let's create synthetic test data.
-"""all_test_graphs = {}
+all_test_graphs = {}
 all_test_features = {}
 all_test_labels = {}
 features = {'nb_parents':0, 'nb_children':1, 'node_index':2, 'distance_to_end':3, 'nb_words_before':4, 'nb_nodes_per_depth':5}
@@ -230,27 +230,27 @@ print(f"Test graphs: {all_test_graphs}")
 print(f"Test features: {all_test_features}")
 print(f"Test labels: {all_test_labels}")
 # Now let's test.
-test_results = {}
+"""test_results = {}
 for subject in subjects:
     test_loader = build_dataloader(all_test_features[subject], all_test_graphs[subject], all_test_labels[subject])
     acc = test(test_loader, trained_model)
     test_results[subject] = acc
 print(test_results)"""
 
-"""print(f"Split current wd: {os.getcwd().split('/')[:-1]}")
+print(f"Split current wd: {os.getcwd().split('/')[:-1]}")
 parent_dir = "/".join(os.getcwd().split('/')[:-1])
 print(f"Parent_dir: {parent_dir}")
 graphs_path = os.path.join(parent_dir,".local/graphs")
 lcots = os.path.join(parent_dir,".local/lcots")
 with open(graphs_path+"/train.txt","w+") as f:
-    print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(train_graphs, train_features, train_labels)]), file=f)"""
-"""with open(graphs_path+"/eval.txt","w+") as f:
+    print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(train_graphs, train_features, train_labels)]), file=f)
+with open(graphs_path+"/eval.txt","w+") as f:
     print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(val_graphs, val_features, val_labels)]), file=f)
 for subject in subjects:
     with open(graphs_path+f"/test_{subject}.txt", "w+") as f:
         print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in zip(test_graphs, test_features, test_labels)]), file=f)
 
-"""
+
 
 """g = nx.DiGraph()
 g.add_node(1)
