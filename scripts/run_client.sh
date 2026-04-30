@@ -16,6 +16,7 @@ module load python/3.10.12
 
 # Activate the environment
 source ~/TripleCoT/triplecot2/bin/activate
+which pip
 pip list
 which python
 # Execute the Python script with specific arguments
