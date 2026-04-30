@@ -154,7 +154,7 @@ if "train" in actions:
     print(f"Eval_graphs: {eval_graphs}")
     train_loader = build_dataloader(train_features[0], list(train_graphs), list(train_labels), batch_size=args.batch_size)
     eval_loader = build_dataloader(eval_features[0], list(eval_graphs), list(eval_labels), batch_size=args.batch_size)
-    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=len(wanted_features), out_channels=args.out_channels, hidden=args.hidden_channels, epochs=args.epochs, lr=args.learning_rate)
+    trained_model = train(train_dataloader=train_loader, val_loader=eval_loader, in_channels=len(wanted_features), out_channels=args.out_channels, hidden=args.hidden_channels, parent_dir=parent_dir, epochs=args.epochs, lr=args.learning_rate)
 
     # We save the trained model in the specified path.
     if verbose:
