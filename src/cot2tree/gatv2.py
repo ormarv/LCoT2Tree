@@ -209,7 +209,7 @@ train_graphs, train_features, train_labels = generate_synthetic_graphs(2)
 print(f"Train graphs: {train_graphs}")
 print(f"Train features: {train_features}")
 print(f"Train labels: {train_labels}")
-#val_graphs, val_features, val_labels = generate_synthetic_graphs(2)
+val_graphs, val_features, val_labels = generate_synthetic_graphs(2)
 #train_loader = build_dataloader(train_features, train_graphs, train_labels)
 #val_loader = build_dataloader(val_features, val_graphs, val_labels)
 # the size of in_channels: nb of features? 
