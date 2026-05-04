@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from transformers import AutoTokenizer, AutoModelForCausalLM
 #model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--bartowski--DeepSeek-R1-Distill-Qwen-32B-GGUF/snapshots/1dc8cf9ffa5dd333057ea1b09ccf4772d8726dec/DeepSeek-R1-Distill-Qwen-32B-Q8_0.gguf"
 model_name = "/home/infres/bjaulmes-22/.cache/huggingface/hub/models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
