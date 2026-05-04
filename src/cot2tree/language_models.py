@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoModelForCausalLM
 import torch
-from llama_cpp import Llama
+#from llama_cpp import Llama
 class NLI_client():
     
     def __init__(self,model_name:str):
