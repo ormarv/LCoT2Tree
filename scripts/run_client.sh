@@ -22,8 +22,8 @@ ln -s /usr/lib/x86_64-linux-gnu/libbz2.so.1.0 ~/.cache/libz2_alma_linux/libbz2.s
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
 chmod +x src/cot2tree/main.py
-chmod +x src/cot2tree/gatv2.py
-srun src/cot2tree/gatv2.py
+chmod +x src/cot2tree/models_with_vllm.py
+srun src/cot2tree/models_with_vllm.py
 #srun src/cot2tree/main.py train -g -d ~/.local/graphs -v -F nb_parents nb_children node_index distance_to_end nb_words_before nb_nodes_per_depth
 #srun LLM-MindMap/edge_classification.py
 # Print job completion time
