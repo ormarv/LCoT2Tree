@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
 #model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name, gguf_file="/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/DeepSeek-R1-Distill-Llama-70B-Q5_K_M.gguf")
 messages = [
     {"role": "user", "content": "Who are you?"},
 ]
