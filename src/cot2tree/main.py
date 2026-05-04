@@ -145,8 +145,8 @@ if "train" in actions:
     
     # Now we create the DataLoaders
     train_graphs, train_features, train_labels = zip(*train_graphs_with_full_features)
-    print(train_graphs_with_full_features)
-    print("train_features: ",train_features)
+    print(f"train_graphs_with_full_features: {train_graphs_with_full_features}")
+    print(f"train_features: {train_features}")
     print(train_features[0])
     print(type(train_features[0][0]))
     eval_graphs, eval_features, eval_labels = zip(*eval_graphs_with_full_features)
