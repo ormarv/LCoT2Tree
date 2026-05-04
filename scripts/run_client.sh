@@ -12,16 +12,16 @@ echo "Job started at: $(date)"
 
 # Define variables for your job
 
-module load python/3.10.12
+#module load python/3.10.12
 
 # Activate the environment
-source ~/TripleCoT/triplecot2/bin/activate
-export LD_LIBRARY_PATH=~/.cache/libz2_alma_linux:$LD_LIBRARY_PATH
+source ~/LCoT2Tree/testenv/bin/activate
+#export LD_LIBRARY_PATH=~/.cache/libz2_alma_linux:$LD_LIBRARY_PATH
 #source ~/LCoT2Tree/lcot2tree/bin/activate
-ln -s /usr/lib/x86_64-linux-gnu/libbz2.so.1.0 ~/.cache/libz2_alma_linux/libbz2.so.1.0
+#ln -s /usr/lib/x86_64-linux-gnu/libbz2.so.1.0 ~/.cache/libz2_alma_linux/libbz2.so.1.0
 # Execute the Python script with specific arguments
 #srun load_deltabench_gen_reasoning.py
-chmod +x src/cot2tree/main.py
+#chmod +x src/cot2tree/main.py
 chmod +x src/cot2tree/models_with_vllm.py
 srun src/cot2tree/models_with_vllm.py
 #srun src/cot2tree/main.py train -g -d ~/.local/graphs -v -F nb_parents nb_children node_index distance_to_end nb_words_before nb_nodes_per_depth
