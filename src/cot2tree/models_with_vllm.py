@@ -1,28 +1,18 @@
 #!/usr/bin/env python3
-from vllm import LLM, SamplingParams
+from bitsandbytes import BitsAndBytesConfig
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-def run_gguf_inference(model_path, tokenizer):
-    # Sample prompts.
-    prompts = [
-        "How many helicopters can a human eat in one sitting?",
-        "What's the future of AI?",
-    ]
-    prompts = [[{"role": "user", "content": prompt}] for prompt in prompts]
-    # Create a sampling params object.
-    sampling_params = SamplingParams(temperature=0, max_tokens=128)
+model_id = "models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
+quantization_config = BitsAndBytesConfig(load_in_8bit=True)
 
-    # Create an LLM.
-    llm = LLM(model=model_path, tokenizer=tokenizer)
+quantized_model = AutoModelForCausalLM.from_pretrained(
+    model_id, device_map="auto", torch_dtype=torch.bfloat16, quantization_config=quantization_config)
 
-    outputs = llm.chat(prompts, sampling_params)
-    # Print the outputs.
-    for output in outputs:
-        prompt = output.prompt
-        generated_text = output.outputs[0].text
-        print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+input_text = "What are we having for dinner?"
+input_ids = tokenizer(input_text, return_tensors="pt").to("cuda")
 
+output = quantized_model.generate(**input_ids, max_new_tokens=10)
 
-if __name__ == "__main__":
-    tokenizer = "models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
-    model = "models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
-    run_gguf_inference(model)
+print(tokenizer.decode(output[0], skip_special_tokens=True))
