@@ -10,6 +10,7 @@
 #SBATCH --hint=nomultithread
 #SBATCH --time=00:15:00
 #SBATCH --account=rqn@a100
+#SBATCH --qos=test
 
 echo "Starting job on node: $(hostname)"
 echo "Job started at: $(date)"
