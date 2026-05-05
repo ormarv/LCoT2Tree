@@ -26,7 +26,7 @@ module load miniforge/24.9.0
 conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
 # 5. Run the script
-chmod +x src/cot2tree/QwQ_32B.py
-srun src/cot2tree/QwQ_32B.py
+chmod +x src/cot2tree/models_with_vllm.py
+srun src/cot2tree/models_with_vllm.py
 
 echo "Job ended at: $(date)"
