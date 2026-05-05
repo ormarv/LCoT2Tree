@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-from bitsandbytes import BitsAndBytesConfig
+
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 model_id = "models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
 quantization_config = BitsAndBytesConfig(load_in_4bit=True)
