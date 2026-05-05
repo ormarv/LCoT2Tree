@@ -25,4 +25,4 @@ def run_gguf_inference(model_path, tokenizer):
 if __name__ == "__main__":
     tokenizer = "models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
     model = "models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
-    run_gguf_inference(model, tokenizer)
+    run_gguf_inference(model)
