@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 
+from vllm import LLM
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-
-model_id = "models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/"
-quantization_config = BitsAndBytesConfig(load_in_4bit=True)
-
-quantized_model = AutoModelForCausalLM.from_pretrained(
-    model_id, device_map="auto", torch_dtype=torch.bfloat16, quantization_config=quantization_config)
-
-tokenizer = AutoTokenizer.from_pretrained(model_id)
-input_text = "What are we having for dinner?"
-input_ids = tokenizer(input_text, return_tensors="pt").to("cuda")
-
-output = quantized_model.generate(**input_ids, max_new_tokens=10)
-
-print(tokenizer.decode(output[0], skip_special_tokens=True))
+model_id = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e"
+llm = LLM(
+    
+model=model_id,
+    
+dtype=torch.bfloat16,
+    
+trust_remote_code=True,
+    
+quantization="bitsandbytes",
+)
