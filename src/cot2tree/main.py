@@ -65,6 +65,7 @@ if "train" in actions:
         for file in files:
             path = os.path.join(args.graphs_directory, file)
             with open(path, "r") as f:
+                contents = f.read()
                 if "train" in file:
                     if verbose:
                         print(f"Loading train graphs from file {path}.")
@@ -73,12 +74,12 @@ if "train" in actions:
                     print(f"Trying ast.literal_eval: {ast.literal_eval(a)}")
                     print(f"Features: {b}")
                     print(f"Label: {c}")"""
-                    train_graphs_with_full_features = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    train_graphs_with_full_features = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in contents.split("############")]
                     # For each graph, we need a ast.literal_eval, for the features a split on "," twice, and for the labels a transformation to boolean form.
                 if "eval" in file:
                     if verbose:
                         print(f"Loading eval graphs from file {path}.")
-                    eval_graphs_with_full_features = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    eval_graphs_with_full_features = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in contents.split("############")]
     
     else:
         if args.use_existing_lcots:  # If we use pre-existing LCoTs
@@ -87,15 +88,16 @@ if "train" in actions:
             files = os.listdir(args.lcots_directory)
             for file in files:
                 path = os.path.join(args.lcots_directory, file)
-                with open(path, "w+") as f:
+                with open(path, "r") as f:
+                    contents = f.read()
                     if "train" in file:
                         if verbose:
                             print(f"Loading train LCoTs from file {path}.")
-                        train_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in f.read().split("############")]
+                        train_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
                     if "eval" in file:
                         if verbose:
                             print(f"Loading eval LCoTs from file {path}.")
-                        eval_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in f.read().split("############")]
+                        eval_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
         else:
             if verbose:
                 print("No existing graphs or LCoTs given, using default.")
