@@ -95,7 +95,7 @@ if "train" in actions:
                         if verbose:
                             print(f"Loading train LCoTs from file {path}.")
                         train_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
-                        print(f"train_samples: {train_samples}")
+                        print(f"len(train_samples): {len(train_samples)}")
                     if "eval" in file:
                         if verbose:
                             print(f"Loading eval LCoTs from file {path}.")
@@ -125,7 +125,7 @@ if "train" in actions:
         
         # We make the graphs and features from the LCoTs
         train_lcots = [lcot for lcot, _ in train_samples]
-        print(f"train_lcots: {train_lcots}")
+        print(f"len(train_lcots): {len(train_lcots)}")
         eval_lcots = [lcot for lcot, _ in eval_samples]
         train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile, "w+")) for lcot in train_lcots]
         eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile, "w+")) for lcot in eval_lcots]
