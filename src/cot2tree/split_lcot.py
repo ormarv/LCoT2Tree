@@ -35,6 +35,7 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper, fusion=False
     first_words = {}
     raw_steps = lcot.split("\n\n")
     print(f"Number of raw steps: {len(raw_steps)}", file=logfile)
+    print(f"Number of raw steps: {len(raw_steps)}")
     #length_regularity(raw_steps)
     for raw_step in raw_steps:
         words = raw_step.split(' ')
@@ -105,12 +106,15 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper, fusion=False
         else:
             if len(step)>0:
                 full_steps.append(step)
+    print(f"When finishing intelligent_split, there are {len(full_steps)} steps.")
     return full_steps
 
 
 def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5, t2:float=None, logfile:TextIOWrapper=None):
+    print(len(lcot))
     steps = intelligent_split(lcot,nb_keywords,logfile)
     print(type(steps))
+    print(len(steps))
     #print(steps[0])
     steps = {i:step for i,step in enumerate(steps)}
     #print(steps[0])
