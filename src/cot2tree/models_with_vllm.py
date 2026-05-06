@@ -17,3 +17,4 @@ tensor_parallel_size=2,
 max_model_len = llm.llm_engine.model_config.max_model_len
 params = SamplingParams(max_tokens=max_model_len)
 output = llm.generate("Bob is twice the age that Alice will be in 5 years, and thrice her current age. How old are Bob and Alice?", params)
+print(output)
