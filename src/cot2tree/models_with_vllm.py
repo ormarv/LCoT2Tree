@@ -12,6 +12,7 @@ dtype=torch.bfloat16,
 trust_remote_code=True,
     
 quantization="bitsandbytes",
+tensor_parallel_size=2,
 )
 
 params = SamplingParams(max_tokens=-1)
