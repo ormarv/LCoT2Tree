@@ -34,6 +34,7 @@ def contains_letters(separator:str)->bool:
 def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper, fusion=False):
     first_words = {}
     raw_steps = lcot.split("\n\n")
+    print(f"LCoT: {lcot}")
     print(f"Number of raw steps: {len(raw_steps)}", file=logfile)
     print(f"Number of raw steps: {len(raw_steps)}")
     #length_regularity(raw_steps)
