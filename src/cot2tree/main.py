@@ -126,6 +126,7 @@ if "train" in actions:
         # We make the graphs and features from the LCoTs
         train_lcots = [lcot for lcot, _ in train_samples]
         print(f"len(train_lcots): {len(train_lcots)}")
+        print(f"Length of each lcot: {[len(lcot) for lcot in train_lcots]}")
         eval_lcots = [lcot for lcot, _ in eval_samples]
         train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile, "w+")) for lcot in train_lcots]
         eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile, "w+")) for lcot in eval_lcots]
