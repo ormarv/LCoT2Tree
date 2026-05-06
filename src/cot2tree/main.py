@@ -9,6 +9,7 @@ from get_questions import load_MMLU, get_lcots_with_labels
 from language_models import *
 from split_lcot import build_graph_from_chain
 from gatv2 import build_features, train, test, build_dataloader
+from torch_geometric.explain import Explainer, GNNExplainer, GraphMaskExplainer, PGExplainer, AttentionExplainer
 
 # This file aggregates all the functions from the other files
 # It is the one that collects all the parameters from the user
@@ -26,7 +27,7 @@ parser.add_argument("-n", "--nb-samples-subject", type=int, default=30, help="Th
 parser.add_argument("-L", "--use-existing-lcots", action="store_true", help="Whether to use pre-existing LCoTs to build the graph. This requires setting --lcots-directory (-D).")
 parser.add_argument("-D", "--lcots-directory", type=str, help="The directory where new LCoTs are stored, and existing ones read.")
 parser.add_argument("-g", "--use-existing-graphs", action="store_true", help="Whether to use pre-existing graphs to train the model. This requires setting --graphs-directory (-d).")
-parser.add_argument("-d", "--graphs-directory", type=str, help="The directory where new graphs are sotred, and existing ones read.")
+parser.add_argument("-d", "--graphs-directory", type=str, help="The directory where new graphs are stored, and existing ones read.")
 parser.add_argument("-s", "--dataset-seed", type=int, default=42, help="The seed to use for the random selection of samples in MMLU.")
 # Should we keep the argument -G or simply make it a part of -v?
 parser.add_argument("-G", "--graph-construction-logfile", type=str, help="The file where the details of the graph construction process are printed.")
@@ -159,7 +160,8 @@ if "train" in actions:
 
     # We save the trained model in the specified path.
     if verbose:
-        print(f"Saving the trained model to file {args.threshold}.")
+        print(f"Saving the trained model to file {args.M}.")
+    torch.save(trained_model.state_dict(), args.M)
     
 
 if "test" in actions:
@@ -229,8 +231,8 @@ if "test" in actions:
     # Now we need a trained GAT model
     if trained_model is None:
         if verbose:
-            print(f"Loading the trained model from file {args.threshold}.")
-        trained_model = torch.load(args.threshold, weights_only=False)
+            print(f"Loading the trained model from file {args.M}.")
+        trained_model = torch.load(args.M, weights_only=False)
     for subject in test_graphs_with_full_features:
         path_test = os.path.join(args.graphs_directory,f"test_{subject}.txt")
         if verbose:
@@ -240,5 +242,30 @@ if "test" in actions:
         test_loader = build_dataloader(test_features, test_graphs, test_labels, batch_size=args.batch_size)
         test(test_dataloader=test_loader, model=trained_model)
 
+
+    # build the explainer
+    explainer = Explainer(
+        model=trained_model, 
+        algorithm=GNNExplainer(epochs=200), 
+        explanation_type='model', 
+        edge_mask_type='object', 
+        model_config=dict(mode="multiclass_classification", task_level="graph", return_type="log_probs")
+    )
+
+    # now we explain
+    #TODO: we need to find a way to average feature importance
+    print('\n\n')
+    print("----------Now we explain the decisions----------")
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print('Device', device)
+    trained_model.to(device)
+    trained_model.eval()
+    with torch.no_grad():
+        for i, data in enumerate(test_loader):
+            explanation = explainer(x=data.x, edge_index=data.edge_index)
+            
+   
+
+    
     
         
