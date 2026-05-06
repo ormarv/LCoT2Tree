@@ -121,7 +121,7 @@ def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:in
     length_regularity(steps)
     graph, features = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2, logfile=logfile)
     dict_graph = nx.to_dict_of_dicts(graph)
-    return dict_graph
+    return dict_graph, features
 
 """parser = ArgumentParser(prog="Reasoning graph construction", description="Builds a reasoning graph from a reasoning chain.")
 parser.add_argument("-m","--max_path_length_for_nli", type=int, default=None)
