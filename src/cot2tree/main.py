@@ -131,8 +131,8 @@ if "train" in actions:
         train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile, "w+")) for lcot in train_lcots]
         eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile, "w+")) for lcot in eval_lcots]
         # These two lines might cause trouble, I am not sure about the way this zip unfolds.
-        train_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=args.wanted_features), eval(label)) for (graph,features),(_, label) in zip(train_graphs_features,train_samples)]
-        eval_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=args.wanted_features), eval(label)) for (graph,features),(_, label) in zip(eval_graphs_features, eval_samples)]
+        train_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=wanted_features), eval(label)) for (graph,features),(_, label) in zip(train_graphs_features,train_samples)]
+        eval_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=wanted_features), eval(label)) for (graph,features),(_, label) in zip(eval_graphs_features, eval_samples)]
 
         # We save those graphs, their features, and their labels for potential future use.
         if not os.path.isdir(args.graphs_directory):
