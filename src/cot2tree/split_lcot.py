@@ -110,7 +110,7 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper, fusion=False
     return full_steps
 
 
-def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5, t2:float=None, logfile:TextIOWrapper=None):
+def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:int=5, t2:float=None, logfile:TextIOWrapper=None, wanted_features=[]):
     print(len(lcot))
     steps = intelligent_split(lcot,nb_keywords,logfile)
     print(type(steps))
@@ -119,7 +119,7 @@ def build_graph_from_chain(lcot:str,nb_keywords:int=8,max_path_length_for_nli:in
     steps = {i:step for i,step in enumerate(steps)}
     #print(steps[0])
     length_regularity(steps)
-    graph, features = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2, logfile=logfile)
+    graph, features = construct_graph(steps=steps, max_path_length_for_nli=max_path_length_for_nli, t2=t2, logfile=logfile, wanted_features=wanted_features)
     #dict_graph = nx.to_dict_of_dicts(graph)
     return graph, features
 
