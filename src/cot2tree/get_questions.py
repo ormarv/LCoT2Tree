@@ -5,6 +5,8 @@ import numpy as np
 import itertools
 import os
 from verify_final_answer import grade_answers
+from models_with_vllm import run_model_with_vLLM
+from QwQ_32B import run_QwQ32B
 
 def eval_dataset_to_list(dataset:Dataset, nb_samples_per_subj:int, verbose=False)->List[Tuple[str,str]]:
     samples_by_subject = {}
@@ -45,12 +47,19 @@ def load_MMLU(nb_samples_per_subj:int, parent_dir:str, seed:int=42, verbose=Fals
     test_samples = {item[0]:np.array(item[1])[indices[i]].tolist() for i, item in enumerate(samples_by_subject.items())}
     return train_samples, eval_samples, test_samples
 
-def get_lcots_with_labels(samples:List[Tuple[str,str]], cross_encoder, lrms, threshold:float,verbose:bool):
+def get_lcots_with_labels(samples:List[Tuple[str,str]], cross_encoder, threshold:float,verbose:bool):
     lcots =  []
     for question,_ in samples:
-        for lrm in lrms:
-            lcots.append(lrm.run(question))
-    golds = list(itertools.chain.from_iterable([[gold]*len(lrms) for _, gold in samples]))
+        # run QwQ32B
+        answer1 = run_QwQ32B(question)
+        lcots.append(answer1)
+        # run DeepSeek-R1-Distill-Llama-70B
+        answer2 = run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", query=question)
+        lcots.append(answer2)
+        # run DeepSeek-R1-Distill-Qwen-32B
+        answer3 = run_model_with_vLLM(model_id = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746/", query=question)
+        lcots.append(answer3)
+    golds = list(itertools.chain.from_iterable([[gold]*3 for _, gold in samples]))
     labels = grade_answers(answers=lcots, gold_standard=golds, model_path=cross_encoder, threshold=threshold, verbose=verbose)
     assert(len(lcots)==len(labels))
     return zip(lcots, labels)

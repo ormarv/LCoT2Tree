@@ -10,6 +10,7 @@ from torch_geometric.loader import DataLoader
 from typing import List, Dict, Tuple
 import numpy as np
 import os
+from parallel import *
 
 class GAT(torch.nn.Module):
     def __init__(self, in_channels:int, out_channels:int, hidden:int=64):
@@ -72,7 +73,7 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
 
 
 
-def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], labels:List[int],batch_size:int=32)->List[DataLoader]:
+def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], labels:List[int],batch_size:int=32, parallel:bool=False, rank=None, world_size=None)->List[DataLoader]:
     # build Data objects
     print("Inside build_dataloader")
     print(f"All_features: {all_features}")
@@ -85,7 +86,11 @@ def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], l
     #print(f"Corresponding types: {type(iterator[0])}")
     datas = [Data(x=features, edge_index=get_edge_index(graph), y=label) for graph, features, label in iterator]
     print(datas)
-    loader = DataLoader(datas, batch_size=batch_size)
+    if parallel:
+        sampler = prepare(rank=rank, world_size=world_size)
+        loader = DataLoader(datas, batch_size=batch_size, sampler=sampler, pin_memory=False, drop_last=False, shuffle=False)
+    else:
+        loader = DataLoader(datas, batch_size=batch_size)
     return loader
 
 def train(train_dataloader:DataLoader, val_loader:DataLoader, in_channels:int, out_channels:int, hidden:int, parent_dir:str, epochs:int=100, lr=1e-3):
