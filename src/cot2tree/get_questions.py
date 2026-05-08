@@ -54,7 +54,15 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--PrimeIntellect--LiveCodeBench-v5/"))
     print(dataset)
     train_split = dataset["train"]
-    print(train_split[0])
+    #print(train_split[0])
+    print("Prompt")
+    print(train_split[0]["prompt"])
+    print("Verification_info")
+    print(json.loads(train_split[0]["verification_info"]))
+    print(type(json.loads(train_split[0]["verification_info"])))
+    print("Truth")
+    print(json.loads(train_split[0]["verification_info"])["ground_truth"])
+    print(type(json.loads(train_split[0]["verification_info"])["ground_truth"]))
     samples = [(sample["prompt"]+"\nInput:"+ {json.loads(sample["verification_info"])["ground_truth"]["input"]}, json.loads(sample["verification_info"])["ground_truth"]["output"]) for sample in train_split]
     return samples
 
