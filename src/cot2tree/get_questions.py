@@ -100,11 +100,11 @@ def load_MATH(seed:int, parent_dir:str)->List[Tuple[str,str]]:
 def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool, nb_samples:int=-1, nb_iterations:int=1):
     if nb_samples != -1:
         nb_samples = min(nb_samples, len(samples))
-    
+    print(f"Samples: {samples}")
     # Use choice to avoid the samples[indices] error and get unique samples
     selected_indices = np.random.choice(len(samples), nb_samples, replace=False)
     s = [samples[i] for i in selected_indices]
-    
+    print(f"s: {s}")
     lcots = []
     for i, (question, _) in enumerate(s):
         for i in range(nb_iterations):
