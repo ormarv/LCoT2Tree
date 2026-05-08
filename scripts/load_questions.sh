@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
 #SBATCH --hint=nomultithread
-#SBATCH --time=00:05:00
+#SBATCH --time=00:20:00
 #SBATCH --account=rqn@cpu
 
 echo "Starting job on node: $(hostname)"
