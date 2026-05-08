@@ -108,7 +108,7 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     lcots = []
     for i, (question, _) in enumerate(s):
         for i in range(nb_iterations):
-            lcots.append("The answer is A.")
+            lcots.append("1 quadruplet and 2 identical doublets")
             lcots.append("The answer is B.")
             lcots.append("The answer is C.")
             # Model 1
@@ -127,7 +127,8 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     # Separate the results
     correct_data = [(ans, lab) for ans, lab in zip(lcots, labels) if lab]
     incorrect_data = [(ans, lab) for ans, lab in zip(lcots, labels) if not lab]
-
+    print(f"Correct: {correct_data}")
+    print(f"Incorrect: {incorrect_data}")
     # Balancing
     if len(correct_data) > len(incorrect_data):
         np.random.shuffle(correct_data)
@@ -147,6 +148,7 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     return list(zip(final_lcots, final_labels))
 
 def split(data):
+    data = list(data)
     random.shuffle(data)
     total_count = len(data)
     test_count = int(total_count * 0.20)
