@@ -11,6 +11,8 @@ class CrossEncoderClient():
         self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
     
     def run(self,answer:str, gold_standard:str, threshold:float):
+        print(f"Answer: {answer}; type: {type(answer)}")
+        print(f"Gold: {gold_standard}; type: {type(gold_standard)}")
         features = self.tokenizer(answer, gold_standard,return_tensors='pt')
         scores = self.model(**features).logits
         label_mapping = ['contradiction', 'entailment', 'neutral']
