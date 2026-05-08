@@ -55,7 +55,7 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     print(dataset)
     train_split = dataset["train"]
     print(train_split[0])
-    samples = [(sample["prompt"]+f"\nInput: {json.loads(sample["verification_info"])["ground_truth"]["input"]}", json.loads(sample["verification_info"])["ground_truth"]["output"]) for sample in train_split]
+    samples = [(sample["prompt"]+"\nInput:"+ {json.loads(sample["verification_info"])["ground_truth"]["input"]}, json.loads(sample["verification_info"])["ground_truth"]["output"]) for sample in train_split]
     return samples
 
 def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
