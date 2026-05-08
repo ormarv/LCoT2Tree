@@ -120,7 +120,8 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     
     # Correctly repeat gold answers to match lcots length
     golds = list(itertools.chain.from_iterable([[gold] * 3 * nb_iterations for _, gold in s]))
-    
+    print(lcots)
+    print(golds)
     labels = grade_answers(answers=lcots, gold_standard=golds, model_path=cross_encoder, threshold=threshold, verbose=verbose)
     
     # Separate the results
