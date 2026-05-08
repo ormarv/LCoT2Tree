@@ -106,7 +106,7 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     s = [samples[i] for i in selected_indices]
     
     lcots = []
-    for i, question, _ in enumerate(s):
+    for i, (question, _) in enumerate(s):
         for i in range(nb_iterations):
             # Model 1
             lcots.append(run_QwQ32B(question))
