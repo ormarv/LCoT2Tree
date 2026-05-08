@@ -61,9 +61,9 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     print(json.loads(train_split[0]["verification_info"]))
     print(type(json.loads(train_split[0]["verification_info"])))
     print("Truth")
-    print(json.loads(train_split[0]["verification_info"])["ground_truth"])
-    print(type(json.loads(train_split[0]["verification_info"])["ground_truth"]))
-    samples = [(sample["prompt"]+"\nInput:"+ {json.loads(sample["verification_info"])["ground_truth"]["input"]}, json.loads(sample["verification_info"])["ground_truth"]["output"]) for sample in train_split]
+    print(eval(json.loads(train_split[0]["verification_info"])["ground_truth"]))
+    print(type(eval(json.loads(train_split[0]["verification_info"])["ground_truth"])))
+    samples = [(sample["prompt"]+"\nInput:"+ eval(json.loads(sample["verification_info"])["ground_truth"])[0]["input"], eval(json.loads(sample["verification_info"])["ground_truth"])[0]["output"]) for sample in train_split]
     return samples
 
 def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
