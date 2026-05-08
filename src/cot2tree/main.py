@@ -144,11 +144,11 @@ if "train" in actions:
         with open(path_train, "w+") as f:
             if verbose:
                     print(f"Saving train graphs to file {path_train}.")
-            print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in train_graphs_with_full_features]),file=f)
+            print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features)+"&&&&&&&&&&&&"+str(label) for graph, features, label in train_graphs_with_full_features]),file=f)
         with open(path_eval, "w+") as f:
             if verbose:
                     print(f"Saving train graphs to file {path_eval}.")
-            print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in eval_graphs_with_full_features]),file=f)
+            print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features)+"&&&&&&&&&&&&"+str(label) for graph, features, label in eval_graphs_with_full_features]),file=f)
     
     # Now we create the DataLoaders
     train_graphs, train_features, train_labels = zip(*train_graphs_with_full_features)
