@@ -108,13 +108,16 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     lcots = []
     for i, (question, _) in enumerate(s):
         for i in range(nb_iterations):
+            lcots.append("The answer is A.")
+            lcots.append("The answer is B.")
+            lcots.append("The answer is C.")
             # Model 1
-            lcots.append(run_QwQ32B(question))
+            #lcots.append(run_QwQ32B(question))
             # Model 2
-            lcots.append(run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", query=question))
+            #lcots.append(run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", query=question))
             # Model 3
-            lcots.append(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", query=question))
-
+            #lcots.append(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", query=question))
+    
     # Correctly repeat gold answers to match lcots length
     golds = list(itertools.chain.from_iterable([[gold] * 3 * nb_iterations for _, gold in s]))
     
