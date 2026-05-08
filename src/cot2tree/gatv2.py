@@ -46,6 +46,7 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
     # compute the number of children per node
     # compute the distance to the last node, computed as the number of words and given
     dict_graph = nx.to_dict_of_dicts(graph)
+    print(f"All features before finishing building: {all_features}")
     if 'nb_children' in wanted_features:
         for i in range(len(all_features)):
             all_features[i][wanted_features['nb_children']] = float(len(dict_graph[i]))
@@ -68,6 +69,7 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
         for i in range(len(all_features)):
             node_depth = node_to_depth[i]
             all_features[i][wanted_features['nb_nodes_per_depth']] = float(nb_nodes_per_depth[node_depth])
+    print(f"All features after: {all_features}")
     all_features_tensors = [torch.tensor(feats) for feats in all_features]
     return all_features_tensors
 
