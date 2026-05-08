@@ -65,7 +65,7 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
                     depth_to_node[node_to_depth[parent] + 1].append(child)
                 if child not in parents:
                     parents.append(child)
-        nb_nodes_per_depth = {key:value.sum() for key, value in depth_to_node.items()}
+        nb_nodes_per_depth = {key:sum(value) for key, value in depth_to_node.items()}
         for i in range(len(all_features)):
             node_depth = node_to_depth[i]
             all_features[i][wanted_features['nb_nodes_per_depth']] = float(nb_nodes_per_depth[node_depth])
