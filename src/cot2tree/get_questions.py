@@ -68,9 +68,7 @@ def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
 
 def load_GPQA(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
-    dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--Idavidrein--gpqa/"))
-    print(dataset)
-    main = dataset["gpqa_main"]
+    main = load_dataset("csv", data_files=os.path.join(parent_dir, ".cache/huggingface/hub/datasets--Idavidrein--gpqa/gpqa_main.csv"))
     print(main[0])
     samples = [(sample['Question']+"\nPossible answers: "+"\n".join(random.shuffle([sample["Correct Answer"], sample["Incorrect Answer 1"], sample["Incorrect Answer 2"], sample["Incorrect Answer 3"]])), sample["Correct Answer"])for sample in main]
     return samples
