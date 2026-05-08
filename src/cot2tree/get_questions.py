@@ -169,6 +169,7 @@ math_lcots = get_lcots_with_labels(math, MODEL_NAME, 0.7, True, nb_samples=2)
 # for lcb, we need 3 iterations for each model, and 2 for qpqa
 lcb_lcots = get_lcots_with_labels(lcb, MODEL_NAME, 0.6, True, nb_samples=2)
 gpqa_lcots = get_lcots_with_labels(gpqa, MODEL_NAME, 0.6, True, nb_samples=2)
+print(f"MMLU lcots: {mmlu_lcots}")
 train_mmlu, eval_mmlu, test_mmlu = split(mmlu_lcots)
 train_math, eval_math, test_math = split(math_lcots)
 train_lcb, eval_lcb, test_lcb = split(lcb_lcots)
