@@ -10,7 +10,6 @@ from torch_geometric.loader import DataLoader
 from typing import List, Dict, Tuple
 import numpy as np
 import os
-from parallel import *
 
 class GAT(torch.nn.Module):
     def __init__(self, in_channels:int, out_channels:int, hidden:int=64):
@@ -87,8 +86,9 @@ def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], l
     datas = [Data(x=features, edge_index=get_edge_index(graph), y=label) for graph, features, label in iterator]
     print(datas)
     if parallel:
-        sampler = prepare(rank=rank, world_size=world_size)
-        loader = DataLoader(datas, batch_size=batch_size, sampler=sampler, pin_memory=False, drop_last=False, shuffle=False)
+        raise NotImplementedError
+        #sampler = prepare(rank=rank, world_size=world_size)
+        #loader = DataLoader(datas, batch_size=batch_size, sampler=sampler, pin_memory=False, drop_last=False, shuffle=False)
     else:
         loader = DataLoader(datas, batch_size=batch_size)
     return loader
