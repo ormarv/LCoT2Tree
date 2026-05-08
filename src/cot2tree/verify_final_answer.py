@@ -22,7 +22,11 @@ class CrossEncoderClient():
         return False
     
 def grade_answers(answers:List[str], gold_standard:List[str], model_path:str, threshold:float, verbose:bool):
-    trimmed_answers = [answer[:-min(max(len(answer)/10,500),len(answer)-1)] for answer in answers]
+    trimmed_answers = [
+        answer[:-int(min(max(len(answer)//10, 500), len(answer)-1))] 
+        if len(answer) > 1000 else answer 
+        for answer in answers
+    ]
     cross_client = CrossEncoderClient(model_path=model_path)
     labels = [cross_client.run(answer, g, threshold) for answer, g in zip(trimmed_answers, gold_standard)]
     return labels
