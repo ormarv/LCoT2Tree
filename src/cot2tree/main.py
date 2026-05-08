@@ -5,12 +5,11 @@ import networkx as nx
 import os
 import json
 import torch
-from get_questions import load_MMLU, get_lcots_with_labels
+from get_questions import load_MMLU, get_lcots_with_labels, load_GPQA, load_live_code_bench, load_MATH, load_MMLU_pro, split
 from language_models import *
 from split_lcot import build_graph_from_chain
 from gatv2 import build_features, train, test, build_dataloader
 from torch_geometric.explain import Explainer, GNNExplainer, GraphMaskExplainer, PGExplainer, AttentionExplainer
-
 # This file aggregates all the functions from the other files
 # It is the one that collects all the parameters from the user
 
@@ -103,10 +102,26 @@ if "train" in actions:
         else:
             if verbose:
                 print("No existing graphs or LCoTs given, using default.")
-                print("Loading MMLU.")
-            train_split, eval_split, test_split = load_MMLU(args.nb_samples_subject, parent_dir=parent_dir, seed=args.dataset_seed,)
-            train_samples = get_lcots_with_labels(samples=train_split, cross_encoder=args.cross_encoder, lrms=args.paths_lrms)
-            eval_samples = get_lcots_with_labels(samples=eval_split, cross_encoder=args.cross_encoder, lrms=args.paths_lrms)
+                print("Loading the datasets.")
+            #train_split, eval_split, test_split = load_MMLU(args.nb_samples_subject, parent_dir=parent_dir, seed=args.dataset_seed,)
+            #train_samples = get_lcots_with_labels(samples=train_split, cross_encoder=args.cross_encoder, lrms=args.paths_lrms)
+            #eval_samples = get_lcots_with_labels(samples=eval_split, cross_encoder=args.cross_encoder, lrms=args.paths_lrms)
+            mmlu_pro = load_MMLU_pro(seed=42, parent_dir=parent_dir)
+            gpqa =load_GPQA(42, parent_dir)
+            lcb = load_live_code_bench(42, parent_dir)
+            math = load_MATH(42, parent_dir)
+            mmlu_lcots = get_lcots_with_labels(mmlu_pro, args.cross_encoder, 0.7, args.verbose)
+            math_lcots = get_lcots_with_labels(math, args.cross_encoder, 0.7, args.verbose)
+            # for lcb, we need 3 iterations for each model, and 2 for qpqa
+            lcb_lcots = get_lcots_with_labels(lcb, args.cross_encoder, 0.6, args.verbose, nb_iterations=3)
+            gpqa_lcots = get_lcots_with_labels(gpqa, args.cross_encoder, 0.6, args.verbose, nb_iterations=2)
+            train_mmlu, eval_mmlu, test_mmlu = split(mmlu_lcots)
+            train_math, eval_math, test_math = split(math_lcots)
+            train_lcb, eval_lcb, test_lcb = split(lcb_lcots)
+            train_gpqa, eval_gpqa, test_gpqa = split(gpqa_lcots)
+            train_split = train_mmlu+train_math+train_lcb+train_gpqa
+            eval_split = eval_mmlu+eval_math+eval_lcb+eval_gpqa
+            test_split = test_mmlu+test_math+test_lcb+test_gpqa
             # We save those LCoTs and their labels for potential later use.
             if not os.path.isdir(args.lcots_directory):
                 if verbose:
@@ -128,8 +143,10 @@ if "train" in actions:
         print(f"len(train_lcots): {len(train_lcots)}")
         print(f"Length of each lcot: {[len(lcot) for lcot in train_lcots]}")
         eval_lcots = [lcot for lcot, _ in eval_samples]
-        train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile, "w+"), wanted_features=wanted_features) for lcot in train_lcots]
-        eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=open(args.graph_construction_logfile, "w+"), wanted_features=wanted_features) for lcot in eval_lcots]
+        logfile = open(args.graph_construction_logfile, "w+")
+        train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=logfile, wanted_features=wanted_features) for lcot in train_lcots]
+        eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=logfile, wanted_features=wanted_features) for lcot in eval_lcots]
+        logfile.close()
         # These two lines might cause trouble, I am not sure about the way this zip unfolds.
         train_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=wanted_features), eval(label)) for (graph,features),(_, label) in zip(train_graphs_features,train_samples)]
         eval_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=wanted_features), eval(label)) for (graph,features),(_, label) in zip(eval_graphs_features, eval_samples)]
@@ -144,11 +161,11 @@ if "train" in actions:
         with open(path_train, "w+") as f:
             if verbose:
                     print(f"Saving train graphs to file {path_train}.")
-            print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features)+"&&&&&&&&&&&&"+str(label) for graph, features, label in train_graphs_with_full_features]),file=f)
+            print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in train_graphs_with_full_features]),file=f)
         with open(path_eval, "w+") as f:
             if verbose:
                     print(f"Saving train graphs to file {path_eval}.")
-            print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features)+"&&&&&&&&&&&&"+str(label) for graph, features, label in eval_graphs_with_full_features]),file=f)
+            print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in eval_graphs_with_full_features]),file=f)
     
     # Now we create the DataLoaders
     train_graphs, train_features, train_labels = zip(*train_graphs_with_full_features)
@@ -243,7 +260,7 @@ if "test" in actions:
         path_test = os.path.join(args.graphs_directory,f"test_{subject}.txt")
         if verbose:
             print(f"Saving graphs for subject {subject} in file {path_test}")
-        print("############".join([graph+"&&&&&&&&&&&&"+features+"&&&&&&&&&&&&"+str(label) for graph, features, label in test_graphs_with_full_features[subject]]),file=f)
+        print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in test_graphs_with_full_features[subject]]),file=f)
         test_graphs, test_features, test_labels = zip(*test_graphs_with_full_features[subject])
         test_loader = build_dataloader(test_features, test_graphs, test_labels, batch_size=args.batch_size)
         test(test_dataloader=test_loader, model=trained_model)
