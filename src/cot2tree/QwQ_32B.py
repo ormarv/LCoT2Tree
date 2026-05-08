@@ -5,8 +5,8 @@ model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/mo
 #model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/"
 
 def run_QwQ32B(query:str)->str:
-	tokenizer = AutoTokenizer.from_pretrained(model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/")
-	model = AutoModelForCausalLM.from_pretrained(model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/")
+	tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name_or_path = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/")
+	model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/")
 	messages = [
 		{"role": "user", "content": query},
 	]
