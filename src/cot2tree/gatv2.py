@@ -68,7 +68,8 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
         for i in range(len(all_features)):
             node_depth = node_to_depth[i]
             all_features[i][wanted_features['nb_nodes_per_depth']] = float(nb_nodes_per_depth[node_depth])
-    return all_features
+    all_features_tensors = [torch.tensor(feats) for feats in all_features]
+    return all_features_tensors
 
 
 
