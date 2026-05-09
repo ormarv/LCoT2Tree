@@ -108,15 +108,12 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     lcots = []
     for i, (question, _) in enumerate(s):
         for j in range(nb_iterations):
-            lcots.append("1 quadruplet and 2 identical doublets")
-            lcots.append("The answer is B.")
-            lcots.append("Trans-propenyl acetate")
             # Model 1
-            #lcots.append(run_QwQ32B(question))
+            lcots.append(run_QwQ32B(question))
             # Model 2
-            #lcots.append(run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", query=question))
+            lcots.append(run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", query=question))
             # Model 3
-            #lcots.append(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", query=question))
+            lcots.append(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", query=question))
     
     # Correctly repeat gold answers to match lcots length
     golds = list(itertools.chain.from_iterable([[gold] * 3 * nb_iterations for _, gold in s]))
@@ -165,7 +162,7 @@ def split(data):
     train_set = data[test_count + eval_count:]
     return train_set, eval_set, test_set
 
-MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
+"""MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 
 parent_dir = "/".join(os.getcwd().split("/")[:-1])
 mmlu_pro = load_MMLU_pro(seed=42, parent_dir=parent_dir)
@@ -187,7 +184,7 @@ eval_split = eval_mmlu+eval_math+eval_lcb+eval_gpqa
 test_split = test_mmlu+test_math+test_lcb+test_gpqa
 print(f"train: {train_split}")
 print(f"eval: {eval_split}")
-print(f"test: {test_split}")
+print(f"test: {test_split}")"""
 #train_samples, eval_samples, test_samples = load_MMLU(3)
 #print(len(train_samples))
 #print(train_samples)

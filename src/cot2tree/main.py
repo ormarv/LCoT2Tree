@@ -183,8 +183,8 @@ if "train" in actions:
 
     # We save the trained model in the specified path.
     if verbose:
-        print(f"Saving the trained model to file {args.M}.")
-    torch.save(trained_model.state_dict(), args.M)
+        print(f"Saving the trained model to file {args.trained_model_path}.")
+    torch.save(trained_model.state_dict(), args.trained_model_path)
     
 
 if "test" in actions:
@@ -254,8 +254,8 @@ if "test" in actions:
     # Now we need a trained GAT model
     if trained_model is None:
         if verbose:
-            print(f"Loading the trained model from file {args.M}.")
-        trained_model = torch.load(args.M, weights_only=False)
+            print(f"Loading the trained model from file {args.trained_model_path}.")
+        trained_model = torch.load(args.trained_model_path, weights_only=False)
     for subject in test_graphs_with_full_features:
         path_test = os.path.join(args.graphs_directory,f"test_{subject}.txt")
         if verbose:
