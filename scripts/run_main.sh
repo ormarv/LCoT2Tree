@@ -33,6 +33,6 @@ chmod -R +x ../.local/graphs
 chmod -R +x ../.local/lcots
 #srun src/cot2tree/gatv2.py
 #srun src/cot2tree/create_fake_lcots_files.py
-srun src/cot2tree/main.py train test -L -D ~/.local/lcots -d ~/.local/graphs -G ~/.local/construction_log_file.txt -v -F nb_parents nb_children node_index distance_to_end nb_words_before nb_nodes_per_depth -M ../.local/model/trained_model
+srun src/cot2tree/main.py train test -L -D ~/.local/lcots -d ~/.local/graphs -G ~/.local/construction_log_file.txt -v -F nb_parents nb_children node_index distance_to_end nb_words_before nb_nodes_per_depth -M ../.local/model/trained_model.pth
 
 echo "Job ended at: $(date)"
