@@ -110,7 +110,7 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
         for j in range(nb_iterations):
             lcots.append("1 quadruplet and 2 identical doublets")
             lcots.append("The answer is B.")
-            lcots.append("The answer is C.")
+            lcots.append("Trans-propenyl acetate")
             # Model 1
             #lcots.append(run_QwQ32B(question))
             # Model 2
@@ -179,6 +179,9 @@ train_gpqa, eval_gpqa, test_gpqa = split(gpqa_lcots)
 train_split = train_mmlu+train_math+train_lcb+train_gpqa
 eval_split = eval_mmlu+eval_math+eval_lcb+eval_gpqa
 test_split = test_mmlu+test_math+test_lcb+test_gpqa
+print(f"train: {train_split}")
+print(f"eval: {eval_split}")
+print(f"test: {test_split}")
 #train_samples, eval_samples, test_samples = load_MMLU(3)
 #print(len(train_samples))
 #print(train_samples)
