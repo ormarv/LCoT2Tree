@@ -146,6 +146,7 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
         print("Pong!")
         incorrect_data = incorrect_data[:1000]
     balanced_results = correct_data + incorrect_data
+    print(f"Balanced results: {balanced_results}")
     if not balanced_results:
         return list(zip([], []))
         
