@@ -136,9 +136,14 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     elif len(incorrect_data) > len(correct_data):
         np.random.shuffle(incorrect_data)
         incorrect_data = incorrect_data[:len(correct_data)]
+        print(len(incorrect_data))
+        print(incorrect_data)
+        print(correct_data)
     if len(correct_data)>1000:
+        print("Ping!")
         correct_data = correct_data[:1000]
     if len(incorrect_data)>1000:
+        print("Pong!")
         incorrect_data = incorrect_data[:1000]
     balanced_results = correct_data + incorrect_data
     if not balanced_results:
