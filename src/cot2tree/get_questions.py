@@ -107,7 +107,7 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     print(f"s: {s}")
     lcots = []
     for i, (question, _) in enumerate(s):
-        for i in range(nb_iterations):
+        for j in range(nb_iterations):
             lcots.append("1 quadruplet and 2 identical doublets")
             lcots.append("The answer is B.")
             lcots.append("The answer is C.")
@@ -142,7 +142,7 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
         incorrect_data = incorrect_data[:1000]
     balanced_results = correct_data + incorrect_data
     if not balanced_results:
-        return zip([], [])
+        return list(zip([], []))
         
     final_lcots, final_labels = zip(*balanced_results)
     return list(zip(final_lcots, final_labels))
