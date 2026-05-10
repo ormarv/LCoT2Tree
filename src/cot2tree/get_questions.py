@@ -113,13 +113,14 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     questions = [item[0] for item in s]*nb_iterations
     answers = [item[1] for item in s]*nb_iterations
     
-
+    print(f"Now generating with the Llama 70B.")
     # Model 2
     lcots.extend(run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", queries=questions))
 
     destroy_model_parallel()
     gc.collect()
     torch.cuda.empty_cache()
+    print(f"Now generating with the Qwen32B.")
     # Model 3
     lcots.extend(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
     
