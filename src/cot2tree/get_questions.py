@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from models_with_vllm import run_model_with_vLLM
 from datasets import load_dataset, Dataset
 from typing import Dict, List, Tuple
 import numpy as np
@@ -7,7 +8,6 @@ import os
 import random
 import json
 from verify_final_answer import grade_answers
-from models_with_vllm import run_model_with_vLLM
 from QwQ_32B import run_QwQ32B
 
 def eval_dataset_to_list(dataset:Dataset, nb_samples_per_subj:int, verbose=False)->List[Tuple[str,str]]:
