@@ -2,6 +2,7 @@
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from typing import List
+import torch
 MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -14,12 +15,20 @@ class CrossEncoderClient():
         print(f"Answer: {answer}; type: {type(answer)}")
         print(f"Gold: {gold_standard}; type: {type(gold_standard)}")
         features = self.tokenizer(answer, gold_standard,return_tensors='pt')
-        scores = self.model(**features).logits
+        with torch.no_grad():
+            scores = self.model(**features).logits
+        probs = torch.softmax(scores, dim=1)[0]
         label_mapping = ['contradiction', 'entailment', 'neutral']
-        for i, score_max in enumerate(scores.argmax(dim=1)):
+        entailment_prob = probs[1].item()
+        predicted_idx = probs.argmax().item()
+
+        if predicted_idx == 1 and entailment_prob >= threshold:
+            return True
+        return False
+        """for i, score_max in enumerate(scores.argmax(dim=1)):
             if label_mapping[score_max] == 'entailment' and scores[i][score_max]>=threshold:
                 return True
-        return False
+        return False"""
     
 def grade_answers(answers:List[str], gold_standard:List[str], model_path:str, threshold:float, verbose:bool):
     trimmed_answers = [
