@@ -110,18 +110,18 @@ if "train" in actions:
             gpqa =load_GPQA(42, parent_dir)
             lcb = load_live_code_bench(42, parent_dir)
             math = load_MATH(42, parent_dir)
-            mmlu_lcots = get_lcots_with_labels(mmlu_pro, args.cross_encoder, 0.7, args.verbose)
-            math_lcots = get_lcots_with_labels(math, args.cross_encoder, 0.7, args.verbose)
+            mmlu_lcots = get_lcots_with_labels(mmlu_pro, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+            math_lcots = get_lcots_with_labels(math, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
             # for lcb, we need 3 iterations for each model, and 2 for qpqa
-            lcb_lcots = get_lcots_with_labels(lcb, args.cross_encoder, 0.6, args.verbose, nb_iterations=3)
-            gpqa_lcots = get_lcots_with_labels(gpqa, args.cross_encoder, 0.6, args.verbose, nb_iterations=2)
+            lcb_lcots = get_lcots_with_labels(lcb, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+            gpqa_lcots = get_lcots_with_labels(gpqa, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
             train_mmlu, eval_mmlu, test_mmlu = split(mmlu_lcots)
             train_math, eval_math, test_math = split(math_lcots)
             train_lcb, eval_lcb, test_lcb = split(lcb_lcots)
             train_gpqa, eval_gpqa, test_gpqa = split(gpqa_lcots)
-            train_split = train_mmlu+train_math+train_lcb+train_gpqa
-            eval_split = eval_mmlu+eval_math+eval_lcb+eval_gpqa
-            test_split = test_mmlu+test_math+test_lcb+test_gpqa
+            train_samples = train_mmlu+train_math+train_lcb+train_gpqa
+            eval_samples = eval_mmlu+eval_math+eval_lcb+eval_gpqa
+            test_samples = {"mmlu":test_mmlu, "gpqa":test_gpqa, "lcb":test_lcb, "math": test_math}
             # We save those LCoTs and their labels for potential later use.
             if not os.path.isdir(args.lcots_directory):
                 if verbose:
@@ -129,6 +129,7 @@ if "train" in actions:
                 os.mkdir(args.lcots_directory)
             path_train = os.path.join(args.lcots_directory,"train.txt")
             path_eval = os.path.join(args.lcots_directory, "eval.txt")
+            path_tests = [os.path.join(args.lcots_directory,"test")+ds+".txt" for ds in ["mmlu","gpqa","lcb","math"]]
             with open(path_train, "w+") as f:
                 if verbose:
                     print(f"Saving train LCoTs to file {path_train}.")
@@ -137,7 +138,24 @@ if "train" in actions:
                 if verbose:
                     print(f"Saving eval LCoTs to file {path_eval}.")
                 print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in eval_samples]),file=f)
-        
+
+            with open(path_tests[0], "w+") as f:
+                if verbose:
+                    print(f"Saving MMLU pro test LCoTs in : {f}.")
+                print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_mmlu]),file=f)
+            with open(path_tests[1], "w+") as f:
+                if verbose:
+                    print(f"Saving GPQA pro test LCoTs in : {f}.")
+                print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_gpqa]),file=f)
+            with open(path_tests[2], "w+") as f:
+                if verbose:
+                    print(f"Saving LCB pro test LCoTs in : {f}.")
+                print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_lcb]),file=f)
+            with open(path_tests[3], "w+") as f:
+                if verbose:
+                    print(f"Saving MATH pro test LCoTs in : {f}.")
+                print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_math]),file=f)
+   
         # We make the graphs and features from the LCoTs
         train_lcots = [lcot for lcot, _ in train_samples]
         print(f"len(train_lcots): {len(train_lcots)}")
@@ -198,10 +216,11 @@ if "test" in actions:
             if "test" in file:
                 subject = file.split('_')[1].split('.')[0]  # file is of the shape test_subject.txt
                 path = os.path.join(args.graphs_directory, file)
-                with open(path, "w+") as f:
+                with open(path, "r") as f:
                     if verbose:
                         print(f"Loading test graphs on subject {subject} from file {path}.")
-                    test_graphs_with_full_features[subject] = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in f.read().split("############")]
+                    contents = f.read()
+                    test_graphs_with_full_features[subject] = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in contents.split("############")]
     else:
         if args.use_existing_lcots:  # If we use pre-existing LCoTs
             if verbose:
@@ -213,7 +232,8 @@ if "test" in actions:
                     subject = file.split('_')[1].split('.')[0]
                     path = os.path.join(args.lcots_directory, file)
                     with open(path, "w+") as f:
-                        test_samples[subject] = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in f.read().split("############")]
+                        contents = f.read()
+                        test_samples[subject] = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
         else:
             if verbose:
                 print("No existing graphs or LCoTs given, using default.")
