@@ -17,8 +17,8 @@ def run_QwQ32B(query:str)->str:
 		return_dict=True,
 		return_tensors="pt",
 	).to(model.device)
-
-	outputs = model.generate(**inputs, max_new_tokens=-1)
+	# using an impossibly high max_new_tokens, it will get capped automatically
+	outputs = model.generate(**inputs, max_new_tokens=100000)
 	answer = tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:])
 	print(answer)
 	return answer
