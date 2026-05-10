@@ -9,6 +9,9 @@ import random
 import json
 from verify_final_answer import grade_answers
 from QwQ_32B import run_QwQ32B
+from vllm.distributed.parallel_state import destroy_model_parallel
+import torch
+import gc
 
 def eval_dataset_to_list(dataset:Dataset, nb_samples_per_subj:int, verbose=False)->List[Tuple[str,str]]:
     samples_by_subject = {}
@@ -106,17 +109,23 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     s = [samples[i] for i in selected_indices]
     print(f"s: {s}")
     lcots = []
-    for i, (question, _) in enumerate(s):
-        for j in range(nb_iterations):
-            # Model 1
-            lcots.append(run_QwQ32B(question))
-            # Model 2
-            lcots.append(run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", query=question))
-            # Model 3
-            lcots.append(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", query=question))
+    # We create a model, then run it nb_iterations times on all samples
+    questions = [item[0] for item in s]*nb_iterations
+    answers = [item[1] for item in s]*nb_iterations
+    for question in questions:
+        lcots.append(run_QwQ32B(question))
+
+    # Model 2
+    lcots.extend(run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", queries=questions))
+
+    destroy_model_parallel()
+    gc.collect()
+    torch.cuda.empty_cache()
+    # Model 3
+    lcots.extend(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
     
     # Correctly repeat gold answers to match lcots length
-    golds = list(itertools.chain.from_iterable([[gold] * 3 * nb_iterations for _, gold in s]))
+    golds = answers * 3
     print(lcots)
     print(golds)
     labels = grade_answers(answers=lcots, gold_standard=golds, model_path=cross_encoder, threshold=threshold, verbose=verbose)
