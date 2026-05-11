@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-from models_with_vllm import run_model_with_vLLM
+#from models_with_vllm import run_model_with_vLLM
+from vllm import LLM, SamplingParams
 from datasets import load_dataset, Dataset
 from typing import Dict, List, Tuple
 import numpy as np
@@ -12,7 +13,7 @@ from QwQ_32B import run_QwQ32B
 from vllm.distributed.parallel_state import destroy_model_parallel
 import torch
 import gc
-
+parent_dir = "/".join(os.getcwd().split("/")[:-1])
 def eval_dataset_to_list(dataset:Dataset, nb_samples_per_subj:int, verbose=False)->List[Tuple[str,str]]:
     samples_by_subject = {}
     for sample in dataset:
@@ -100,6 +101,33 @@ def load_MATH(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     samples = [(sample['problem'], sample["answer"])for sample in main]
     return samples
 
+def run_model_with_vLLM(model_id:str, queries:List[str]):
+    llm = LLM(
+        
+    model=model_id,
+        
+    dtype=torch.bfloat16,
+        
+    trust_remote_code=True,
+        
+    quantization="bitsandbytes",
+    tensor_parallel_size=2,
+    gpu_memory_utilization=0.8
+    )
+
+    max_model_len = llm.llm_engine.model_config.max_model_len
+    params = SamplingParams(max_tokens=max_model_len)
+    outputs = llm.generate(queries, params)
+    #answer = outputs[0].outputs[0].text
+    answers = [output.outputs[0].text for output in outputs]
+    return answers
+mmlu_pro = load_MMLU_pro(seed=42, parent_dir=parent_dir)
+gpqa =load_GPQA(42, parent_dir)
+lcb = load_live_code_bench(42, parent_dir)
+math = load_MATH(42, parent_dir)
+answers = run_model_with_vLLM(model_id = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", queries=["Who is the oldest living former French president?","If a basketball and a lead weight of the same size are dropped from 50 meters above the ground, which one arrives first?"])
+print(answers)
+
 def get_lcots(samples, nb_samples:int=-1, nb_iterations:int=1):
     if nb_samples != -1:
         nb_samples = min(nb_samples, len(samples))
@@ -175,6 +203,14 @@ def split(data):
     eval_set = data[test_count : test_count + eval_count]
     train_set = data[test_count + eval_count:]
     return train_set, eval_set, test_set
+
+mmlu_pro = load_MMLU_pro(seed=42, parent_dir=parent_dir)
+gpqa =load_GPQA(42, parent_dir)
+lcb = load_live_code_bench(42, parent_dir)
+math = load_MATH(42, parent_dir)
+answers = run_model_with_vLLM(model_id = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", queries=["Who is the oldest living former French president?","If a basketball and a lead weight of the same size are dropped from 50 meters above the ground, which one arrives first?"])
+print(answers)
+
 
 """MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 
