@@ -119,7 +119,12 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
 
     max_model_len = llm.llm_engine.model_config.max_model_len
     params = SamplingParams(max_tokens=max_model_len)
-    outputs = llm.generate(queries, params)
+    print(f"Calling the model: {model_id}")
+    outputs = []
+    for query in queries:
+        o = llm.generate(query, params)
+        outputs.append(o)
+    #outputs = llm.generate(queries, params)
     #answer = outputs[0].outputs[0].text
     answers = [output.outputs[0].text for output in outputs]
     return answers
