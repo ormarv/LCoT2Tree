@@ -214,7 +214,7 @@ parser.add_argument("-s", type=int)
 parser.add_argument("-i", type=int)
 verbose = True
 cross_encoder = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
-lcots_directory = "~/.local/lcots"
+lcots_directory = "/linkhome/rech/genltc01/ugy38tw/.local/lcots"
 args = parser.parse_args()
 if args.d==0:
     dataset = load_MMLU_pro(seed=42, parent_dir=parent_dir)
