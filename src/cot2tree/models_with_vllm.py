@@ -4,7 +4,7 @@ from vllm import LLM, SamplingParams
 import torch
 from typing import List
 import os
-from get_questions import *
+from get_questions import load_MMLU_pro, load_GPQA, load_live_code_bench, load_MATH, get_labeled_lcots, get_lcots, split
 #model_id = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e"
 #model_id = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746/"
 parent_dir = "/".join(os.getcwd().split("/")[:-1])
