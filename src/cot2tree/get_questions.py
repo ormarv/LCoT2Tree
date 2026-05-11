@@ -121,12 +121,6 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
     #answer = outputs[0].outputs[0].text
     answers = [output.outputs[0].text for output in outputs]
     return answers
-mmlu_pro = load_MMLU_pro(seed=42, parent_dir=parent_dir)
-gpqa =load_GPQA(42, parent_dir)
-lcb = load_live_code_bench(42, parent_dir)
-math = load_MATH(42, parent_dir)
-answers = run_model_with_vLLM(model_id = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", queries=["Who is the oldest living former French president?","If a basketball and a lead weight of the same size are dropped from 50 meters above the ground, which one arrives first?"])
-print(answers)
 
 def get_lcots(samples, nb_samples:int=-1, nb_iterations:int=1):
     if nb_samples != -1:
@@ -208,9 +202,56 @@ mmlu_pro = load_MMLU_pro(seed=42, parent_dir=parent_dir)
 gpqa =load_GPQA(42, parent_dir)
 lcb = load_live_code_bench(42, parent_dir)
 math = load_MATH(42, parent_dir)
-answers = run_model_with_vLLM(model_id = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", queries=["Who is the oldest living former French president?","If a basketball and a lead weight of the same size are dropped from 50 meters above the ground, which one arrives first?"])
-print(answers)
+mmlu_lcots, mmlu_answers = get_lcots(mmlu_pro, nb_samples=5)
+math_lcots, math_answers = get_lcots(math, nb_samples=5)
+# for lcb, we need 3 iterations for each model, and 2 for qpqa
+lcb_lcots, lcb_answers = get_lcots(lcb, nb_samples=5)
+gpqa_lcots, gpqa_answers = get_lcots(gpqa, nb_samples=5)
+"""fin_mmlu_lcots = get_labeled_lcots(mmlu_lcots, mmlu_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+fin_gpqa_lcots = get_labeled_lcots(gpqa_lcots, gpqa_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+fin_lcb_lcots = get_labeled_lcots(lcb_lcots, lcb_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+fin_math_lcots = get_labeled_lcots(math_lcots, math_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+train_mmlu, eval_mmlu, test_mmlu = split(fin_mmlu_lcots)
+train_math, eval_math, test_math = split(fin_math_lcots)
+train_lcb, eval_lcb, test_lcb = split(fin_lcb_lcots)
+train_gpqa, eval_gpqa, test_gpqa = split(fin_gpqa_lcots)
+train_samples = train_mmlu+train_math+train_lcb+train_gpqa
+eval_samples = eval_mmlu+eval_math+eval_lcb+eval_gpqa
+test_samples = {"mmlu":test_mmlu, "gpqa":test_gpqa, "lcb":test_lcb, "math": test_math}
+# We save those LCoTs and their labels for potential later use.
+if not os.path.isdir(args.lcots_directory):
+    if verbose:
+        print(f"Did not find directory {args.lcots_directory}. Creating directory.")
+    os.mkdir(args.lcots_directory)
+path_train = os.path.join(args.lcots_directory,"train.txt")
+path_eval = os.path.join(args.lcots_directory, "eval.txt")
+path_tests = [os.path.join(args.lcots_directory,"test")+ds+".txt" for ds in ["mmlu","gpqa","lcb","math"]]
+with open(path_train, "w+") as f:
+    if verbose:
+        print(f"Saving train LCoTs to file {path_train}.")
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in train_samples]),file=f)
+with open(path_eval, "w+") as f:
+    if verbose:
+        print(f"Saving eval LCoTs to file {path_eval}.")
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in eval_samples]),file=f)
 
+with open(path_tests[0], "w+") as f:
+    if verbose:
+        print(f"Saving MMLU pro test LCoTs in : {f}.")
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_mmlu]),file=f)
+with open(path_tests[1], "w+") as f:
+    if verbose:
+        print(f"Saving GPQA pro test LCoTs in : {f}.")
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_gpqa]),file=f)
+with open(path_tests[2], "w+") as f:
+    if verbose:
+        print(f"Saving LCB pro test LCoTs in : {f}.")
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_lcb]),file=f)
+with open(path_tests[3], "w+") as f:
+    if verbose:
+        print(f"Saving MATH pro test LCoTs in : {f}.")
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_math]),file=f)
+"""
 
 """MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 
