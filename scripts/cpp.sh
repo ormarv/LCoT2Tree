@@ -28,17 +28,20 @@ module load miniforge/24.9.0
 conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
 # We get the arguments for the Python script.
-dataset=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' "scripts/input_file.txt")
-model=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' "scripts/input_file.txt")
-n_samples=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' "scripts/input_file.txt")
-n_iterations=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' "scripts/input_file.txt")
+INPUT_FILE="scripts/input_file.txt"
 
-# 5. Run the script
-echo $dataset
-echo $model
-echo $n_samples
-echo $n_iterations
+# 2. Extract the line corresponding to the current Array Task ID
+# This skips the header if you have one; if not, it grabs the Nth line.
+LINE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" $INPUT_FILE)
+
+# 3. Parse the columns into variables
+# Format: ArrayId Dataset LRM N_samples N_iterations
+read -r AID DATASET LRM N_SAMPLES N_ITER <<< "$LINE"
+
+# 4. (Optional) Print for debugging to your log file
+echo "Running Task ID $SLURM_ARRAY_TASK_ID"
+echo "Dataset: $DATASET, LRM: $LRM, Samples: $N_SAMPLES, Iterations: $N_ITER"
 chmod +x src/cot2tree/get_questions_dsr-distill-Q32B.py
-srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d "$dataset" -m "$model" -s "$n_samples" -i "$n_iterations"
+srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d $DATASET -m $MODEL -s $N_SAMPLES -i $N_ITER
 
 echo "Job ended at: $(date)"
