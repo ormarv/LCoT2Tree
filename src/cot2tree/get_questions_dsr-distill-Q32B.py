@@ -9,7 +9,7 @@ import itertools
 import os
 import random
 import json
-import tqdm
+from tqdm import tqdm
 from verify_final_answer import grade_answers
 from QwQ_32B import run_QwQ32B
 from vllm.distributed.parallel_state import destroy_model_parallel
