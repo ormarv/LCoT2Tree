@@ -28,17 +28,14 @@ module load miniforge/24.9.0
 conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
 # We get the arguments for the Python script.
-line_N=$( awk "NR==$SLURM_ARRAY_TASK_ID" scripts/input_file.txt)
-dataset=$( echo "$line_N" | cut -d " " -f 1)
-model=$( echo "$line_N" | cut -d " " -f 2)
-n_samples=$( echo "$line_N" | cut -d " " -f 3)
-n_iterations=$( echo "$line_N" | cut -d " " -f 4)
+line_N=$( sed -n "${SLURM_ARRAY_TASK_ID:-1}p" scripts/input_file.txt)
+read -r dataset model n_samples n_iterations <<< "$line_N"
 # 5. Run the script
 echo $dataset
 echo $model
 echo $n_samples
 echo $n_iterations
 chmod +x src/cot2tree/get_questions_dsr-distill-Q32B.py
-srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d $dataset -m $model -s $n_samples -i $n_iterations
+srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d "$dataset" -m "$model" -s "$n_samples" -i "$n_iterations"
 
 echo "Job ended at: $(date)"
