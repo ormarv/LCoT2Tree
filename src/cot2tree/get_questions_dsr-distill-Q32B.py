@@ -153,8 +153,7 @@ def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
     # Model 3
         lcots.extend(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
     else:
-        for question in questions:
-            lcots.append(run_QwQ32B(question))
+        lcots.extend(run_QwQ32B(questions))
     # Correctly repeat gold answers to match lcots length
     golds = answers
     print(lcots)
@@ -225,7 +224,7 @@ elif args.d==2:
     dataset = load_live_code_bench(42, parent_dir)
 else:
     dataset = load_MATH(42, parent_dir)
-lcots, answers = get_lcots(dataset, nb_samples=args.s, nb_iterations=args.i)
+lcots, answers = get_lcots(dataset, args.m, nb_samples=args.s, nb_iterations=args.i)
 
 fin_lcots = get_labeled_lcots(lcots, answers, cross_encoder, 0.7, verbose)
 train_samples, eval_samples, test_samples = split(fin_lcots)
