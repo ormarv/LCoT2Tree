@@ -28,6 +28,6 @@ conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
 # 5. Run the script
 chmod +x src/cot2tree/get_questions_dsr-distill-Q32B.py
-srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d 0 -n 0 -s 5 -i 1
+srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d 0 -m 0 -s 5 -i 1
 
 echo "Job ended at: $(date)"
