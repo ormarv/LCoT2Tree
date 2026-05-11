@@ -28,11 +28,11 @@ module load miniforge/24.9.0
 conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
 # We get the arguments for the Python script.
-dataset=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' scripts/input_file.txt)
-model=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' scripts/input_file.txt)
-n_samples=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' scripts/input_file.txt)
-n_iterations=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' scripts/input_file.txt)
-read -r dataset model n_samples n_iterations <<< "$line_N"
+dataset=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' "scripts/input_file.txt")
+model=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' "scripts/input_file.txt")
+n_samples=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' "scripts/input_file.txt")
+n_iterations=$( awk -v ArrayId==$SLURM_ARRAY_TASK_ID '$1==ArrayId {print $2}' "scripts/input_file.txt")
+
 # 5. Run the script
 echo $dataset
 echo $model
