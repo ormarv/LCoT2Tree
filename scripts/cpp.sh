@@ -34,6 +34,10 @@ model=$( echo "$line_N" | cut -d " " -f 2)
 n_samples=$( echo "$line_N" | cut -d " " -f 3)
 n_iterations=$( echo "$line_N" | cut -d " " -f 4)
 # 5. Run the script
+echo $dataset
+echo $model
+echo $n_samples
+echo $n_iterations
 chmod +x src/cot2tree/get_questions_dsr-distill-Q32B.py
 srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d $dataset -m $model -s $n_samples -i $n_iterations
 
