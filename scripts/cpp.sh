@@ -29,10 +29,10 @@ conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
 # We get the arguments for the Python script.
 INPUT_FILE="scripts/input_file.txt"
-
+TARGET_LINE=$((SLURM_ARRAY_TASK_ID + 1))
 # 2. Extract the line corresponding to the current Array Task ID
 # This skips the header if you have one; if not, it grabs the Nth line.
-LINE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" $INPUT_FILE)
+LINE=$(sed -n "${TARGET_LINE}p" $INPUT_FILE)
 
 # 3. Parse the columns into variables
 # Format: ArrayId Dataset LRM N_samples N_iterations
