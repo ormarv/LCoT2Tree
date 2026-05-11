@@ -8,6 +8,7 @@ import itertools
 import os
 import random
 import json
+import tqdm
 from verify_final_answer import grade_answers
 from QwQ_32B import run_QwQ32B
 from vllm.distributed.parallel_state import destroy_model_parallel
@@ -56,7 +57,7 @@ def load_MMLU(nb_samples_per_subj:int, parent_dir:str, seed:int=42, verbose=Fals
 def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--PrimeIntellect--LiveCodeBench-v5/"))
-    print(dataset)
+    #print(dataset)
     train_split = dataset["train"]
     #print(train_split[0])
     print("Prompt")
@@ -75,7 +76,7 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
 def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--TIGER-Lab--MMLU-Pro/"))
-    print(dataset)
+    #print(dataset)
     test_split = dataset["test"]
     print(test_split[0])
     samples = [(sample['question']+"\nPossible answers: "+"\n".join(sample["options"]), sample["options"][int(sample["answer_index"])])for sample in test_split]
@@ -95,7 +96,7 @@ def load_GPQA(seed:int, parent_dir:str)->List[Tuple[str,str]]:
 def load_MATH(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--simplescaling--openaimath/"))
-    print(dataset)
+    #print(dataset)
     main = dataset["train"]
     print(main[0])
     samples = [(sample['problem'], sample["answer"])for sample in main]
@@ -120,13 +121,12 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
     max_model_len = llm.llm_engine.model_config.max_model_len
     params = SamplingParams(max_tokens=max_model_len)
     print(f"Calling the model: {model_id}")
-    outputs = []
-    for query in queries:
+    answers = []
+    for query in tqdm(queries):
         o = llm.generate(query, params)
-        outputs.append(o)
+        answers.append(o[0].outputs[0].text)
     #outputs = llm.generate(queries, params)
     #answer = outputs[0].outputs[0].text
-    answers = [output.outputs[0].text for output in outputs]
     return answers
 
 def get_lcots(samples, nb_samples:int=-1, nb_iterations:int=1):
@@ -146,17 +146,17 @@ def get_lcots(samples, nb_samples:int=-1, nb_iterations:int=1):
     # Model 2
     lcots.extend(run_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e", queries=questions))
 
-    destroy_model_parallel()
+    """destroy_model_parallel()
     gc.collect()
-    torch.cuda.empty_cache()
-    print(f"Now generating with the Qwen32B.")
+    torch.cuda.empty_cache()"""
+    #print(f"Now generating with the Qwen32B.")
     # Model 3
-    lcots.extend(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
+    #lcots.extend(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
     
     for question in questions:
         lcots.append(run_QwQ32B(question))
     # Correctly repeat gold answers to match lcots length
-    golds = answers * 3
+    golds = answers
     print(lcots)
     print(golds)
     return lcots, golds
@@ -204,7 +204,7 @@ def split(data):
     eval_set = data[test_count : test_count + eval_count]
     train_set = data[test_count + eval_count:]
     return train_set, eval_set, test_set
-
+verbose = True
 mmlu_pro = load_MMLU_pro(seed=42, parent_dir=parent_dir)
 gpqa =load_GPQA(42, parent_dir)
 lcb = load_live_code_bench(42, parent_dir)
@@ -214,10 +214,12 @@ math_lcots, math_answers = get_lcots(math, nb_samples=5)
 # for lcb, we need 3 iterations for each model, and 2 for qpqa
 lcb_lcots, lcb_answers = get_lcots(lcb, nb_samples=5)
 gpqa_lcots, gpqa_answers = get_lcots(gpqa, nb_samples=5)
-"""fin_mmlu_lcots = get_labeled_lcots(mmlu_lcots, mmlu_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
-fin_gpqa_lcots = get_labeled_lcots(gpqa_lcots, gpqa_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
-fin_lcb_lcots = get_labeled_lcots(lcb_lcots, lcb_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
-fin_math_lcots = get_labeled_lcots(math_lcots, math_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+cross_encoder = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
+
+fin_mmlu_lcots = get_labeled_lcots(mmlu_lcots, mmlu_answers, cross_encoder, 0.7, verbose, nb_samples=5)
+fin_gpqa_lcots = get_labeled_lcots(gpqa_lcots, gpqa_answers, cross_encoder, 0.7, verbose, nb_samples=5)
+fin_lcb_lcots = get_labeled_lcots(lcb_lcots, lcb_answers, cross_encoder, 0.7, verbose, nb_samples=5)
+fin_math_lcots = get_labeled_lcots(math_lcots, math_answers, cross_encoder, 0.7, verbose, nb_samples=5)
 train_mmlu, eval_mmlu, test_mmlu = split(fin_mmlu_lcots)
 train_math, eval_math, test_math = split(fin_math_lcots)
 train_lcb, eval_lcb, test_lcb = split(fin_lcb_lcots)
@@ -226,39 +228,40 @@ train_samples = train_mmlu+train_math+train_lcb+train_gpqa
 eval_samples = eval_mmlu+eval_math+eval_lcb+eval_gpqa
 test_samples = {"mmlu":test_mmlu, "gpqa":test_gpqa, "lcb":test_lcb, "math": test_math}
 # We save those LCoTs and their labels for potential later use.
-if not os.path.isdir(args.lcots_directory):
+lcots_directory = "~/.local/lcots"
+if not os.path.isdir(lcots_directory):
     if verbose:
-        print(f"Did not find directory {args.lcots_directory}. Creating directory.")
-    os.mkdir(args.lcots_directory)
-path_train = os.path.join(args.lcots_directory,"train.txt")
-path_eval = os.path.join(args.lcots_directory, "eval.txt")
-path_tests = [os.path.join(args.lcots_directory,"test")+ds+".txt" for ds in ["mmlu","gpqa","lcb","math"]]
-with open(path_train, "w+") as f:
+        print(f"Did not find directory {lcots_directory}. Creating directory.")
+    os.mkdir(lcots_directory)
+path_train = os.path.join(lcots_directory,"train.txt")
+path_eval = os.path.join(lcots_directory, "eval.txt")
+path_tests = [os.path.join(lcots_directory,"test")+ds+".txt" for ds in ["mmlu","gpqa","lcb","math"]]
+with open(path_train, "a+") as f:
     if verbose:
         print(f"Saving train LCoTs to file {path_train}.")
     print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in train_samples]),file=f)
-with open(path_eval, "w+") as f:
+with open(path_eval, "a+") as f:
     if verbose:
         print(f"Saving eval LCoTs to file {path_eval}.")
     print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in eval_samples]),file=f)
 
-with open(path_tests[0], "w+") as f:
+with open(path_tests[0], "a+") as f:
     if verbose:
         print(f"Saving MMLU pro test LCoTs in : {f}.")
     print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_mmlu]),file=f)
-with open(path_tests[1], "w+") as f:
+with open(path_tests[1], "a+") as f:
     if verbose:
         print(f"Saving GPQA pro test LCoTs in : {f}.")
     print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_gpqa]),file=f)
-with open(path_tests[2], "w+") as f:
+with open(path_tests[2], "a+") as f:
     if verbose:
         print(f"Saving LCB pro test LCoTs in : {f}.")
     print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_lcb]),file=f)
-with open(path_tests[3], "w+") as f:
+with open(path_tests[3], "a+") as f:
     if verbose:
         print(f"Saving MATH pro test LCoTs in : {f}.")
     print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_math]),file=f)
-"""
+
 
 """MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 

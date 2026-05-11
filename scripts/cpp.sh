@@ -27,8 +27,14 @@ module load miniforge/24.9.0
 # Note: On Jean Zay, it is generally safer to use `conda activate` even if you install with mamba
 conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
+# We get the arguments for the Python script.
+line_N=$( awk "NR==$SLURM_ARRAY_TASK_ID" input_file.txt)
+dataset=$( echo "$line_N" | cut -d " " -f 1)
+model=$( echo "$line_N" | cut -d " " -f 2)
+n_samples=$( echo "$line_N" | cut -d " " -f 3)
+n_iterations=$( echo "$line_N" | cut -d " " -f 4)
 # 5. Run the script
 chmod +x src/cot2tree/get_questions_dsr-distill-Q32B.py
-srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d 0 -m 0 -s 5 -i 1
+srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d $dataset -m $model -s $n_samples -i $n_iterations
 
 echo "Job ended at: $(date)"

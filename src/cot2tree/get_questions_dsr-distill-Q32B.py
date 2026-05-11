@@ -237,20 +237,20 @@ if not os.path.isdir(lcots_directory):
 path_train = os.path.join(lcots_directory,"train.txt")
 path_eval = os.path.join(lcots_directory, "eval.txt")
 ds_names = ["mmlu","gpqa","lcb","math"]
-path_test = os.path.join(lcots_directory,"test")+ds_names[args.d]+".txt"
+path_test = os.path.join(lcots_directory,"test"+ds_names[args.d]+".txt")
 with open(path_train, "a+") as f:
     if verbose:
         print(f"Saving train LCoTs to file {path_train}.")
-    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in train_samples]),file=f)
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in train_samples]),file=f)
 with open(path_eval, "a+") as f:
     if verbose:
         print(f"Saving eval LCoTs to file {path_eval}.")
-    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in eval_samples]),file=f)
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in eval_samples]),file=f)
 
 with open(path_test, "a+") as f:
     if verbose:
         print(f"Saving MMLU pro test LCoTs in : {f}.")
-    print("############".join([lcot+"&&&&&&&&&&&&"+str(label) for lcot, label in test_samples]),file=f)
+    print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in test_samples]),file=f)
 
 
 """MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
