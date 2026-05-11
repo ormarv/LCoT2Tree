@@ -100,7 +100,7 @@ def load_MATH(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     samples = [(sample['problem'], sample["answer"])for sample in main]
     return samples
 
-def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool, nb_samples:int=-1, nb_iterations:int=1):
+def get_lcots(samples, nb_samples:int=-1, nb_iterations:int=1):
     if nb_samples != -1:
         nb_samples = min(nb_samples, len(samples))
     print(f"Samples: {samples}")
@@ -130,6 +130,9 @@ def get_lcots_with_labels(samples, cross_encoder, threshold:float, verbose:bool,
     golds = answers * 3
     print(lcots)
     print(golds)
+    return lcots, golds
+
+def get_labeled_lcots(lcots, golds, cross_encoder, threshold:float, verbose:bool):
     labels = grade_answers(answers=lcots, gold_standard=golds, model_path=cross_encoder, threshold=threshold, verbose=verbose)
     
     # Separate the results

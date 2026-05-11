@@ -5,7 +5,7 @@ import networkx as nx
 import os
 import json
 import torch
-from get_questions import load_MMLU, get_lcots_with_labels, load_GPQA, load_live_code_bench, load_MATH, load_MMLU_pro, split
+from get_questions import load_MMLU, get_lcots, get_labeled_lcots, load_GPQA, load_live_code_bench, load_MATH, load_MMLU_pro, split
 from language_models import *
 from split_lcot import build_graph_from_chain
 from gatv2 import build_features, train, test, build_dataloader
@@ -110,15 +110,19 @@ if "train" in actions:
             gpqa =load_GPQA(42, parent_dir)
             lcb = load_live_code_bench(42, parent_dir)
             math = load_MATH(42, parent_dir)
-            mmlu_lcots = get_lcots_with_labels(mmlu_pro, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
-            math_lcots = get_lcots_with_labels(math, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+            mmlu_lcots, mmlu_answers = get_lcots(mmlu_pro, nb_samples=5)
+            math_lcots, math_answers = get_lcots(math, nb_samples=5)
             # for lcb, we need 3 iterations for each model, and 2 for qpqa
-            lcb_lcots = get_lcots_with_labels(lcb, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
-            gpqa_lcots = get_lcots_with_labels(gpqa, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
-            train_mmlu, eval_mmlu, test_mmlu = split(mmlu_lcots)
-            train_math, eval_math, test_math = split(math_lcots)
-            train_lcb, eval_lcb, test_lcb = split(lcb_lcots)
-            train_gpqa, eval_gpqa, test_gpqa = split(gpqa_lcots)
+            lcb_lcots, lcb_answers = get_lcots(lcb, nb_samples=5)
+            gpqa_lcots, gpqa_answers = get_lcots(gpqa, nb_samples=5)
+            fin_mmlu_lcots = get_labeled_lcots(mmlu_lcots, mmlu_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+            fin_gpqa_lcots = get_labeled_lcots(gpqa_lcots, gpqa_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+            fin_lcb_lcots = get_labeled_lcots(lcb_lcots, lcb_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+            fin_math_lcots = get_labeled_lcots(math_lcots, math_answers, args.cross_encoder, 0.7, args.verbose, nb_samples=5)
+            train_mmlu, eval_mmlu, test_mmlu = split(fin_mmlu_lcots)
+            train_math, eval_math, test_math = split(fin_math_lcots)
+            train_lcb, eval_lcb, test_lcb = split(fin_lcb_lcots)
+            train_gpqa, eval_gpqa, test_gpqa = split(fin_gpqa_lcots)
             train_samples = train_mmlu+train_math+train_lcb+train_gpqa
             eval_samples = eval_mmlu+eval_math+eval_lcb+eval_gpqa
             test_samples = {"mmlu":test_mmlu, "gpqa":test_gpqa, "lcb":test_lcb, "math": test_math}
