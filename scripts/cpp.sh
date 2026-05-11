@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=4
 #SBATCH -C h100
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:4
 #SBATCH --hint=nomultithread
 #SBATCH --time=01:00:00
 #SBATCH --account=rqn@h100
