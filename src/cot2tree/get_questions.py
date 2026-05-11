@@ -114,6 +114,7 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
     tensor_parallel_size=2,
     gpu_memory_utilization=0.9,
     kv_cache_dtype="fp8",
+    enable_chunked_prefill=True
     )
 
     max_model_len = llm.llm_engine.model_config.max_model_len
