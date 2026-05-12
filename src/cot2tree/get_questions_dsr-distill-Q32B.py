@@ -5,6 +5,7 @@ from datasets import load_dataset, Dataset
 from argparse import ArgumentParser
 from typing import Dict, List, Tuple
 import numpy as np
+import datetime
 import itertools
 import os
 import random
@@ -160,12 +161,25 @@ def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
     print(golds)
     return lcots, golds
 
+def ensure_int_labels(label):
+    if type(label)==str:
+        label = eval(label)  # either bool or int
+    if type(label)==bool:
+        if label==True:
+            label = 1
+        else:
+            label = 0
+    if type(label)==int:
+        return str(label)
+    else:
+        raise TypeError("The label should be an int, a boolean, or a string.")
+    
 def get_labeled_lcots(lcots, golds, cross_encoder, threshold:float, verbose:bool):
     labels = grade_answers(answers=lcots, gold_standard=golds, model_path=cross_encoder, threshold=threshold, verbose=verbose)
     
     # Separate the results
-    correct_data = [(ans, lab) for ans, lab in zip(lcots, labels) if lab]
-    incorrect_data = [(ans, lab) for ans, lab in zip(lcots, labels) if not lab]
+    correct_data = [(ans, ensure_int_labels(lab)) for ans, lab in zip(lcots, labels) if lab]
+    incorrect_data = [(ans, ensure_int_labels(lab)) for ans, lab in zip(lcots, labels) if not lab]
     print(f"Correct: {correct_data}")
     print(f"Incorrect: {incorrect_data}")
     # Balancing
@@ -178,12 +192,12 @@ def get_labeled_lcots(lcots, golds, cross_encoder, threshold:float, verbose:bool
         print(len(incorrect_data))
         print(incorrect_data)
         print(correct_data)
-    if len(correct_data)>1000:
+    if len(correct_data)>500:
         print("Ping!")
-        correct_data = correct_data[:1000]
-    if len(incorrect_data)>1000:
+        correct_data = correct_data[:500]
+    if len(incorrect_data)>500:
         print("Pong!")
-        incorrect_data = incorrect_data[:1000]
+        incorrect_data = incorrect_data[:500]
     balanced_results = correct_data + incorrect_data
     print(f"Balanced results: {balanced_results}")
     if not balanced_results:
@@ -225,7 +239,7 @@ elif args.d==2:
 else:
     dataset = load_MATH(42, parent_dir)
 lcots, answers = get_lcots(dataset, args.m, nb_samples=args.s, nb_iterations=args.i)
-
+print(f"LCoTs are generated, the time is {str(datetime.datetime.now())}.")
 fin_lcots = get_labeled_lcots(lcots, answers, cross_encoder, 0.7, verbose)
 train_samples, eval_samples, test_samples = split(fin_lcots)
 # We save those LCoTs and their labels for potential later use.
@@ -252,7 +266,7 @@ with open(path_eval, "a+") as f:
 
 with open(path_test, "a+") as f:
     if verbose:
-        print(f"Saving MMLU pro test LCoTs in : {f}.")
+        print(f"Saving MMLU pro test LCoTs in : {path_test}.")
     print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in test_samples]),file=f)
 
 
