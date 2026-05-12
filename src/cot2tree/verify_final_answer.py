@@ -40,7 +40,7 @@ def string_matching(answer:str, gold_standard:str):
         extracted_answer = answer.lower().replace('\n','').replace(' ','')
     print(f"Extracted answer: {extracted_answer}")
     lower_gold = gold_standard.lower().replace('\n','').replace(' ','')
-    if gold_standard in extracted_answer:
+    if lower_gold in extracted_answer:
         return True
     return False
 
