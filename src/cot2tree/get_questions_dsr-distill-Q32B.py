@@ -78,7 +78,7 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
 def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--TIGER-Lab--MMLU-Pro/"))
-    print(dataset)
+    #print(dataset)
     test_split = dataset["test"]
     print(test_split[0])
     samples = [(sample['question']+"\nPossible answers: "+"\n".join(sample["options"]), sample["options"][int(sample["answer_index"])])for sample in test_split]
@@ -210,12 +210,16 @@ def split(data):
     data = list(data)
     random.shuffle(data)
     total_count = len(data)
+    print(f"Total number of samples: {total_count}")
     test_count = int(total_count * 0.20)
     remainder_count = total_count - test_count
     eval_count = int(remainder_count * 0.10)
     test_set = data[:test_count]
     eval_set = data[test_count : test_count + eval_count]
     train_set = data[test_count + eval_count:]
+    print(f"Test count: {test_count}")
+    print(f"Eval count: {eval_count}")
+    print(f"Train count: {total_count-test_count-eval_count}")
     return train_set, eval_set, test_set
 parser = ArgumentParser("get_questions")
 # the dataset
