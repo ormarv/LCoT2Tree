@@ -32,12 +32,13 @@ class CrossEncoderClient():
     
 def string_matching(answer:str, gold_standard:str):
     print("--------------------------String matching-------------------------------")
-    print(f"Answer: {answer}")
+    #print(f"Answer: {answer}")
     print(f"Gold: {gold_standard}")
     if "\\boxed{" in answer:
         extracted_answer = answer.split("\\boxed{")[1].split("}")[0].lower().replace('\n','').replace(' ','')
     else:
         extracted_answer = answer.lower().replace('\n','').replace(' ','')
+    print(f"Extracted answer: {extracted_answer}")
     lower_gold = gold_standard.lower().replace('\n','').replace(' ','')
     if gold_standard in extracted_answer:
         return True
