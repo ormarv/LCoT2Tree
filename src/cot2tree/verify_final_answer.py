@@ -3,6 +3,7 @@ from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from typing import List
 import torch
+import re
 MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -35,20 +36,61 @@ def string_matching(answer:str, gold_standard:str, letter:str):
     print(f"Answer: {answer}")
     print(f"Gold: {gold_standard}")
     print(f"Letter: {letter}")
-    if "\\boxed{" in answer:
-        extracted_answer = answer.split("\\boxed{")[1].split("}")[0].lower().replace('\n','').replace(' ','')
+    if "boxed{" in answer:
+        extracted_answer = answer.split("boxed{")[1].split("}")[0].lower().replace('\n','').replace(' ','')
+        lower_gold = gold_standard.lower().replace('\n','').replace(' ','')
+        print(f"Extracted answer: {extracted_answer}")
+        if lower_gold in extracted_answer:
+            return True
+        if letter is not None and letter.lower() in extracted_answer:
+            return True
     else:
-        extracted_answer = answer.lower().replace('\n','').replace(' ','')
-    print(f"Extracted answer: {extracted_answer}")
-    lower_gold = gold_standard.lower().replace('\n','').replace(' ','')
-    if lower_gold in extracted_answer:
+        extracted_answer = answer
+        print(f"Extracted answer: {extracted_answer}")
+        if gold_standard in extracted_answer:
+            return True
+        return False
+    
+def string_matching2(answer:str, gold_standard:str, letter:str):
+    if "boxed{" in answer:
+        parts = answer.split("boxed{")[-1]
+        extracted_answer = parts.rsplit("}", 1)[0]
+        lb = extracted_answer.count("{")
+        rb = extracted_answer.count("}")
+        print(f"Number of left brackets: {lb}")
+        print(f"Number of right brackets: {rb}")
+    else:
+        extracted_answer = answer
+    
+    def clean(s):
+        if not s:
+            return ""
+        s = s.lower().replace('\n').replace(' ','')
+        return s.strip('.')
+    
+    clean_extracted = clean(extracted_answer)
+    clean_gold = clean(gold_standard)
+    clean_letter = letter.lower() if letter else None
+    print(f"Extracted: {clean_extracted}")
+    print(f"Gold: {clean_gold}")
+    print(f"Letter: {clean_letter}")
+
+    if clean_letter:
+        if clean_extracted==clean_letter:
+            return True
+        elif len(answer)>10 and (answer.strip().lower().endswith(f"is{clean_letter}") or answer.strip().lower().endswith(f"answer:{clean_letter}")):
+            return True
+    
+    if clean_extracted==clean_gold:
         return True
-    if letter is not None and letter in extracted_answer and len(extracted_answer)<3:
+    elif clean_gold in clean_extracted and len(clean_gold)>1:
+        print("Exception used!")
         return True
     return False
 
+
 def grade_answers(answers:List[str], gold_standard:List[str], letters:List[str], model_path:str, threshold:float, verbose:bool):
-    labels = [string_matching(answer, gold,letter) for answer, gold, letter in zip(answers, gold_standard, letters)]
+    labels = [string_matching2(answer, gold,letter) for answer, gold, letter in zip(answers, gold_standard, letters)]
     return labels
     """trimmed_answers = [
         answer[:-int(min(max(len(answer)//10, 500), len(answer)-1))] 
