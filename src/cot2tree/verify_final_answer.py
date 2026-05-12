@@ -30,10 +30,11 @@ class CrossEncoderClient():
                 return True
         return False"""
     
-def string_matching(answer:str, gold_standard:str):
+def string_matching(answer:str, gold_standard:str, letter:str):
     print("--------------------------String matching-------------------------------")
     print(f"Answer: {answer}")
     print(f"Gold: {gold_standard}")
+    print(f"Letter: {letter}")
     if "\\boxed{" in answer:
         extracted_answer = answer.split("\\boxed{")[1].split("}")[0].lower().replace('\n','').replace(' ','')
     else:
@@ -42,10 +43,12 @@ def string_matching(answer:str, gold_standard:str):
     lower_gold = gold_standard.lower().replace('\n','').replace(' ','')
     if lower_gold in extracted_answer:
         return True
+    if letter is not None and letter in extracted_answer and len(extracted_answer)<3:
+        return True
     return False
 
-def grade_answers(answers:List[str], gold_standard:List[str], model_path:str, threshold:float, verbose:bool):
-    labels = [string_matching(answer, gold) for answer, gold in zip(answers, gold_standard)]
+def grade_answers(answers:List[str], gold_standard:List[str], letters:List[str], model_path:str, threshold:float, verbose:bool):
+    labels = [string_matching(answer, gold,letter) for answer, gold, letter in zip(answers, gold_standard, letters)]
     return labels
     """trimmed_answers = [
         answer[:-int(min(max(len(answer)//10, 500), len(answer)-1))] 

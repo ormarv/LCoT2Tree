@@ -82,7 +82,7 @@ def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     #print(dataset)
     test_split = dataset["test"]
     print(test_split[0])
-    samples = [(sample['question']+"\nPossible answers: "+"\n".join([f"{letters[i]}:{option}" for i, option in enumerate(sample["options"])])+"Put the final answer in the following format: \\boxed\{answer\}", sample["options"][int(sample["answer_index"])])for sample in test_split]
+    samples = [(sample['question']+"\nPossible answers: "+"\n".join([f"{letters[i]}:{option}" for i, option in enumerate(sample["options"])])+"Put the final answer in the following format: \\boxed\{answer\}", sample["options"][int(sample["answer_index"])], letters[int(sample["answer_index"])])for sample in test_split]
     return samples
 
 def return_shuffle(l):
@@ -93,7 +93,7 @@ def load_GPQA(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     main = load_dataset("csv", data_files=os.path.join(parent_dir, ".cache/huggingface/hub/datasets--Idavidrein--gpqa/snapshots/633f5ee89ab8ad4522a9f850766b73f62147ffdd/gpqa_main.csv"))["train"]
     print(main[0])
-    samples = [(sample['Question']+"\nPossible answers: "+"\n".join([str((letters[0],sample["Correct Answer"])), str((letters[1],["Incorrect Answer 1"])), str((letters[2],sample["Incorrect Answer 2"])), str((letters[3],sample["Incorrect Answer 3"]))]), sample["Correct Answer"])for sample in main]
+    samples = [(sample['Question']+"\nPossible answers: "+"\n".join(["A:"+sample["Correct Answer"], "B:"+["Incorrect Answer 1"], "C:"+sample["Incorrect Answer 2"], "D:"+sample["Incorrect Answer 3"]])+"Put the final answer in the following format: \\boxed\{answer\}", sample["Correct Answer"], "A") for sample in main]
     return samples
 
 def load_MATH(seed:int, parent_dir:str)->List[Tuple[str,str]]:
@@ -144,6 +144,10 @@ def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
     # We create a model, then run it nb_iterations times on all samples
     questions = [item[0] for item in s]*nb_iterations
     answers = [item[1] for item in s]*nb_iterations
+    if len(s[0])>2:
+        letters = [item[2] for item in s]*nb_iterations
+    else:
+        letters = [None for _ in s]*nb_iterations
     
     #print(f"Now generating with the Llama 70B.")
     # Model 2
@@ -160,7 +164,7 @@ def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
     golds = answers
     print(lcots)
     print(golds)
-    return lcots, golds
+    return lcots, golds, letters
 
 def ensure_int_labels(label):
     if type(label)==str:
@@ -175,8 +179,8 @@ def ensure_int_labels(label):
     else:
         raise TypeError("The label should be an int, a boolean, or a string.")
     
-def get_labeled_lcots(lcots, golds, cross_encoder, threshold:float, verbose:bool):
-    labels = grade_answers(answers=lcots, gold_standard=golds, model_path=cross_encoder, threshold=threshold, verbose=verbose)
+def get_labeled_lcots(lcots, golds, letters, cross_encoder, threshold:float, verbose:bool):
+    labels = grade_answers(answers=lcots, gold_standard=golds, letters=letters, model_path=cross_encoder, threshold=threshold, verbose=verbose)
     print(f"Number of samples: {len(labels)}")
     # Separate the results
     correct_data = [(ans, ensure_int_labels(lab)) for ans, lab in zip(lcots, labels) if lab]
@@ -243,7 +247,7 @@ elif args.d==2:
     dataset = load_live_code_bench(42, parent_dir)
 else:
     dataset = load_MATH(42, parent_dir)
-lcots, answers = get_lcots(dataset, args.m, nb_samples=args.s, nb_iterations=args.i)
+lcots, answers, letters = get_lcots(dataset, args.m, nb_samples=args.s, nb_iterations=args.i)
 print(f"LCoTs are generated, the time is {str(datetime.datetime.now())}.")
 fin_lcots = get_labeled_lcots(lcots, answers, cross_encoder, 0.7, verbose)
 train_samples, eval_samples, test_samples = split(fin_lcots)
