@@ -42,6 +42,6 @@ read -r AID DATASET LRM N_SAMPLES N_ITER <<< "$LINE"
 echo "Running Task ID $SLURM_ARRAY_TASK_ID"
 echo "Dataset: $DATASET, LRM: $LRM, Samples: $N_SAMPLES, Iterations: $N_ITER"
 chmod +x src/cot2tree/get_questions_dsr-distill-Q32B.py
-srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d $DATASET -m $MODEL -s $N_SAMPLES -i $N_ITER
+srun src/cot2tree/get_questions_dsr-distill-Q32B.py -d $DATASET -m $LRM -s $N_SAMPLES -i $N_ITER
 
 echo "Job ended at: $(date)"
