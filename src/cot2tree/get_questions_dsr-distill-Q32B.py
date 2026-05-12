@@ -185,8 +185,8 @@ def get_labeled_lcots(lcots, golds, letters, cross_encoder, threshold:float, ver
     # Separate the results
     correct_data = [(ans, ensure_int_labels(lab)) for ans, lab in zip(lcots, labels) if lab]
     incorrect_data = [(ans, ensure_int_labels(lab)) for ans, lab in zip(lcots, labels) if not lab]
-    print(f"Correct: {correct_data}")
-    print(f"Incorrect: {incorrect_data}")
+    print(f"Correct: {len(correct_data)}")
+    print(f"Incorrect: {len(incorrect_data)}")
     # Balancing
     if len(correct_data) > len(incorrect_data):
         np.random.shuffle(correct_data)
