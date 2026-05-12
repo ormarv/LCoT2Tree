@@ -31,6 +31,9 @@ class CrossEncoderClient():
         return False"""
     
 def string_matching(answer:str, gold_standard:str):
+    print("--------------------------String matching-------------------------------")
+    print(f"Answer: {answer}")
+    print(f"Gold: {gold_standard}")
     if "\\boxed{" in answer:
         extracted_answer = answer.split("\\boxed{")[1].split("}")[0].lower().replace('\n','').replace(' ','')
     else:
