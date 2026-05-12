@@ -65,7 +65,7 @@ def string_matching2(answer:str, gold_standard:str, letter:str):
     def clean(s):
         if not s:
             return ""
-        s = s.lower().replace('\n').replace(' ','')
+        s = s.lower().replace('\n','').replace(' ','')
         return s.strip('.')
     
     clean_extracted = clean(extracted_answer)
