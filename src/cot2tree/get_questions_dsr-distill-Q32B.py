@@ -61,16 +61,16 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     print(dataset)
     train_split = dataset["train"]
     #print(train_split[0])
-    print("Prompt")
-    print(train_split[0]["prompt"])
-    print("Verification_info")
-    print(json.loads(train_split[0]["verification_info"]))
-    print(type(json.loads(train_split[0]["verification_info"])))
-    print("Truth")
-    print(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["input"])
-    print(type(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["input"]))
-    print(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["output"])
-    print(type(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["output"]))
+    #print("Prompt")
+    #print(train_split[0]["prompt"])
+    #print("Verification_info")
+    #print(json.loads(train_split[0]["verification_info"]))
+    #print(type(json.loads(train_split[0]["verification_info"])))
+    #print("Truth")
+    #print(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["input"])
+    #print(type(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["input"]))
+    #print(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["output"])
+    #print(type(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["output"]))
     samples = [(sample["prompt"]+"\nInput:"+ json.loads(json.loads(sample["verification_info"])["ground_truth"])[0]["input"], json.loads(json.loads(sample["verification_info"])["ground_truth"])[0]["output"]) for sample in train_split]
     return samples
 
@@ -238,6 +238,9 @@ path_train = os.path.join(lcots_directory,"train.txt")
 path_eval = os.path.join(lcots_directory, "eval.txt")
 ds_names = ["mmlu","gpqa","lcb","math"]
 path_test = os.path.join(lcots_directory,"test"+ds_names[args.d]+".txt")
+print(path_train)
+print(path_eval)
+print(path_test)
 with open(path_train, "a+") as f:
     if verbose:
         print(f"Saving train LCoTs to file {path_train}.")
