@@ -81,7 +81,7 @@ def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     #print(dataset)
     test_split = dataset["test"]
     print(test_split[0])
-    samples = [(sample['question']+"\nPossible answers: "+"\n".join(sample["options"]), sample["options"][int(sample["answer_index"])])for sample in test_split]
+    samples = [(sample['question']+"\nPossible answers: "+"\n".join(sample["options"])+"Put the final answer in the following format: \\boxed\{answer\}", sample["options"][int(sample["answer_index"])])for sample in test_split]
     return samples
 
 def return_shuffle(l):
@@ -176,7 +176,7 @@ def ensure_int_labels(label):
     
 def get_labeled_lcots(lcots, golds, cross_encoder, threshold:float, verbose:bool):
     labels = grade_answers(answers=lcots, gold_standard=golds, model_path=cross_encoder, threshold=threshold, verbose=verbose)
-    
+    print(f"Number of samples: {len(labels)}")
     # Separate the results
     correct_data = [(ans, ensure_int_labels(lab)) for ans, lab in zip(lcots, labels) if lab]
     incorrect_data = [(ans, ensure_int_labels(lab)) for ans, lab in zip(lcots, labels) if not lab]
