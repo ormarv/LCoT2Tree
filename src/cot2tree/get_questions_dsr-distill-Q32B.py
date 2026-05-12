@@ -17,6 +17,7 @@ from vllm.distributed.parallel_state import destroy_model_parallel
 import torch
 import gc
 parent_dir = "/".join(os.getcwd().split("/")[:-1])
+letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 def eval_dataset_to_list(dataset:Dataset, nb_samples_per_subj:int, verbose=False)->List[Tuple[str,str]]:
     samples_by_subject = {}
     for sample in dataset:
@@ -81,7 +82,7 @@ def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     #print(dataset)
     test_split = dataset["test"]
     print(test_split[0])
-    samples = [(sample['question']+"\nPossible answers: "+"\n".join(sample["options"])+"Put the final answer in the following format: \\boxed\{answer\}", sample["options"][int(sample["answer_index"])])for sample in test_split]
+    samples = [(sample['question']+"\nPossible answers: "+"\n".join([f"{letters[i]}:{option}" for i, option in enumerate(sample["options"])])+"Put the final answer in the following format: \\boxed\{answer\}", sample["options"][int(sample["answer_index"])])for sample in test_split]
     return samples
 
 def return_shuffle(l):
@@ -92,7 +93,7 @@ def load_GPQA(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     main = load_dataset("csv", data_files=os.path.join(parent_dir, ".cache/huggingface/hub/datasets--Idavidrein--gpqa/snapshots/633f5ee89ab8ad4522a9f850766b73f62147ffdd/gpqa_main.csv"))["train"]
     print(main[0])
-    samples = [(sample['Question']+"\nPossible answers: "+"\n".join(return_shuffle([sample["Correct Answer"], sample["Incorrect Answer 1"], sample["Incorrect Answer 2"], sample["Incorrect Answer 3"]])), sample["Correct Answer"])for sample in main]
+    samples = [(sample['Question']+"\nPossible answers: "+"\n".join([str((letters[0],sample["Correct Answer"])), str((letters[1],["Incorrect Answer 1"])), str((letters[2],sample["Incorrect Answer 2"])), str((letters[3],sample["Incorrect Answer 3"]))]), sample["Correct Answer"])for sample in main]
     return samples
 
 def load_MATH(seed:int, parent_dir:str)->List[Tuple[str,str]]:

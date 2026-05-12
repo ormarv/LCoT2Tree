@@ -36,7 +36,15 @@ def _load_and_train_parallel(rank, world_size, train_features, train_graphs, tra
         total_train = 0
         for j, data in enumerate(train_loader):
             optimizer.zero_grad()
-            
+            output = model(data.x, data.edge_index, data.batch)
+            loss = torch.nn.functional.nll_loss(output, data.y)
+            loss_eval += loss.item()
+            prediction = output.argmax(dim=1)
+            correct = int((prediction == data.y).sum())
+            acc = correct/len(data.y)
+            print(f"    Batch {j}. Loss: {loss.item()}. Accuracy: {acc}")
+            total_correct_eval += correct
+            total_eval += len(data.y)
 
     
 
