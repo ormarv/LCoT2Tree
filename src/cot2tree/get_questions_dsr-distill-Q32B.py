@@ -249,7 +249,7 @@ else:
     dataset = load_MATH(42, parent_dir)
 lcots, answers, letters = get_lcots(dataset, args.m, nb_samples=args.s, nb_iterations=args.i)
 print(f"LCoTs are generated, the time is {str(datetime.datetime.now())}.")
-fin_lcots = get_labeled_lcots(lcots, answers, cross_encoder, 0.7, verbose)
+fin_lcots = get_labeled_lcots(lcots, answers, letters, cross_encoder, 0.7, verbose)
 train_samples, eval_samples, test_samples = split(fin_lcots)
 # We save those LCoTs and their labels for potential later use.
 
