@@ -292,7 +292,7 @@ with open(path_eval, "a+") as f:
 
 with open(path_test, "a+") as f:
     if verbose:
-        print(f"Saving MMLU pro test LCoTs in : {path_test}.")
+        print(f"Saving test LCoTs in : {path_test}.")
     print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in test_samples]),file=f)
 
 

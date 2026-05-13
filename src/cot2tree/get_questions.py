@@ -152,9 +152,9 @@ def get_lcots(samples, nb_samples:int=-1, nb_iterations:int=1):
     #print(f"Now generating with the Qwen32B.")
     # Model 3
     #lcots.extend(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
-    
-    for question in questions:
-        lcots.append(run_QwQ32B(question))
+    lcots.extend(run_model_with_vLLM("/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--unsloth--DeepSeek-R1-Distill-Llama-70B-GGUF/snapshots/732dd974083ea5877d7b6d788b36fe7c2e5eab36/", questions))
+    #for question in questions:
+        #lcots.append(run_QwQ32B(question))
     # Correctly repeat gold answers to match lcots length
     golds = answers
     print(lcots)
