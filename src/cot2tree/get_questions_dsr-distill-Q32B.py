@@ -176,7 +176,8 @@ def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
     # Model 3
         lcots.extend(run_model_with_vLLM(model_id="/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
     else:
-        lcots.extend(run_QwQ32B(questions))
+        lcots.extend(run_model_with_vLLM("/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/", questions))
+    
     # Correctly repeat gold answers to match lcots length
     golds = answers
     print(lcots)
