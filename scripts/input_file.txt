@@ -8,6 +8,6 @@ ArrayId Dataset LRM N_samples N_iterations
 7       2       1   300         1
 8       3       1   300         1
 9       0       2   300         1
-10      1       2   300         1
-11      2       2   300         1
+10      1       2   30         1
+11      2       2   30         1
 12      3       2   300         1
