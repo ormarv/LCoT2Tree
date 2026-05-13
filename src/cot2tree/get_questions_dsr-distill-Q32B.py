@@ -93,7 +93,16 @@ def load_GPQA(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     main = load_dataset("csv", data_files=os.path.join(parent_dir, ".cache/huggingface/hub/datasets--Idavidrein--gpqa/snapshots/633f5ee89ab8ad4522a9f850766b73f62147ffdd/gpqa_main.csv"))["train"]
     print(main[0])
-    samples = [(sample['Question']+"\nPossible answers: "+"\n".join(["A:"+sample["Correct Answer"], "B:"+["Incorrect Answer 1"], "C:"+sample["Incorrect Answer 2"], "D:"+sample["Incorrect Answer 3"]])+"Put the final answer in the following format: \\boxed\{answer\}", sample["Correct Answer"], "A") for sample in main]
+    samples = []
+    for sample in main:
+        correct_answer = sample["Correct Answer"]
+        options = [correct_answer, sample["Incorrect Answer 1"], sample["Incorrect Answer 2"], sample["Incorrect Answer 3"]]
+        np.random.shuffle(options)
+        correct_idx = options.index(correct_answer)
+        correct_letter = letters[correct_idx]
+        formatted_options = "\n".join([f"{letters[i]}: {options[i]}" for i in range(4)])
+        prompt = sample["Question"]+"\nPossible answers:\n"+formatted_options+"\nPut the final answer in the following format: \\boxed\{answer\}"
+        samples.append((prompt, correct_answer, correct_letter))
     return samples
 
 def load_MATH(seed:int, parent_dir:str)->List[Tuple[str,str]]:
@@ -157,7 +166,7 @@ def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
     elif model_n==1:
         print(f"Now generating with the Qwen32B.")
     # Model 3
-        lcots.extend(run_model_with_vLLM(model_id="linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
+        lcots.extend(run_model_with_vLLM(model_id="/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Qwen-32B/snapshots/711ad2ea6aa40cfca18895e8aca02ab92df1a746", queries=questions))
     else:
         lcots.extend(run_QwQ32B(questions))
     # Correctly repeat gold answers to match lcots length
