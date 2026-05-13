@@ -124,7 +124,7 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
     trust_remote_code=True,
         
     quantization="bitsandbytes",
-    tensor_parallel_size=6,
+    tensor_parallel_size=4,
     gpu_memory_utilization=0.9,
     kv_cache_dtype="fp8",
     enable_chunked_prefill=True
