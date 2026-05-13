@@ -123,7 +123,7 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
         
     trust_remote_code=True,
         
-    quantization="bitsandbytes",
+    quantization="fp8",
     tensor_parallel_size=4,
     gpu_memory_utilization=0.9,
     kv_cache_dtype="fp8",
@@ -131,12 +131,20 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
     )
 
     max_model_len = llm.llm_engine.model_config.max_model_len
-    params = SamplingParams(max_tokens=max_model_len, repetition_penalty=1.1)
+    tokenizer = llm.get_tokenizer()
+    formatted_queries = []
+    for query in queries:
+        message = [{"role":"user","content":query}]
+        prompt = tokenizer.apply_chat_template(message, add_generation_prompt=True, tokenize=False)
+        formatted_queries.append(prompt)
+    params = SamplingParams(max_tokens=max_model_len, temperature=0.6, top_p=0.95, stop=["<|end_of_text|>", "<|eot_id|>"])
     print(f"Calling the model: {model_id}")
-    answers = []
-    for query in tqdm(queries):
-        o = llm.generate(query, params)
-        answers.append(o[0].outputs[0].text)
+    outputs = llm.generate(formatted_queries, params)
+    answers = [output.outputs[0].text for output in outputs]
+    #answers = []
+    #for query in tqdm(queries):
+        #o = llm.generate(query, params)
+        #answers.append(o[0].outputs[0].text)
     #outputs = llm.generate(queries, params)
     #answer = outputs[0].outputs[0].text
     return answers
