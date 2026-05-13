@@ -124,14 +124,14 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
     trust_remote_code=True,
         
     quantization="bitsandbytes",
-    tensor_parallel_size=4,
+    tensor_parallel_size=6,
     gpu_memory_utilization=0.9,
     kv_cache_dtype="fp8",
     enable_chunked_prefill=True
     )
 
     max_model_len = llm.llm_engine.model_config.max_model_len
-    params = SamplingParams(max_tokens=max_model_len)
+    params = SamplingParams(max_tokens=max_model_len, repetition_penalty=1.1)
     print(f"Calling the model: {model_id}")
     answers = []
     for query in tqdm(queries):
