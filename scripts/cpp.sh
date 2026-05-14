@@ -2,10 +2,10 @@
 #SBATCH --job-name=cpp
 #SBATCH --output=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/cpp/%x_%j_%a.out
 #SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/cpp/%x_%j_%a.err
-#SBATCH --array=10-11
+#SBATCH --array=1-4
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=8
 #SBATCH -C h100
 #SBATCH --gres=gpu:4
 #SBATCH --hint=nomultithread
