@@ -129,7 +129,7 @@ def grade_math(answer:str, gold_standard:str):
 def grade_lcb(answer:str, sample):
     code = extract_test_output_code(answer)
     if not code:
-        print(f"No code found in {answer}.")
+        print(f"No code found.")
         return False
     str_sample = json.dumps(sample)
     results, metadata = run_test(str_sample, test=code)

@@ -167,7 +167,7 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
 def get_lcots(samples, model_n:int, dataset_n: int, nb_samples:int=-1, nb_iterations:int=1):
     if nb_samples != -1:
         nb_samples = min(nb_samples, len(samples))
-    print(f"Samples: {samples}")
+    #print(f"Samples: {samples}")
     # Use choice to avoid the samples[indices] error and get unique samples
     selected_indices = np.random.choice(len(samples), nb_samples, replace=False)
     s = [samples[i] for i in selected_indices]
@@ -195,8 +195,8 @@ def get_lcots(samples, model_n:int, dataset_n: int, nb_samples:int=-1, nb_iterat
     
     # Correctly repeat gold answers to match lcots length
     golds = answers
-    print(lcots)
-    print(golds)
+    #print(lcots)
+    #print(golds)
     return lcots, golds, letters
 
 def ensure_int_labels(label):
