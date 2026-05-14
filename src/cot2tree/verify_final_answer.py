@@ -93,6 +93,7 @@ def string_matching2(answer:str, gold_standard:str, letter:str):
     return False
 
 def string_matching3(answer:str, gold_standard:str, letter:str):
+    print(f"Letter: {letter}")
     extracted_answer = None
     patterns = [
         r"(?:answer)\s*[:\s]*\(?([A-Z])\)?",
@@ -106,6 +107,8 @@ def string_matching3(answer:str, gold_standard:str, letter:str):
             break
     if extracted_answer and extracted_answer==letter:
         return True
+    print(f"Extracted answer: {extracted_answer}")
+    
     return False
 
 def grade_math(answer:str, gold_standard:str):
@@ -116,6 +119,9 @@ def grade_math(answer:str, gold_standard:str):
     ]
     result = parse(answer, config)
     is_correct = verify(gold_standard, result)
+    print(f"Answer: {answer}")
+    print(f"Result: {result}")
+    print(f"Gold: {gold_standard}")
     return is_correct
 
 def grade_lcb(answer:str, sample):

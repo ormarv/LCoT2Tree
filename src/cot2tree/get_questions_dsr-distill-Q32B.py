@@ -83,7 +83,7 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
         for x in verification_info:
             inputs.append(x["input"])
             outputs.append(x["output"])
-        function = json.loads(verification_info[0]["metadata"])["func_name"]
+        function = verification_info[0]["metadata"]["func_name"]
         if function!="null":
             fn_name=function
         samples.append((prompt, {'input_output':{'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name}}))
@@ -123,7 +123,7 @@ def load_GPQA(seed:int, parent_dir:str)->List[Tuple[str,str]]:
 def load_MATH(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--simplescaling--openaimath/"))
-    print(dataset)
+    #print(dataset)
     main = dataset["train"]
     print(main[0])
     samples = [(sample['problem'], sample["answer"])for sample in main]
@@ -164,7 +164,7 @@ def run_model_with_vLLM(model_id:str, queries:List[str]):
     #answer = outputs[0].outputs[0].text
     return answers
 
-def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
+def get_lcots(samples, model_n:int, dataset_n: int, nb_samples:int=-1, nb_iterations:int=1):
     if nb_samples != -1:
         nb_samples = min(nb_samples, len(samples))
     print(f"Samples: {samples}")
@@ -176,7 +176,7 @@ def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
     # We create a model, then run it nb_iterations times on all samples
     questions = [item[0] for item in s]*nb_iterations
     answers = [item[1] for item in s]*nb_iterations
-    if model_n<2:
+    if dataset_n<2:
         letters = [item[2] for item in s]*nb_iterations
     else:
         letters = [None for _ in s]*nb_iterations
@@ -280,7 +280,7 @@ elif args.d==2:
     dataset = load_live_code_bench(42, parent_dir)
 else:
     dataset = load_MATH(42, parent_dir)
-lcots, answers, letters = get_lcots(dataset, args.m, nb_samples=args.s, nb_iterations=args.i)
+lcots, answers, letters = get_lcots(dataset, args.m, args.d, nb_samples=args.s, nb_iterations=args.i)
 print(f"LCoTs are generated, the time is {str(datetime.datetime.now())}.")
 fin_lcots = get_labeled_lcots(lcots, answers, letters, cross_encoder, 0.7, verbose, args.d)
 train_samples, eval_samples, test_samples = split(fin_lcots)
