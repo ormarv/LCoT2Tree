@@ -5,13 +5,13 @@
 #SBATCH --array=1-4
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=32
 #SBATCH -C h100
 #SBATCH --gres=gpu:4
 #SBATCH --hint=nomultithread
 #SBATCH --time=00:30:00
 #SBATCH --account=rqn@h100
-#SBATCH --qos=qos_gpu_h100‑dev
+#SBATCH --qos=qos_gpu_h100-dev
 echo "Starting job on node: $(hostname)"
 echo "Job started at: $(date)"
 
