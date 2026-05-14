@@ -131,8 +131,8 @@ def grade_lcb(answer:str, sample):
     if not code:
         print(f"No code found.")
         return False
-    str_sample = json.dumps(sample)
-    results, metadata = run_test(str_sample, test=code)
+    #str_sample = json.dumps(sample)
+    results, metadata = run_test(sample, test=code)
     print(f"Results: {results}")
     # Let's assume that results is a list of bools
     for result in results:

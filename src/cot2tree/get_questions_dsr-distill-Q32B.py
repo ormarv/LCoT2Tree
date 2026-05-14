@@ -86,7 +86,7 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
         function = verification_info[0]["metadata"]["func_name"]
         if function!="null":
             fn_name=function
-        samples.append((prompt, {'input_output':{'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name}}))
+        samples.append((prompt, {'input_output':json.dumps({'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name})}))
 
     #samples = [(sample["prompt"]+"\nInput:"+ json.loads(json.loads(sample["verification_info"])["ground_truth"])[0]["input"], json.loads(json.loads(sample["verification_info"])["ground_truth"])[0]["output"]) for sample in train_split]
     return samples
