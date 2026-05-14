@@ -96,19 +96,19 @@ def string_matching3(answer:str, gold_standard:str, letter:str):
     print(f"Letter: {letter}")
     extracted_answer = None
     patterns = [
-        r"(?:answer)\s*[:\s]*\(?([A-Z])\)?",
         r"\\boxed\{([A-Z])\}",
+        r"(?:answer)\s*[:\s]*\(?([A-Z])\)?",
         r"\b([A-Z])\b(?:\s*)$"
     ]
-    for p in patterns:
+    for i,p in enumerate(patterns):
         match = re.search(p, answer, re.IGNORECASE)
         if match:
+            print(f"Pattern used: {p}, n°{i}")
             extracted_answer = match.group(1).upper()
             break
     if extracted_answer and extracted_answer==letter:
         return True
     print(f"Extracted answer: {extracted_answer}")
-    
     return False
 
 def grade_math(answer:str, gold_standard:str):
@@ -118,7 +118,8 @@ def grade_math(answer:str, gold_standard:str):
         StringExtractionConfig()
     ]
     result = parse(answer, config)
-    is_correct = verify(gold_standard, result)
+    parsed_gold = parse(gold_standard, config)
+    is_correct = verify(parsed_gold, result)
     print(f"Answer: {answer}")
     print(f"Result: {result}")
     print(f"Gold: {gold_standard}")
