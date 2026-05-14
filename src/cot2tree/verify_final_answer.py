@@ -4,6 +4,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from typing import List, Dict
 import torch
 import re
+import json
 from math_verify import LatexExtractionConfig, ExprExtractionConfig, StringExtractionConfig, parse
 from math_verify import verify
 from lcb_runner.evaluation.testing_util import run_test
@@ -130,7 +131,8 @@ def grade_lcb(answer:str, sample):
     if not code:
         print(f"No code found in {answer}.")
         return False
-    results, metadata = run_test(sample, test=code)
+    str_sample = json.dumps(sample)
+    results, metadata = run_test(str_sample, test=code)
     print(f"Results: {results}")
     # Let's assume that results is a list of bools
     for result in results:
