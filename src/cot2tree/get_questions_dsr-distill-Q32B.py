@@ -73,7 +73,22 @@ def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     #print(type(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["input"]))
     #print(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["output"])
     #print(type(json.loads(json.loads(train_split[0]["verification_info"])["ground_truth"])[0]["output"]))
-    samples = [(sample["prompt"]+"\nInput:"+ json.loads(json.loads(sample["verification_info"])["ground_truth"])[0]["input"], json.loads(json.loads(sample["verification_info"])["ground_truth"])[0]["output"]) for sample in train_split]
+    samples = []
+    for sample in train_split:
+        prompt = sample["prompt"]
+        fn_name = None
+        inputs = []
+        outputs = []
+        verification_info = json.loads(json.loads(sample["verification_info"])["ground_truth"])
+        for x in verification_info:
+            inputs.append(x["input"])
+            outputs.append(x["output"])
+        function = json.loads(verification_info[0]["metadata"])["func_name"]
+        if function!="null":
+            fn_name=function
+        samples.append((prompt, {'input_output':{'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name}}))
+
+    #samples = [(sample["prompt"]+"\nInput:"+ json.loads(json.loads(sample["verification_info"])["ground_truth"])[0]["input"], json.loads(json.loads(sample["verification_info"])["ground_truth"])[0]["output"]) for sample in train_split]
     return samples
 
 def load_MMLU_pro(seed:int, parent_dir:str)->List[Tuple[str,str]]:
@@ -161,7 +176,7 @@ def get_lcots(samples, model_n:int, nb_samples:int=-1, nb_iterations:int=1):
     # We create a model, then run it nb_iterations times on all samples
     questions = [item[0] for item in s]*nb_iterations
     answers = [item[1] for item in s]*nb_iterations
-    if len(s[0])>2:
+    if model_n<2:
         letters = [item[2] for item in s]*nb_iterations
     else:
         letters = [None for _ in s]*nb_iterations
@@ -197,8 +212,8 @@ def ensure_int_labels(label):
     else:
         raise TypeError("The label should be an int, a boolean, or a string.")
     
-def get_labeled_lcots(lcots, golds, letters, cross_encoder, threshold:float, verbose:bool):
-    labels = grade_answers(answers=lcots, gold_standard=golds, letters=letters, model_path=cross_encoder, threshold=threshold, verbose=verbose)
+def get_labeled_lcots(lcots, golds, letters, cross_encoder, threshold:float, verbose:bool, dataset_n:int):
+    labels = grade_answers(answers=lcots, gold_standard=golds, letters=letters, model_path=cross_encoder, threshold=threshold, verbose=verbose, dataset_n=dataset_n)
     print(f"Number of samples: {len(labels)}")
     # Separate the results
     correct_data = [(ans, ensure_int_labels(lab)) for ans, lab in zip(lcots, labels) if lab]
@@ -267,7 +282,7 @@ else:
     dataset = load_MATH(42, parent_dir)
 lcots, answers, letters = get_lcots(dataset, args.m, nb_samples=args.s, nb_iterations=args.i)
 print(f"LCoTs are generated, the time is {str(datetime.datetime.now())}.")
-fin_lcots = get_labeled_lcots(lcots, answers, letters, cross_encoder, 0.7, verbose)
+fin_lcots = get_labeled_lcots(lcots, answers, letters, cross_encoder, 0.7, verbose, args.d)
 train_samples, eval_samples, test_samples = split(fin_lcots)
 # We save those LCoTs and their labels for potential later use.
 

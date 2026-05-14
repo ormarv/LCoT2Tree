@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 from datasets import load_dataset
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from typing import List
+from typing import List, Dict
 import torch
 import re
+from math_verify import LatexExtractionConfig, ExprExtractionConfig, StringExtractionConfig, parse
+from math_verify import verify
+from lcb_runner.evaluation.testing_util import run_test
+from lcb_runner.utils.extraction_utils import extract_test_output_code
 MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -88,9 +92,55 @@ def string_matching2(answer:str, gold_standard:str, letter:str):
         return True
     return False
 
+def string_matching3(answer:str, gold_standard:str, letter:str):
+    extracted_answer = None
+    patterns = [
+        r"(?:answer)\s*[:\s]*\(?([A-Z])\)?",
+        r"\\boxed\{([A-Z])\}",
+        r"\b([A-Z])\b(?:\s*)$"
+    ]
+    for p in patterns:
+        match = re.search(p, answer, re.IGNORECASE)
+        if match:
+            extracted_answer = match.group(1).upper()
+            break
+    if extracted_answer and extracted_answer==letter:
+        return True
+    return False
 
-def grade_answers(answers:List[str], gold_standard:List[str], letters:List[str], model_path:str, threshold:float, verbose:bool):
-    labels = [string_matching2(answer, gold,letter) for answer, gold, letter in zip(answers, gold_standard, letters)]
+def grade_math(answer:str, gold_standard:str):
+    config = [
+        LatexExtractionConfig(),
+        ExprExtractionConfig(),
+        StringExtractionConfig()
+    ]
+    result = parse(answer, config)
+    is_correct = verify(gold_standard, result)
+    return is_correct
+
+def grade_lcb(answer:str, sample):
+    code = extract_test_output_code(answer)
+    if not code:
+        print(f"No code found in {answer}.")
+        return False
+    results, metadata = run_test(sample, test=code)
+    print(f"Results: {results}")
+    # Let's assume that results is a list of bools
+    for result in results:
+        if result is not True:
+            return False
+    return True
+    
+
+
+
+def grade_answers(answers:List[str], gold_standard:List[str|Dict], letters:List[str|None], model_path:str, threshold:float, verbose:bool, dataset_n:int):
+    if dataset_n<2:
+        labels = [string_matching3(answer, gold,letter) for answer, gold, letter in zip(answers, gold_standard, letters)]
+    elif dataset_n==2:  #LiveCodeBench
+        labels = [grade_lcb(answer, gold) for answer, gold in zip(answers, gold_standard)]
+    else:  # MATH
+        labels = [grade_math(answer, gold) for answer, gold in zip(answers, gold_standard)]
     return labels
     """trimmed_answers = [
         answer[:-int(min(max(len(answer)//10, 500), len(answer)-1))] 

@@ -11,6 +11,7 @@
 #SBATCH --hint=nomultithread
 #SBATCH --time=00:30:00
 #SBATCH --account=rqn@h100
+#SBATCH --qos=qos_gpu_h100‑dev
 echo "Starting job on node: $(hostname)"
 echo "Job started at: $(date)"
 
