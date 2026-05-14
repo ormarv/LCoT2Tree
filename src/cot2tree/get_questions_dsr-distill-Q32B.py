@@ -60,7 +60,7 @@ def load_MMLU(nb_samples_per_subj:int, parent_dir:str, seed:int=42, verbose=Fals
 def load_live_code_bench(seed:int, parent_dir:str)->List[Tuple[str,str]]:
     np.random.seed(seed)
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--PrimeIntellect--LiveCodeBench-v5/"))
-    print(dataset)
+    #print(dataset)
     train_split = dataset["train"]
     #print(train_split[0])
     #print("Prompt")
