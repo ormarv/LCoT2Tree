@@ -293,7 +293,8 @@ if not os.path.isdir(lcots_directory):
 path_train = os.path.join(lcots_directory,"train.txt")
 path_eval = os.path.join(lcots_directory, "eval.txt")
 ds_names = ["mmlu","gpqa","lcb","math"]
-path_test = os.path.join(lcots_directory,"test"+ds_names[args.d]+".txt")
+lrm_names = ["llama", "qwen", "qwq"]
+path_test = os.path.join(lcots_directory,"test_"+ds_names[args.d]+"_"+lrm_names[args.m]+".txt")
 print(path_train)
 print(path_eval)
 print(path_test)

@@ -2,16 +2,16 @@
 #SBATCH --job-name=cpp
 #SBATCH --output=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/cpp/%x_%j_%a.out
 #SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/cpp/%x_%j_%a.err
-#SBATCH --array=1,4,5,8,9,12
+#SBATCH --array=4,8,12
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
 #SBATCH -C h100
 #SBATCH --gres=gpu:4
 #SBATCH --hint=nomultithread
-#SBATCH --time=30:00:00
+#SBATCH --time=02:00:00
 #SBATCH --account=rqn@h100
-#SBATCH --qos=qos_gpu_h100-t4
+#SBATCH --qos=qos_gpu_h100-dev
 
 echo "Starting job on node: $(hostname)"
 echo "Job started at: $(date)"

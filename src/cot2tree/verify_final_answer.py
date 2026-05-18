@@ -9,6 +9,7 @@ from math_verify import LatexExtractionConfig, ExprExtractionConfig, StringExtra
 from math_verify import verify
 from lcb_runner.evaluation.testing_util import run_test
 from lcb_runner.utils.extraction_utils import extract_test_output_code
+import multiprocessing as mp
 MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -126,15 +127,42 @@ def grade_math(answer:str, gold_standard:str):
     print(f"Gold: {gold_standard}")
     return is_correct
 
+def run_test_isolated(sample, code, timeout=10):
+    context = mp.get_context("spawn")
+
+    def worker(queue, samp, test_code):
+        try:
+            results, metadata = run_test(samp, test=test_code)
+            queue.put((results, metadata))
+        except Exception as e:
+            queue.put(([False], str(e)))
+
+    q = context.Queue()
+    p = context.Process(target=worker, args=(q, sample, code))
+    p.start()
+    p.join(timeout=timeout)
+
+    if p.is_alive():
+        p.terminate()
+        p.join()
+        return [False], {"error":"Timeout or Infinite Loop"}
+    
+    if not q.empty():
+        return q.get()
+    else:
+        return [False], {"error":"Process crashed silently"}
+
 def grade_lcb(answer:str, sample):
     code = extract_test_output_code(answer)
     if not code:
         print(f"No code found.")
         return False
     #str_sample = json.dumps(sample)
-    results, metadata = run_test(sample, test=code)
+    results, metadata = run_test_isolated(sample, test=code)
     print(f"Results: {results}")
     # Let's assume that results is a list of bools
+    if not results:
+        return False
     for result in results:
         if result is not True:
             return False
