@@ -10,3 +10,4 @@ testenv/*
 testenv
 graphenv/*
 graphenv
+.vscode/*
