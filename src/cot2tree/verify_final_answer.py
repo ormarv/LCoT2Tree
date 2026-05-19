@@ -171,12 +171,13 @@ def run_test_isolated(sample, code, timeout=10):
 
 def grade_lcb(answer:str, sample):
     code = extract_test_output_code(answer)
+    print(f"Code: {code}\n")
     if not code:
         print(f"No code found.")
         return False
     #str_sample = json.dumps(sample)
     results, metadata = run_test_isolated(sample, code)
-    print(f"Results: {results}")
+    print(f"Results: {results}, Metadata: {metadata}")
     # Let's assume that results is a list of bools
     if not results:
         return False
