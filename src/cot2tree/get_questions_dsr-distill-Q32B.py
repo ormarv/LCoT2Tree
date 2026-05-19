@@ -171,7 +171,7 @@ def get_lcots(samples, model_n:int, dataset_n: int, nb_samples:int=-1, nb_iterat
     # Use choice to avoid the samples[indices] error and get unique samples
     selected_indices = np.random.choice(len(samples), nb_samples, replace=False)
     s = [samples[i] for i in selected_indices]
-    print(f"s: {s}")
+    #print(f"s: {s}")
     lcots = []
     # We create a model, then run it nb_iterations times on all samples
     questions = [item[0] for item in s]*nb_iterations
@@ -228,14 +228,14 @@ def get_labeled_lcots(lcots, golds, letters, cross_encoder, threshold:float, ver
         np.random.shuffle(incorrect_data)
         incorrect_data = incorrect_data[:len(correct_data)]
         print(len(incorrect_data))
-        print(incorrect_data)
-        print(correct_data)
-    if len(correct_data)>500:
+        #print(incorrect_data)
+        #print(correct_data)
+    if len(correct_data)>1000:
         print("Ping!")
-        correct_data = correct_data[:500]
-    if len(incorrect_data)>500:
+        correct_data = correct_data[:1000]
+    if len(incorrect_data)>1000:
         print("Pong!")
-        incorrect_data = incorrect_data[:500]
+        incorrect_data = incorrect_data[:1000]
     balanced_results = correct_data + incorrect_data
     print(f"Balanced results: {balanced_results}")
     if not balanced_results:
