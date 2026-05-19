@@ -142,6 +142,7 @@ def grade_math(answer:str, gold_standard:str):
     return equiv
 
 def worker(queue, samp, test_code):
+    _rmtree = shutil.rmtree
     temp_dir = tempfile.mkdtemp()
     try:
         os.chdir(temp_dir)
@@ -150,7 +151,7 @@ def worker(queue, samp, test_code):
     except Exception as e:
         queue.put(([False], str(e)))
     finally:
-        shutil.rmtree(temp_dir, ignore_errors=True)
+        _rmtree(temp_dir, ignore_errors=True)
 
 def run_test_isolated(sample, code, timeout=10):
     context = mp.get_context("spawn")
