@@ -128,13 +128,15 @@ def grade_math(answer:str, gold_standard:str):
         LatexExtractionConfig(),
         ExprExtractionConfig()
     ]
-    cleaned_answer = clean_answer(answer)
+    cleaned_answer = last_boxed_only_string(answer)
     result = parse(cleaned_answer, config)
     parsed_gold = parse(gold_standard, config)
     is_correct = verify(parsed_gold, result)
-    equiv = is_equiv(cleaned_answer, gold_standard)
-    print(f"Answer: {cleaned_answer}")
-    print(f"Result: {type(result)}")
+    rm_ans = remove_boxed(cleaned_answer)
+    equiv = is_equiv(rm_ans, gold_standard)
+    print(f"Answer: {rm_ans}")
+    print("\n")
+    #print(f"Result: {type(result)}")
     print(f"Gold: {gold_standard}")
     return equiv
 

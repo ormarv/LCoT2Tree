@@ -235,15 +235,23 @@ if "test" in actions:
             else:
                 if verbose:
                     print(f"Loading existing LCoTs for testing from directory {args.lcots_directory}.")
-                test_samples = {}
+                test_samples_true = {}
+                test_samples_false = {}
                 for ds in ["mmlu", "gpqa", "lcb", "math"]:
-                    ds_samples = {}
+                    ds_samples_true = {}
+                    ds_samples_false = {}
                     for m in ["llama", "qwen", "qwq"]:
-                        file = os.path.join(args.lcots_directory,"test_"+ds+"_"+m+".txt")
-                        with open(file, "r+") as f:
+                        file_true = os.path.join(args.lcots_directory,"test_"+ds+"_"+m+"_true"+".txt")
+                        file_false = os.path.join(args.lcots_directory,"test_"+ds+"_"+m+"_false"+".txt")
+                        with open(file_true, "r+") as f:
                             contents = f.read()
-                            ds_samples[m] = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
-                    test_samples[ds] = ds_samples
+                            ds_samples_true[m] = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
+                        with open(file_false, "r+") as f:
+                            contents = f.read()
+                            ds_samples_false[m] = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
+                    
+                    test_samples_true[ds] = ds_samples_true
+                    test_samples_false[ds] = ds_samples_false
         else:  # Won't be used
             if verbose:
                 print("No existing graphs or LCoTs given, using default.")
@@ -272,27 +280,35 @@ if "test" in actions:
                 if verbose:
                     print(f"Did not find directory {args.graphs_directory}. Creating directory.")
                 os.mkdir(args.graphs_directory)
-        test_lcots = {}  # a dict with just the lcots, no labels
-        for subject in test_samples:
+        test_lcots_true = {}  # a dict with just the lcots, no labels
+        test_lcots_false = {}
+        for subject in test_samples_true:
             subj_lcots = {}
-            for m in test_samples[subject]:
-                subj_lcots[m] = [lcot for lcot, _ in test_samples[subject][m]]
-            test_lcots[subject] = subj_lcots
-        test_graphs_features = {}
-        test_graphs_with_full_features = {}
+            for m in test_samples_true[subject]:
+                subj_lcots[m] = [lcot for lcot, _ in test_samples_true[subject][m]]
+            test_lcots_true[subject] = subj_lcots
+        for subject in test_samples_false:
+            subj_lcots = {}
+            for m in test_samples_false[subject]:
+                subj_lcots[m] = [lcot for lcot, _ in test_samples_false[subject][m]]
+            test_lcots_false[subject] = subj_lcots
+        test_graphs_features_true = {}
+        test_graphs_features_false = {}
+        test_graphs_with_full_features_true = {}
+        test_graphs_with_full_features_false = {}
         log = open(args.graph_construction_logfile, "w+")
         if trained_model is None:
             if verbose:
                 print(f"Loading the trained model from file {args.trained_model_path}.")
             trained_model = torch.load(args.trained_model_path, weights_only=False)
-        for subject in test_lcots:
+        for subject in test_lcots_true:
             subj_graphs = {}
             subj_full_features = {}
-            for m in test_lcots[subject]:
-                subj_graphs[m] = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=log) for lcot in test_lcots[subject][m]]
+            for m in test_lcots_true[subject]:
+                subj_graphs[m] = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=log) for lcot in test_lcots_true[subject][m]]
             
                 # These two lines might cause trouble, I am not sure about the way this zip unfolds.
-                subj_full_features[m] = [(graph, build_features(graph=graph, all_features=features, wanted_features=wanted_features), label) for (graph,features),(_, label) in zip(subj_graphs[m],test_samples[subject][m])]
+                subj_full_features[m] = [(graph, build_features(graph=graph, all_features=features, wanted_features=wanted_features), label) for (graph,features),(_, label) in zip(subj_graphs[m],test_samples_true[subject][m])]
                 path_save = os.path.join(args.graphs_directory,f"test_{subject}_{m}.txt")
                 if verbose:
                     print(f"Saving graphs for subject {subject} in file {path_save}")
@@ -309,8 +325,34 @@ if "test" in actions:
                                 model_config=dict(mode="multiclass_classification", task_level="graph", return_type="log_probs")
                             )
                 patterns = get_explanations(explainer, test_loader, subject, m, parent_dir)
-            test_graphs_features[subject] = subj_graphs 
-            test_graphs_with_full_features[subject] = subj_full_features   
+            test_graphs_features_true[subject] = subj_graphs 
+            test_graphs_with_full_features_true[subject] = subj_full_features   
+        for subject in test_lcots_false:
+            subj_graphs = {}
+            subj_full_features = {}
+            for m in test_lcots_false[subject]:
+                subj_graphs[m] = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=log) for lcot in test_lcots_false[subject][m]]
+            
+                # These two lines might cause trouble, I am not sure about the way this zip unfolds.
+                subj_full_features[m] = [(graph, build_features(graph=graph, all_features=features, wanted_features=wanted_features), label) for (graph,features),(_, label) in zip(subj_graphs[m],test_samples_false[subject][m])]
+                path_save = os.path.join(args.graphs_directory,f"test_{subject}_{m}.txt")
+                if verbose:
+                    print(f"Saving graphs for subject {subject} in file {path_save}")
+                with open(path_save) as f:
+                    print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in subj_full_features[m]]),file=f)
+                test_graphs, test_features, test_labels = zip(*subj_full_features[m])
+                test_loader = build_dataloader(test_features, test_graphs, test_labels, batch_size=args.batch_size)
+                test(test_dataloader=test_loader, model=trained_model)
+                explainer = Explainer(
+                                model=trained_model, 
+                                algorithm=GNNExplainer(epochs=200), 
+                                explanation_type='model', 
+                                edge_mask_type='object', 
+                                model_config=dict(mode="multiclass_classification", task_level="graph", return_type="log_probs")
+                            )
+                patterns = get_explanations(explainer, test_loader, subject, m, parent_dir)
+            test_graphs_features_false[subject] = subj_graphs 
+            test_graphs_with_full_features_false[subject] = subj_full_features
     
     
 
