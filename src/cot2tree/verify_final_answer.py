@@ -127,6 +127,9 @@ def grade_math(answer:str, gold_standard:str):
     print(f"Gold: {gold_standard}")
     return is_correct
 
+def work(foo):
+    foo.worker()
+
 def run_test_isolated(sample, code, timeout=10):
     context = mp.get_context("spawn")
 
@@ -138,7 +141,7 @@ def run_test_isolated(sample, code, timeout=10):
             queue.put(([False], str(e)))
 
     q = context.Queue()
-    p = context.Process(target=worker, args=(q, sample, code))
+    p = context.Process(target=work, args=(q, sample, code))
     p.start()
     p.join(timeout=timeout)
 
