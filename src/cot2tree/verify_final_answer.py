@@ -13,6 +13,7 @@ import multiprocessing as mp
 import tempfile
 from hendryck_cleanup import *
 import os
+import shutil
 MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -141,13 +142,15 @@ def grade_math(answer:str, gold_standard:str):
     return equiv
 
 def worker(queue, samp, test_code):
+    temp_dir = tempfile.mkdtemp()
     try:
-        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
-            os.chdir(temp_dir)
-            results, metadata = run_test(samp, test=test_code)
-            queue.put((results, metadata))
+        os.chdir(temp_dir)
+        results, metadata = run_test(samp, test=test_code)
+        queue.put((results, metadata))
     except Exception as e:
         queue.put(([False], str(e)))
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
 def run_test_isolated(sample, code, timeout=10):
     context = mp.get_context("spawn")
