@@ -1,5 +1,5 @@
 ArrayId Dataset LRM N_samples N_iterations
-1       0       0   200         1
+1       0       0   6667         1
 2       1       0   448          4
 3       2       0   279          4
 4       3       0   6667         1
