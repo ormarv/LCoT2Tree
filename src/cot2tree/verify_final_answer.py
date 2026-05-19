@@ -116,8 +116,7 @@ def string_matching3(answer:str, gold_standard:str, letter:str):
 def grade_math(answer:str, gold_standard:str):
     config = [
         LatexExtractionConfig(),
-        ExprExtractionConfig(),
-        StringExtractionConfig()
+        ExprExtractionConfig()
     ]
     result = parse(answer, config)
     parsed_gold = parse(gold_standard, config)
