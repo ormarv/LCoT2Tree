@@ -113,16 +113,24 @@ def string_matching3(answer:str, gold_standard:str, letter:str):
     print(f"Extracted answer: {extracted_answer}")
     return False
 
+def clean_answer(answer:str)->str:
+    answer = re.sub(f"<think>.*?</think>", "", answer, flags=re.DOTALL)
+    boxed_match = re.findall(r"\\boxed{(.*?)\}", answer)
+    if boxed_match:
+        return boxed_match[-1].strip()
+    return answer.strip()
+
 def grade_math(answer:str, gold_standard:str):
     config = [
         LatexExtractionConfig(),
         ExprExtractionConfig()
     ]
-    result = parse(answer, config)
+    cleaned_answer = clean_answer(answer)
+    result = parse(cleaned_answer, config)
     parsed_gold = parse(gold_standard, config)
     is_correct = verify(parsed_gold, result)
-    print(f"Answer: {answer}")
-    print(f"Result: {result}")
+    print(f"Answer: {cleaned_answer}")
+    print(f"Result: {type(result)}")
     print(f"Gold: {gold_standard}")
     return is_correct
 
