@@ -259,58 +259,69 @@ def split(data):
     print(f"Eval count: {eval_count}")
     print(f"Train count: {total_count-test_count-eval_count}")
     return train_set, eval_set, test_set
-parser = ArgumentParser("get_questions")
-# the dataset
-parser.add_argument("-d",type=int)
-# the model
-parser.add_argument("-m", type=int)
-# the number of samples
-parser.add_argument("-s", type=int)
-# the number of iterations
-parser.add_argument("-i", type=int)
-verbose = True
-cross_encoder = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
-lcots_directory = "/linkhome/rech/genltc01/ugy38tw/.local/lcots"
-args = parser.parse_args()
-if args.d==0:
-    dataset = load_MMLU_pro(seed=42, parent_dir=parent_dir)
-elif args.d==1:
-    dataset =load_GPQA(42, parent_dir)
-elif args.d==2:
-    dataset = load_live_code_bench(42, parent_dir)
-else:
-    dataset = load_MATH(42, parent_dir)
-lcots, answers, letters = get_lcots(dataset, args.m, args.d, nb_samples=args.s, nb_iterations=args.i)
-print(f"LCoTs are generated, the time is {str(datetime.datetime.now())}.")
-fin_lcots = get_labeled_lcots(lcots, answers, letters, cross_encoder, 0.7, verbose, args.d)
-train_samples, eval_samples, test_samples = split(fin_lcots)
-# We save those LCoTs and their labels for potential later use.
 
-if not os.path.isdir(lcots_directory):
-    if verbose:
-        print(f"Did not find directory {lcots_directory}. Creating directory.")
-    os.mkdir(lcots_directory)
-path_train = os.path.join(lcots_directory,"train.txt")
-path_eval = os.path.join(lcots_directory, "eval.txt")
-ds_names = ["mmlu","gpqa","lcb","math"]
-lrm_names = ["llama", "qwen", "qwq"]
-path_test = os.path.join(lcots_directory,"test_"+ds_names[args.d]+"_"+lrm_names[args.m]+".txt")
-print(path_train)
-print(path_eval)
-print(path_test)
-with open(path_train, "a+") as f:
-    if verbose:
-        print(f"Saving train LCoTs to file {path_train}.")
-    print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in train_samples]),file=f)
-with open(path_eval, "a+") as f:
-    if verbose:
-        print(f"Saving eval LCoTs to file {path_eval}.")
-    print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in eval_samples]),file=f)
+if __name__ == '__main__':
+    parser = ArgumentParser("get_questions")
+    # the dataset
+    parser.add_argument("-d",type=int)
+    # the model
+    parser.add_argument("-m", type=int)
+    # the number of samples
+    parser.add_argument("-s", type=int)
+    # the number of iterations
+    parser.add_argument("-i", type=int)
+    verbose = True
+    cross_encoder = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
+    lcots_directory = "/linkhome/rech/genltc01/ugy38tw/.local/lcots"
+    args = parser.parse_args()
+    if args.d==0:
+        dataset = load_MMLU_pro(seed=42, parent_dir=parent_dir)
+    elif args.d==1:
+        dataset =load_GPQA(42, parent_dir)
+    elif args.d==2:
+        dataset = load_live_code_bench(42, parent_dir)
+    else:
+        dataset = load_MATH(42, parent_dir)
+    lcots, answers, letters = get_lcots(dataset, args.m, args.d, nb_samples=args.s, nb_iterations=args.i)
+    print(f"LCoTs are generated, the time is {str(datetime.datetime.now())}.")
+    fin_lcots = get_labeled_lcots(lcots, answers, letters, cross_encoder, 0.7, verbose, args.d)
+    train_samples, eval_samples, test_samples = split(fin_lcots)
+    test_samples_true = [sample for sample in test_samples if sample[1]==1]
+    test_samples_false = [sample for sample in test_samples if sample[1]==0]
+    # We save those LCoTs and their labels for potential later use.
 
-with open(path_test, "a+") as f:
-    if verbose:
-        print(f"Saving test LCoTs in : {path_test}.")
-    print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in test_samples]),file=f)
+    if not os.path.isdir(lcots_directory):
+        if verbose:
+            print(f"Did not find directory {lcots_directory}. Creating directory.")
+        os.mkdir(lcots_directory)
+    path_train = os.path.join(lcots_directory,"train.txt")
+    path_eval = os.path.join(lcots_directory, "eval.txt")
+    ds_names = ["mmlu","gpqa","lcb","math"]
+    lrm_names = ["llama", "qwen", "qwq"]
+    path_test_true = os.path.join(lcots_directory,"test_"+ds_names[args.d]+"_"+lrm_names[args.m]+"_true"+".txt")
+    path_test_false = os.path.join(lcots_directory,"test_"+ds_names[args.d]+"_"+lrm_names[args.m]+"_false"+".txt")
+    print(path_train)
+    print(path_eval)
+    print(path_test_true)
+    print(path_test_false)
+    with open(path_train, "a+") as f:
+        if verbose:
+            print(f"Saving train LCoTs to file {path_train}.")
+        print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in train_samples]),file=f)
+    with open(path_eval, "a+") as f:
+        if verbose:
+            print(f"Saving eval LCoTs to file {path_eval}.")
+        print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in eval_samples]),file=f)
+
+    with open(path_test_true, "a+") as f:
+        if verbose:
+            print(f"Saving true test LCoTs in : {path_test_true}.")
+        print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in test_samples_true]),file=f)
+
+    with open(path_test_false, "a+") as f:
+        if verbose:
+            print(f"Saving false test LCoTs in : {path_test_false}.")
+        print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in test_samples_false]),file=f)
 
 
 """MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
