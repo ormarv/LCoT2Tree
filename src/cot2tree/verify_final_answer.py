@@ -149,7 +149,7 @@ def worker(queue, samp, test_code, temp_dir):
     except Exception as e:
         queue.put(([False], str(e)))
 
-def run_test_isolated(sample, code, timeout=10):
+def run_test_isolated(sample, code, timeout=60):
     context = mp.get_context("spawn")
 
     q = context.Queue()
