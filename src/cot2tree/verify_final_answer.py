@@ -12,6 +12,7 @@ from lcb_runner.utils.extraction_utils import extract_test_output_code
 import multiprocessing as mp
 import tempfile
 from hendryck_cleanup import *
+import os
 MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -139,7 +140,8 @@ def grade_math(answer:str, gold_standard:str):
 
 def worker(queue, samp, test_code):
     try:
-        with tempfile.TemporaryDirectory() as temp_dir:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as temp_dir:
+            os.chdir(temp_dir)
             results, metadata = run_test(samp, test=test_code)
             queue.put((results, metadata))
     except Exception as e:
