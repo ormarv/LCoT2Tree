@@ -286,8 +286,8 @@ if __name__ == '__main__':
     print(f"LCoTs are generated, the time is {str(datetime.datetime.now())}.")
     fin_lcots = get_labeled_lcots(lcots, answers, letters, cross_encoder, 0.7, verbose, args.d)
     train_samples, eval_samples, test_samples = split(fin_lcots)
-    test_samples_true = [sample for sample in test_samples if sample[1]==1]
-    test_samples_false = [sample for sample in test_samples if sample[1]==0]
+    test_samples_true = [sample for sample in test_samples if sample[1]=='1']
+    test_samples_false = [sample for sample in test_samples if sample[1]=='0']
     # We save those LCoTs and their labels for potential later use.
 
     if not os.path.isdir(lcots_directory):
