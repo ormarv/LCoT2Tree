@@ -141,29 +141,27 @@ def grade_math(answer:str, gold_standard:str):
     print(f"Gold: {gold_standard}")
     return equiv
 
-def worker(queue, samp, test_code):
-    _rmtree = shutil.rmtree
-    temp_dir = tempfile.mkdtemp()
+def worker(queue, samp, test_code, temp_dir):
     try:
         os.chdir(temp_dir)
         results, metadata = run_test(samp, test=test_code)
         queue.put((results, metadata))
     except Exception as e:
         queue.put(([False], str(e)))
-    finally:
-        _rmtree(temp_dir, ignore_errors=True)
 
 def run_test_isolated(sample, code, timeout=10):
     context = mp.get_context("spawn")
 
     q = context.Queue()
-    p = context.Process(target=worker, args=(q, sample, code))
+    temp_dir = tempfile.mkdtemp()
+    p = context.Process(target=worker, args=(q, sample, code, temp_dir))
     p.start()
     p.join(timeout=timeout)
 
     if p.is_alive():
         p.terminate()
         p.join()
+        shutil.rmtree(temp_dir, ignore_errors=True)
         return [False], {"error":"Timeout or Infinite Loop"}
     
     if not q.empty():
