@@ -11,6 +11,7 @@ from lcb_runner.evaluation.testing_util import run_test
 from lcb_runner.utils.extraction_utils import extract_test_output_code
 import multiprocessing as mp
 import tempfile
+from hendryck_cleanup import *
 MODEL_NAME = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
@@ -130,10 +131,11 @@ def grade_math(answer:str, gold_standard:str):
     result = parse(cleaned_answer, config)
     parsed_gold = parse(gold_standard, config)
     is_correct = verify(parsed_gold, result)
+    equiv = is_equiv(cleaned_answer, gold_standard)
     print(f"Answer: {cleaned_answer}")
     print(f"Result: {type(result)}")
     print(f"Gold: {gold_standard}")
-    return is_correct
+    return equiv
 
 def worker(queue, samp, test_code):
     try:
