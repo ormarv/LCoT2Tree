@@ -230,12 +230,12 @@ def get_labeled_lcots(lcots, golds, letters, cross_encoder, threshold:float, ver
         print(len(incorrect_data))
         #print(incorrect_data)
         #print(correct_data)
-    if len(correct_data)>1000:
+    if len(correct_data)>334:
         print("Ping!")
-        correct_data = correct_data[:1000]
-    if len(incorrect_data)>1000:
+        correct_data = correct_data[:334]
+    if len(incorrect_data)>334:
         print("Pong!")
-        incorrect_data = incorrect_data[:1000]
+        incorrect_data = incorrect_data[:334]
     balanced_results = correct_data + incorrect_data
     print(f"Balanced results: {balanced_results}")
     if not balanced_results:
@@ -272,7 +272,7 @@ if __name__ == '__main__':
     parser.add_argument("-i", type=int)
     verbose = True
     cross_encoder = "/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--cross-encoder--nli-deberta-v3-base/snapshots/6c749ce3425cd33b46d187e45b92bbf96ee12ec7/"
-    lcots_directory = "/linkhome/rech/genltc01/ugy38tw/.local/lcots"
+    lcots_directory = "/linkhome/rech/genltc01/ugy38tw/.local/lcots2"
     args = parser.parse_args()
     if args.d==0:
         dataset = load_MMLU_pro(seed=42, parent_dir=parent_dir)
