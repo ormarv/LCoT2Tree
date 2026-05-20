@@ -69,7 +69,7 @@ def get_explanations(explainer:Explainer, loader:DataLoader, dataset_name:str, m
     return subgraphs
 
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+"""device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print('Device', device)
 # create fake data and edge_index
 g = nx.DiGraph()
@@ -111,9 +111,9 @@ explainer = Explainer(
         explanation_type='model', 
         edge_mask_type='object', 
         model_config=dict(mode="multiclass_classification", task_level="graph", return_type="log_probs")
-    )
+    )"""
 
-get_explanations(explainer, loader)
+#get_explanations(explainer, loader)
 
 
 
