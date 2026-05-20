@@ -5,12 +5,12 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
-#SBATCH -C h100
-#SBATCH --gres=gpu:2
+#SBATCH -C v100
+#SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
 #SBATCH --time=02:00:00
-#SBATCH --account=rqn@h100
-#SBATCH --qos=qos_gpu_h100-dev
+#SBATCH --account=rqn@v100
+#SBATCH --qos=qos_gpu_v100-dev
 echo "Starting job on node: $(hostname)"
 echo "Job started at: $(date)"
 
@@ -34,5 +34,5 @@ chmod -R +x ../.local/lcots
 #srun src/cot2tree/gatv2.py
 #srun src/cot2tree/create_fake_lcots_files.py
 #srun src/cot2tree/main.py train test -L -D ~/.local/lcots -d ~/.local/graphs -G ~/.local/construction_log_file.txt -v -F nb_parents nb_children node_index distance_to_end nb_words_before nb_nodes_per_depth -M ../.local/model/trained_model.pth
-srun src/cot2tree/main.py train test -D ~/.local/lcots -d ~/.local/graphs -G ~/.local/construction_log_file.txt -v -F nb_parents nb_children node_index distance_to_end nb_words_before nb_nodes_per_depth -M ../.local/model/trained_model.pth
+srun src/cot2tree/main.py train test -L -D ~/.local/lcots -d ~/.local/graphs -G ~/.local/construction_log_file.txt -v -F nb_parents nb_children node_index distance_to_end nb_words_before nb_nodes_per_depth -M ../.local/model/trained_model.pth
 echo "Job ended at: $(date)"

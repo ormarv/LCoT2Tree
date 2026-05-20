@@ -11,6 +11,7 @@ from split_lcot import build_graph_from_chain
 from gatv2 import build_features, train, test, build_dataloader
 from torch_geometric.explain import Explainer, GNNExplainer, GraphMaskExplainer, PGExplainer, AttentionExplainer
 from toy_explainer import get_explanations
+from tqdm import tqdm
 # This file aggregates all the functions from the other files
 # It is the one that collects all the parameters from the user
 
@@ -167,8 +168,8 @@ if "train" in actions:
         print(f"Length of each lcot: {[len(lcot) for lcot in train_lcots]}")
         eval_lcots = [lcot for lcot, _ in eval_samples]
         logfile = open(args.graph_construction_logfile, "w+")
-        train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=logfile, wanted_features=wanted_features) for lcot in train_lcots]
-        eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=logfile, wanted_features=wanted_features) for lcot in eval_lcots]
+        train_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=logfile, wanted_features=wanted_features) for lcot in tqdm(train_lcots)]
+        eval_graphs_features = [build_graph_from_chain(lcot=lcot, nb_keywords=args.nb_keywords, max_path_length_for_nli=args.max_context_nli, logfile=logfile, wanted_features=wanted_features) for lcot in tqdm(eval_lcots)]
         logfile.close()
         # These two lines might cause trouble, I am not sure about the way this zip unfolds.
         train_graphs_with_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=wanted_features), eval(label)) for (graph,features),(_, label) in zip(train_graphs_features,train_samples)]
