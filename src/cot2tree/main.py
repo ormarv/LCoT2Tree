@@ -13,6 +13,7 @@ from torch_geometric.explain import Explainer, GNNExplainer, GraphMaskExplainer,
 from toy_explainer import get_explanations
 from tqdm import tqdm
 from readlog import readlog
+import sys
 # This file aggregates all the functions from the other files
 # It is the one that collects all the parameters from the user
 
@@ -45,7 +46,7 @@ parser.add_argument("-w", "--nb-keywords", type=int, default=8, help="The number
 parser.add_argument("-o", "--out-channels", type=int, default=2, help="The output dimension of the graph model.")
 parser.add_argument("-H", "--hidden-channels", type=int, default=64, help="The hidden dimension of the graph model.")
 parser.add_argument("-M", "--trained-model-path",type=str, help="The path to the file containing the model to use, either for training or to continue training from a checkpoint.")
-
+print(f"DEBUG RAW ARGV: {sys.argv}")
 args = parser.parse_args()
 actions = args.actions
 verbose = args.verbose
