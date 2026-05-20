@@ -28,11 +28,12 @@ def split_file(file_path:str,n:int):
 directory = "../.local/lcots2/"
 files = os.listdir(directory)
 for file in files:
-    if "test" in file:
-        n = 5
-    elif "train" in file:
-        n = 50
-    else:
-        n = 20
-    print(f"File: {file}, n: {n}")
-    split_file(file_path=os.path.join(directory,file), n=n)
+    if file.endswith(".txt"):
+        if "test" in file:
+            n = 5
+        elif "train" in file:
+            n = 50
+        else:
+            n = 20
+        print(f"File: {file}, n: {n}")
+        split_file(file_path=os.path.join(directory,file), n=n)
