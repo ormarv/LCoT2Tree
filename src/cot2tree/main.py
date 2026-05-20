@@ -12,6 +12,7 @@ from gatv2 import build_features, train, test, build_dataloader
 from torch_geometric.explain import Explainer, GNNExplainer, GraphMaskExplainer, PGExplainer, AttentionExplainer
 from toy_explainer import get_explanations
 from tqdm import tqdm
+from readlog import readlog
 # This file aggregates all the functions from the other files
 # It is the one that collects all the parameters from the user
 
@@ -93,19 +94,16 @@ if "train" in actions:
                     print(f"File name: {path}")
                     contents = f.read()
                     if "train" in file:
-                        print(f"len(contents): {len(contents)}")
-                        len_split = len(contents.split("############"))
-                        print(f"len(contents.split(############)):{len_split}")
-                        x = len(contents.split("############")[0].split("&&&&&&&&&&&&"))
-                        print(f"len(contents.split(############)[0].split(&&&&&&&&&&&&)):{x}")
                         if verbose:
                             print(f"Loading train LCoTs from file {path}.")
-                        train_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
+                        #train_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
+                        train_samples = readlog(contents=contents)
                         print(f"len(train_samples): {len(train_samples)}")
                     if "eval" in file:
                         if verbose:
                             print(f"Loading eval LCoTs from file {path}.")
-                        eval_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
+                        eval_samples = readlog(contents=contents)
+                        #eval_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
         else:
             if verbose:
                 print("No existing graphs or LCoTs given, using default.")
