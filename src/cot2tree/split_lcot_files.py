@@ -41,7 +41,9 @@ def read_one_file_and_make_graphs(file_path:str, graph_directory:str):
     lcots = [lcot for lcot,_ in samples]
     features = ['nb_parents', 'nb_children', 'node_index', 'distance_to_end', 'nb_words_before', 'nb_nodes_per_depth']
     wanted_features = {feature:i for i, feature in enumerate(features)}
-    graphs =  [build_graph_from_chain(lcot=lcot, nb_keywords=8, max_path_length_for_nli=None, logfile="../.local/construction_log_file.txt", wanted_features=wanted_features) for lcot in tqdm(lcots)]
+    logfile = open("../.local/construction_log_file.txt","a+")
+    graphs =  [build_graph_from_chain(lcot=lcot, nb_keywords=8, max_path_length_for_nli=None, logfile=logfile, wanted_features=wanted_features) for lcot in tqdm(lcots)]
+    logfile.close()
     graphs_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=features), eval(label)) for (graph,features),(_, label) in tqdm(zip(graphs,samples))]
     print(f"LCoTs from: {file_path}, printing graphs in {graph_filename}.")
     with open(graph_filename, "w+") as g:
