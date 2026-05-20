@@ -6,6 +6,7 @@ def split_file(file_path:str,n:int):
         contents = f.read()
         samples = readlog(contents=contents)
         total_length = len(samples)
+        print(f"Total: {total_length}")
         q = total_length//n
         print(f"Quotient: {q}")
         r = total_length - q * n
