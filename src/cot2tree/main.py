@@ -5,7 +5,7 @@ import networkx as nx
 import os
 import json
 import torch
-from get_questions import load_MMLU, get_lcots, get_labeled_lcots, load_GPQA, load_live_code_bench, load_MATH, load_MMLU_pro, split
+#from get_questions import load_MMLU, get_lcots, get_labeled_lcots, load_GPQA, load_live_code_bench, load_MATH, load_MMLU_pro, split
 from language_models import *
 from split_lcot import build_graph_from_chain
 from gatv2 import build_features, train, test, build_dataloader
