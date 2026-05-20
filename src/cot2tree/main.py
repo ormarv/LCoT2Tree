@@ -92,6 +92,9 @@ if "train" in actions:
                 with open(path, "r") as f:
                     contents = f.read()
                     print(f"len(contents): {len(contents)}")
+                    len_split = len(contents.split("############"))
+                    print(f"len(contents.split(############)):{len_split}")
+                    print(contents.split("############")[0])
                     if "train" in file:
                         if verbose:
                             print(f"Loading train LCoTs from file {path}.")
