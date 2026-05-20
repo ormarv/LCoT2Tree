@@ -1,10 +1,15 @@
+from vllm import LLM, SamplingParams
+from typing import Tuple, List
 import torch
 import torch.nn.functional as F
 import numpy as np
+import os
+from datasets import load_dataset
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoModel
 from typing import List
 from scipy.stats import entropy
 from itertools import combinations, chain
+import json
 def run_skywork(model, tokenizer, prompt, responses, device):
     conversations = [[{"role":"user", "content":prompt},{"role":"assistant","content":response}] for response in responses]
     tokenized_convs = [tokenizer.apply_chat_template(conv, tokenize=True, return_tensors="pt").to(device) for conv in conversations]
@@ -123,3 +128,34 @@ def laconic(answers:List, lengths:List[int]):
 
 def tokenize_and_measure(answers:List[str], tokenizer):
     return [len(tokenizer(answer)) for answer in answers]
+
+def load_MATH_500(parent_dir:str)->List[Tuple[str,str]]:
+    dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--simplescaling--openaimath/"))
+    #print(dataset)
+    main = dataset["test"]
+    print(main[0])
+    samples = [(sample['problem'], sample["answer"])for sample in main]
+    return samples
+
+def load_LCB_v6(parent_dir:str)->List[Tuple[str,str]]:
+    dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--drproduck--livecodebench-v6/"))
+    ds = dataset["train"]+dataset["test"]
+    public_test_cases = ds["public_test_cases"]
+    metadata = json.loads(ds["metadata"])
+    fn_name = None
+    if "func_name" in metadata and metadata["func_name"]!="null":
+        fn_name = metadata["func_name"]
+    inputs = []
+    outputs = []
+    for x in public_test_cases:
+        inputs.append(x["input"])
+        outputs.append(x["output"])
+    print(ds[0]["starter_code"])
+    samples = [(sample['question_content'], {'input_output':json.dumps({'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name})}) for sample in ds]
+    return samples
+
+parent_dir = "/".join(os.getcwd().split("/")[:-1])
+math_500 = load_MATH_500(parent_dir)
+print(math_500[0])
+lcb = load_LCB_v6(parent_dir)
+print(lcb[0])
