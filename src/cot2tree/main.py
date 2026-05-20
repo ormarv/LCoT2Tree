@@ -90,12 +90,14 @@ if "train" in actions:
             for file in files:
                 path = os.path.join(args.lcots_directory, file)
                 with open(path, "r") as f:
+                    print(f"File name: {path}")
                     contents = f.read()
-                    print(f"len(contents): {len(contents)}")
-                    len_split = len(contents.split("############"))
-                    print(f"len(contents.split(############)):{len_split}")
-                    print(contents.split("############")[0])
                     if "train" in file:
+                        print(f"len(contents): {len(contents)}")
+                        len_split = len(contents.split("############"))
+                        print(f"len(contents.split(############)):{len_split}")
+                        x = len(contents.split("############")[0].split("&&&&&&&&&&&&"))
+                        print(f"len(contents.split(############)[0].split(&&&&&&&&&&&&)):{x}")
                         if verbose:
                             print(f"Loading train LCoTs from file {path}.")
                         train_samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
