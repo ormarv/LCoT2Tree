@@ -4,12 +4,13 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 import os
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, AutoModel
 from typing import List
 from scipy.stats import entropy
 from itertools import combinations, chain
 import json
+from tqdm import tqdm
 def run_skywork(model, tokenizer, prompt, responses, device):
     conversations = [[{"role":"user", "content":prompt},{"role":"assistant","content":response}] for response in responses]
     tokenized_convs = [tokenizer.apply_chat_template(conv, tokenize=True, return_tensors="pt").to(device) for conv in conversations]
@@ -137,22 +138,46 @@ def load_MATH_500(parent_dir:str)->List[Tuple[str,str]]:
     samples = [(sample['problem'], sample["answer"])for sample in main]
     return samples
 
+def _load_lcb_split(dataset:Dataset):
+    samples = []
+    for sample in dataset:
+        public_test_cases = sample["public_test_cases"]
+        metadata = json.loads(sample["metadata"])
+        fn_name = None
+        if "func_name" in metadata and metadata["func_name"]!="null":
+            fn_name = metadata["func_name"]
+        inputs = []
+        outputs = []
+        for x in public_test_cases:
+            inputs.append(x["input"])
+            outputs.append(x["output"])
+        samples.append((sample['question_content'], {'input_output':json.dumps({'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name})}))
+    return samples
+
 def load_LCB_v6(parent_dir:str)->List[Tuple[str,str]]:
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--drproduck--livecodebench-v6/"))
-    ds = dataset["train"]+dataset["test"]
-    public_test_cases = ds["public_test_cases"]
-    metadata = json.loads(ds["metadata"])
-    fn_name = None
-    if "func_name" in metadata and metadata["func_name"]!="null":
-        fn_name = metadata["func_name"]
-    inputs = []
-    outputs = []
-    for x in public_test_cases:
-        inputs.append(x["input"])
-        outputs.append(x["output"])
-    print(ds[0]["starter_code"])
-    samples = [(sample['question_content'], {'input_output':json.dumps({'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name})}) for sample in ds]
+    ds1 = dataset["train"]
+    ds2 = dataset["test"]
+    s1 = _load_lcb_split(ds1)
+    s2 = _load_lcb_split(ds2)
+    samples = s1 + s2
+    print(samples[0])
     return samples
+
+def test_baselines(dataset_n:int, lrm_n:int, N:int, parent_dir:str):
+    if dataset_n==0:
+        samples = load_LCB_v6(parent_dir)
+    else:
+        samples = load_MATH_500(parent_dir)
+    if lrm_n==0:
+        pass  # llama
+    elif lrm_n==1:
+        pass   # qwen
+    else:
+        pass  # qwq
+    for sample in tqdm(samples):
+        multi_sample = [sample]*N
+
 
 parent_dir = "/".join(os.getcwd().split("/")[:-1])
 math_500 = load_MATH_500(parent_dir)
