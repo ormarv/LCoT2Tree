@@ -1,5 +1,9 @@
 from readlog import readlog
 import os
+from tqdm import tqdm
+from split_lcot import build_graph_from_chain
+from gatv2 import build_features
+import networkx as nx
 
 def split_file(file_path:str,n:int):
     with open(file_path, "r") as f:
@@ -26,15 +30,25 @@ def split_file(file_path:str,n:int):
             with open(os.path.join("../.local/split_lcots/",core_path+f"_{n+1}.txt"), "w+") as h:
                 print("############".join([lcot+"&&&&&&&&&&&&"+str(int(label)) for lcot, label in last_samples]),file=h)
 
-directory = "../.local/lcots2/"
+def read_one_file_and_make_graphs(file_path:str, graph_directory:str):
+    filename = os.path.basename(file_path)
+    graph_filename = os.path.join(graph_directory,filename)
+    with open(file_path,"r") as f:
+        contents = f.read()
+        samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
+    lcots = [lcot for lcot,_ in samples]
+    features = ['nb_parents', 'nb_children', 'node_index', 'distance_to_end', 'nb_words_before', 'nb_nodes_per_depth']
+    graphs =  [build_graph_from_chain(lcot=lcot, nb_keywords=8, max_path_length_for_nli=None, logfile="../.local/construction_log_file.txt", wanted_features=features) for lcot in tqdm(lcots)]
+    graphs_full_features = [(graph, build_features(graph=graph, all_features=features, wanted_features=features), eval(label)) for (graph,features),(_, label) in zip(graphs,samples)]
+    print(f"LCoTs from: {file_path}, printing graphs in {graph_filename}.")
+    with open(graph_filename, "w+") as g:
+        print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in graphs_full_features]),file=g)
+
+
+directory = "../.local/split_lcots/"
+
+graph_directory = "../.local/graphs/"
 files = os.listdir(directory)
 for file in files:
-    if file.endswith(".txt"):
-        if "test" in file:
-            n = 5
-        elif "train" in file:
-            n = 50
-        else:
-            n = 20
-        print(f"File: {file}, n: {n}")
-        split_file(file_path=os.path.join(directory,file), n=n)
+    if file.endswith(".txt") and "eval_10" in file:
+        read_one_file_and_make_graphs(file_path=os.path.join(directory, file), graph_directory=graph_directory)
