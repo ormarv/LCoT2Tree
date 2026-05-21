@@ -68,4 +68,4 @@ for file in files:
         else:
             n = 40
         print(f"File: {file}, n: {n}")
-        split_file(file_path=file, n=n)
+        split_file(file_path=os.path.join(directory,file), n=n)
