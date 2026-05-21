@@ -23,16 +23,16 @@ def _load_lcb_split(dataset:Dataset):
         outputs = []
         ptc = json.loads(public_test_cases)
         for x in ptc:
-            print("TYPE:", type(x), "VALUE:", repr(x))
+            """print("TYPE:", type(x), "VALUE:", repr(x))
             try:
                 print(f"x: {x}")
                 y = json.loads(x)
                 print(f"y: {y}")
             except Exception as e:
                 print(f"Handled exception {e}, ignoring malformed sample.")
-                continue
-            inputs.append(y["input"])
-            outputs.append(y["output"])
+                continue"""
+            inputs.append(x["input"])
+            outputs.append(x["output"])
         samples.append((sample['question_content'], {'input_output':json.dumps({'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name})}))
     return samples
 
