@@ -49,11 +49,22 @@ def read_one_file_and_make_graphs(file_path:str, graph_directory:str):
     with open(graph_filename, "w+") as g:
         print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in graphs_full_features]),file=g)
 
-parser = ArgumentParser()
+"""parser = ArgumentParser()
 parser.add_argument("-f", type=str)
 directory = "../.local/split_lcots/"
 args = parser.parse_args()
 graph_directory = "../.local/graphs/"
 file = args.f
-#os.path.join(directory, file)
-read_one_file_and_make_graphs(file_path=file, graph_directory=graph_directory)
+read_one_file_and_make_graphs(file_path=os.path.join(directory, file), graph_directory=graph_directory)"""
+
+directory = "../.local/lcots2/"
+files = os.listdir(directory)
+for file in files:
+    if file.endswith(".txt"):
+        if "test" in file:
+            n = 10
+        elif "train" in file:
+            n = 100
+        else:
+            n = 40
+        print(f"File: {file}, n: {n}")
