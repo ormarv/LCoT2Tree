@@ -35,9 +35,15 @@ def split_file(file_path:str,n:int):
 def read_one_file_and_make_graphs(file_path:str, graph_directory:str):
     filename = os.path.basename(file_path)
     graph_filename = os.path.join(graph_directory,filename)
+    samples = []
     with open(file_path,"r") as f:
         contents = f.read()
-        samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
+        #samples = [(iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]) for iteration in contents.split("############")]
+        for iteration in contents.split("############"):
+            print(f"<sample>{iteration}</sample>")
+            l = len(iteration.split("&&&&&&&&&&&&")[0])
+            print(f"length of lcot: {l}")
+            samples.append((iteration.split("&&&&&&&&&&&&")[0], iteration.split("&&&&&&&&&&&&")[1]))
     lcots = [lcot for lcot,_ in samples]
     feature_names = ['nb_parents', 'nb_children', 'node_index', 'distance_to_end', 'nb_words_before', 'nb_nodes_per_depth']
     wanted_features = {feature:i for i, feature in enumerate(feature_names)}
@@ -53,7 +59,7 @@ parser = ArgumentParser()
 parser.add_argument("-f", type=str)
 directory = "../.local/split_lcots/"
 args = parser.parse_args()
-graph_directory = "../.local/graphs/"
+graph_directory = "../"
 file = args.f
 read_one_file_and_make_graphs(file_path=os.path.join(directory, file), graph_directory=graph_directory)
 
