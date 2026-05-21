@@ -23,7 +23,11 @@ def _load_lcb_split(dataset:Dataset):
         outputs = []
         for x in public_test_cases:
             print("TYPE:", type(x), "VALUE:", repr(x))
-            y = json.loads(x)
+            try:
+                y = json.loads(x)
+            except Exception as e:
+                print(f"Handled exception {e}, ignoring malformed sample.")
+                continue
             inputs.append(y["input"])
             outputs.append(y["output"])
         samples.append((sample['question_content'], {'input_output':json.dumps({'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name})}))
