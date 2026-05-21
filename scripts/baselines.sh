@@ -2,10 +2,12 @@
 #SBATCH --job-name=baselines
 #SBATCH --output=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/cpp/%x_%j_%a.out
 #SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/cpp/%x_%j_%a.err
-#SBATCH --nodes=23
+#SBATCH --nodes=1
+#SBATCH --array=23
 #SBATCH --ntasks-per-node=1
 #SBATCH -C h100
 #SBATCH --cpus-per-task=32
+#SBATCH --gres=gpu:4
 #SBATCH --hint=nomultithread
 #SBATCH --time=2:00:00
 #SBATCH --account=rqn@h100
