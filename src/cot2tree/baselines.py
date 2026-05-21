@@ -29,7 +29,7 @@ def run_skywork(model, tokenizer, prompt, responses, device):
     return scores
 
 def init_skywork(device):
-    model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Skywork--Skywork-Reward-Gemma-2-27B-v0.2/"
+    model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Skywork--Skywork-Reward-Gemma-2-27B-v0.2/snapshots/a92f2ec997c806de469ff287ef3b71982e886fc2/"
     rm = AutoModelForSequenceClassification.from_pretrained(
         model_name,
         torch_dtype=torch.bfloat16,
@@ -41,7 +41,7 @@ def init_skywork(device):
     return rm, rm_tokenizer
 
 def init_qwen_prm(device):
-    model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--Qwen2.5-Math-PRM-72B/"
+    model_name = "/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--Qwen2.5-Math-PRM-72B/snapshots/9df429b02adb5f764cd6e30e76a0cca16d501ae1/"
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
     model = AutoModel.from_pretrained(
         model_name, 
