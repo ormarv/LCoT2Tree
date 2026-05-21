@@ -21,7 +21,8 @@ def _load_lcb_split(dataset:Dataset):
             fn_name = metadata["func_name"]
         inputs = []
         outputs = []
-        for x in public_test_cases:
+        ptc = json.loads(public_test_cases)
+        for x in ptc:
             print("TYPE:", type(x), "VALUE:", repr(x))
             try:
                 print(f"x: {x}")
