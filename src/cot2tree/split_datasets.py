@@ -31,8 +31,12 @@ def _load_lcb_split(dataset:Dataset):
             except Exception as e:
                 print(f"Handled exception {e}, ignoring malformed sample.")
                 continue"""
-            inputs.append(x["input"])
-            outputs.append(x["output"])
+            if len(x)>0:
+                inputs.append(x["input"])
+                outputs.append(x["output"])
+            else:
+                print(f"Empty x: {x}")
+                continue
         samples.append((sample['question_content'], {'input_output':json.dumps({'inputs':inputs, 'outputs':outputs, 'fn_name':fn_name})}))
     return samples
 
@@ -71,8 +75,8 @@ def retrieve_split_dataset_samples(file_path:str):
     return samples
 
 pwd = "/".join(os.getcwd().split("/")[:-1])
-#samples_math = load_MATH_500(pwd)
-samples_lcb = load_LCB_v6(pwd)
+samples_math = load_MATH_500(pwd)
+#samples_lcb = load_LCB_v6(pwd)
 output_dir = "../.local/split_datasets"
-#split_and_save_dataset(samples_math, output_dir, "math")
-split_and_save_dataset(samples_lcb, output_dir, "lcb")
+split_and_save_dataset(samples_math, output_dir, "math")
+#split_and_save_dataset(samples_lcb, output_dir, "lcb")
