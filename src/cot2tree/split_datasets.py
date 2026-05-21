@@ -74,9 +74,13 @@ def retrieve_split_dataset_samples(file_path:str):
                 samples.append((data["query"], data["gold"]))
     return samples
 
-pwd = "/".join(os.getcwd().split("/")[:-1])
-samples_math = load_MATH_500(pwd)
+#pwd = "/".join(os.getcwd().split("/")[:-1])
+#samples_math = load_MATH_500(pwd)
 #samples_lcb = load_LCB_v6(pwd)
-output_dir = "../.local/split_datasets"
-split_and_save_dataset(samples_math, output_dir, "math")
+#output_dir = "../.local/split_datasets"
+#split_and_save_dataset(samples_math, output_dir, "math")
 #split_and_save_dataset(samples_lcb, output_dir, "lcb")
+
+samples = retrieve_split_dataset_samples("../.local/split_datasets/math_0.jsonl")
+print(samples[0])
+print(len(samples))
