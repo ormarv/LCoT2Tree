@@ -55,12 +55,13 @@ def read_one_file_and_make_graphs(file_path:str, graph_directory:str):
     with open(graph_filename, "w+") as g:
         print("############".join([str(nx.to_dict_of_dicts(graph))+"&&&&&&&&&&&&"+str(features.tolist())+"&&&&&&&&&&&&"+str(label) for graph, features, label in graphs_full_features]),file=g)
 
-parser = ArgumentParser()
-parser.add_argument("-f", type=str)
+#parser = ArgumentParser()
+#parser.add_argument("-f", type=str)
 directory = "../.local/split_lcots/"
-args = parser.parse_args()
+#args = parser.parse_args()
 graph_directory = "../"
-file = args.f
+#file = args.f
+file = "eval_29.txt"
 read_one_file_and_make_graphs(file_path=os.path.join(directory, file), graph_directory=graph_directory)
 
 """directory = "../.local/lcots2/"
