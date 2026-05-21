@@ -33,6 +33,6 @@ echo "Extracted Map ID: $ID"
 echo "Processing File: $FILE"
 chmod +x src/cot2tree/split_lcot_files.py
 #srun src/cot2tree/split_lcot_files.py -f $FILE
-srun src/cot2tree/split_lcot_files.py -f "../../LCoT2Tree/src/cot2tree/lcots.txt"
+srun src/cot2tree/split_lcot_files.py -f "src/cot2tree/lcots.txt"
 
 echo "Job ended at: $(date)"

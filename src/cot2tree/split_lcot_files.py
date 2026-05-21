@@ -55,4 +55,5 @@ directory = "../.local/split_lcots/"
 args = parser.parse_args()
 graph_directory = "../.local/graphs/"
 file = args.f
-read_one_file_and_make_graphs(file_path=os.path.join(directory, file), graph_directory=graph_directory)
+#os.path.join(directory, file)
+read_one_file_and_make_graphs(file_path=file, graph_directory=graph_directory)
