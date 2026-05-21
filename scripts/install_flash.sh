@@ -1,3 +1,15 @@
+#!/bin/bash
+#SBATCH --job-name=install_flash
+#SBATCH --output=/lustre/fswork/projects/rech/rqn/ugy38tw/install_%x.out
+#SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/install_%x.err
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH -C v100
+#SBATCH --cpus-per-task=32
+#SBATCH --gres=gpu:1
+#SBATCH --hint=nomultithread
+#SBATCH --time=00:10:00
+#SBATCH --account=rqn@v100
 # 1. Load Jean Zay's CUDA toolkit modules to provide 'nvcc'
 module load cuda/12.1.1 gcc/11.3.0
 
