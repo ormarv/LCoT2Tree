@@ -24,7 +24,9 @@ def _load_lcb_split(dataset:Dataset):
         for x in public_test_cases:
             print("TYPE:", type(x), "VALUE:", repr(x))
             try:
+                print(f"x: {x}")
                 y = json.loads(x)
+                print(f"y: {y}")
             except Exception as e:
                 print(f"Handled exception {e}, ignoring malformed sample.")
                 continue
