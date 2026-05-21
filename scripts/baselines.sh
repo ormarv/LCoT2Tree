@@ -4,6 +4,7 @@
 #SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/cpp/%x_%j_%a.err
 #SBATCH --nodes=23
 #SBATCH --ntasks-per-node=1
+#SBATCH -C h100
 #SBATCH --cpus-per-task=32
 #SBATCH --hint=nomultithread
 #SBATCH --time=2:00:00
