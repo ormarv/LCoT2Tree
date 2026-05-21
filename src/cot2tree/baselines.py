@@ -1,3 +1,4 @@
+#!/bin/env python3
 from vllm import LLM, SamplingParams
 from typing import Tuple, List,  Dict
 import torch
