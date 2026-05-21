@@ -22,6 +22,7 @@ def _load_lcb_split(dataset:Dataset):
         inputs = []
         outputs = []
         for x in public_test_cases:
+            print("TYPE:", type(x), "VALUE:", repr(x))
             y = json.loads(x)
             inputs.append(y["input"])
             outputs.append(y["output"])
@@ -63,8 +64,8 @@ def retrieve_split_dataset_samples(file_path:str):
     return samples
 
 pwd = "/".join(os.getcwd().split("/")[:-1])
-samples_math = load_MATH_500(pwd)
+#samples_math = load_MATH_500(pwd)
 samples_lcb = load_LCB_v6(pwd)
 output_dir = "../.local/split_datasets"
-split_and_save_dataset(samples_math, output_dir, "math")
+#split_and_save_dataset(samples_math, output_dir, "math")
 split_and_save_dataset(samples_lcb, output_dir, "lcb")
