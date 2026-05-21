@@ -4,21 +4,25 @@
 #SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/install_%x.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH -C v100
+#SBATCH -C h100
 #SBATCH --cpus-per-task=32
 #SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
 #SBATCH --time=00:10:00
-#SBATCH --account=rqn@v100
-# 1. Load Jean Zay's CUDA toolkit modules to provide 'nvcc'
+#SBATCH --account=rqn@h100
+# 1. Ensure you are on an H100 node
+module purge
+module load arch/h100
 module load cuda/12.1.1 gcc/11.3.0
+module load miniforge/24.9.0
 
-# 2. Tell the builder where CUDA lives and force the target architecture
+# 2. Activate your env
+conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
+
+# 3. CRITICAL: Set these variables so the compiler knows what to do
 export CUDA_HOME=$CUDA_DIR
-export TORCH_CUDA_ARCH_LIST="8.0;8.6;9.0"
+export TORCH_CUDA_ARCH_LIST="8.0;9.0" 
 
-# 3. Double check that nvcc is active now (it should return a path)
-which nvcc
-
-# 4. Install using the correct Python 3.10 wheel directly with no isolation
-pip install "flash_attn @ https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.3/flash_attn-2.8.3+cu130torch2.12cxx11abiTRUE-cp310-cp310-linux_x86_64.whl" --no-build-isolation
+# 4. Use the '--no-build-isolation' flag with the actual repository
+# This forces it to compile for your SPECIFIC machine using your version of PyTorch
+pip install flash-attn --no-build-isolation --no-cache-dir
