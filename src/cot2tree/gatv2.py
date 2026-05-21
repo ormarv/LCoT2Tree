@@ -51,12 +51,14 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
         for i in range(len(all_features)):
             all_features[i][wanted_features['nb_children']] = float(len(dict_graph[i]))
     if 'nb_nodes_per_depth' in wanted_features:
+        print("nb_nodes_per_depth is present.")
         node_to_depth = {0:0}
         depth_to_node = {0:[0]}
         parents = [0]
         while(len(parents))>0:
             parent = parents.pop(0)
             children = dict_graph[parent]
+            print(f"children: {children}")
             for child in children:
                 if child not in node_to_depth:
                     node_to_depth[child] = node_to_depth[parent] + 1
@@ -65,7 +67,7 @@ def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_feat
                     depth_to_node[node_to_depth[parent] + 1].append(child)
                 if child not in parents:
                     parents.append(child)
-        nb_nodes_per_depth = {key:sum(value) for key, value in depth_to_node.items()}
+        nb_nodes_per_depth = {key:len(value) for key, value in depth_to_node.items()}
         for i in range(len(all_features)):
             node_depth = node_to_depth[i]
             all_features[i][wanted_features['nb_nodes_per_depth']] = float(nb_nodes_per_depth[node_depth])

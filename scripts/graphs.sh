@@ -9,7 +9,7 @@
 #SBATCH -C v100
 #SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
-#SBATCH --time=16:00:00
+#SBATCH --time=00:30:00
 #SBATCH --account=rqn@v100
 
 echo "Starting job on node: $(hostname)"
@@ -32,6 +32,7 @@ echo "Running Task ID $SLURM_ARRAY_TASK_ID"
 echo "Extracted Map ID: $ID"
 echo "Processing File: $FILE"
 chmod +x src/cot2tree/split_lcot_files.py
-srun src/cot2tree/split_lcot_files.py -f $FILE
+#srun src/cot2tree/split_lcot_files.py -f $FILE
+srun src/cot2tree/split_lcot_files.py -f "src/cot2tree/lcots.txt"
 
 echo "Job ended at: $(date)"
