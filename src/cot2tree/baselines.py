@@ -16,6 +16,7 @@ import shutil
 from lcb_runner.evaluation.testing_util import run_test
 from lcb_runner.utils.extraction_utils import extract_test_output_code
 import tempfile
+from argparse import ArgumentParser
 from hendryck_cleanup import *
 def run_skywork(model, tokenizer, prompt, responses, device):
     conversations = [[{"role":"user", "content":prompt},{"role":"assistant","content":response}] for response in responses]
@@ -51,40 +52,62 @@ def init_qwen_prm(device):
 
 def make_step_rewards(logits, token_masks):
     probabilities = F.softmax(logits, dim=-1)
-    probabilities = probabilities * token_masks.unsqueeze(-1) # bs, seq_len, num_labels
+    probabilities = probabilities * token_masks.unsqueeze(-1) 
     
     all_scores_res = []
     for i in range(probabilities.size(0)):
-        sample = probabilities[i] # seq_len, num_labels
-        positive_probs = sample[sample != 0].view(-1, 2)[:, 1] # valid_tokens, num_labels
-        non_zero_elements_list = positive_probs.cpu().tolist()
+        sample = probabilities[i] 
+        mask = token_masks[i]
+        valid_probs = sample[mask] 
+        
+        if valid_probs.numel() > 0:
+            positive_probs = valid_probs[:, 1]
+            non_zero_elements_list = positive_probs.cpu().tolist()
+        else:
+            non_zero_elements_list = []
+            
         all_scores_res.append(non_zero_elements_list)
+        
     return all_scores_res
 
 
-def run_qwen_prm(model, tokenizer, prompt, reponses, device):
-    system_prompt = "Please reason step by step, and put your final answer within \\boxed{}."
-    messages = [
-        {"role":"system", "content":system_prompt},
-        {"role":"user", "content":prompt},
-        {"role":"assistant", "content":"<extra_0>".join(reponses)+"<extra_0>"}
-    ]
-    conversation_str = tokenizer.apply_chat_template(
-    messages, 
-    tokenize=False, 
-    add_generation_prompt=False
-    )
+def run_qwen_prm(model, tokenizer, prompt, responses, device):
+    all_scores = []
+    for response in responses:
+        split_response = [step.strip() for step in response.split("\n\n")]
+        if not split_response:
+            print("No split response!")
+            split_response = [""]
+        system_prompt = "Please reason step by step, and put your final answer within \\boxed{}."
+        messages = [
+            {"role":"system", "content":system_prompt},
+            {"role":"user", "content":prompt},
+            {"role":"assistant", "content":"<extra_0>".join(split_response)+"<extra_0>"}
+        ]
+        conversation_str = tokenizer.apply_chat_template(
+        messages, 
+        tokenize=False, 
+        add_generation_prompt=False
+        )
 
-    input_ids = tokenizer.encode(
-        conversation_str, 
-        return_tensors="pt", 
-    ).to(model.device)
+        input_ids = tokenizer.encode(
+            conversation_str, 
+            return_tensors="pt", 
+        ).to(model.device)
 
-    outputs = model(input_ids=input_ids)
-    step_sep_id = tokenizer.encode("<extra_0>")[0]
-    token_masks = (input_ids == step_sep_id)
-    scores = make_step_rewards(outputs[0], token_masks)[0]
-    return scores
+        with torch.no_grad():
+            outputs = model(input_ids=input_ids)
+        step_sep_id = tokenizer.encode("<extra_0>")[0]
+        token_masks = (input_ids == step_sep_id)
+        extracted_rewards = make_step_rewards(outputs[0], token_masks)
+        print(f"Extracted rewards: {extracted_rewards}")
+        if extracted_rewards and len(extracted_rewards[0]) > 0:
+            score = extracted_rewards[0][-1]
+        else:
+            print("Scoring problem.")
+            score = 0.0
+        all_scores.append(score)
+    return all_scores
 
 def get_best(scores):
     ind_max = np.argmax(np.array(scores))
@@ -103,7 +126,7 @@ def weighted_majority_voting(answers, scores):
     added_scores = {}
     for answer, score in zip(answers, scores):
         if answer not in added_scores:
-            added_scores[answer]
+            added_scores[answer] = 0
         added_scores[answer] += score
     max_answer = max(added_scores, key=added_scores.get)
     return max_answer
@@ -270,11 +293,19 @@ def grade_answers(answers:List[str], gold_standard:List[str|Dict], dataset_n:int
         labels = [grade_math(answer, gold) for answer, gold in zip(answers, gold_standard)]
     return labels
 
-def test_baselines(dataset_n:int, lrm_n:int, N:int, parent_dir:str, width:int, nb_groups:int, nb_selected_groups:int):
-    if dataset_n==0:
-        samples = load_LCB_v6(parent_dir)
-    else:
-        samples = load_MATH_500(parent_dir)
+def retrieve_split_dataset_samples(file_path:str):
+    samples = []
+    with open(file_path, 'r') as f:
+        for line in f:
+            if line.strip():
+                data = json.loads(line)
+                samples.append((data["query"], data["gold"]))
+    return samples
+
+def test_baselines(dataset_n:int, lrm_n:int, N:int, filepath:str, split:int):
+    ds_names = ["lcb","math"]
+    lrm_names = ["llama", "qwen", "qwq"]
+    samples = retrieve_split_dataset_samples(filepath)
     if lrm_n==0:
         model, params, tokenizer, max_model_len = initialize_model_with_vLLM("/linkhome/rech/genltc01/ugy38tw/.cache/huggingface/hub/models--deepseek-ai--DeepSeek-R1-Distill-Llama-70B/snapshots/b1c0b44b4369b597ad119a196caf79a9c40e141e")
     elif lrm_n==1:
@@ -284,22 +315,25 @@ def test_baselines(dataset_n:int, lrm_n:int, N:int, parent_dir:str, width:int, n
     device = "cuda" if torch.cuda.is_available() else "cpu"
     correct_answers_per_model = {"skywork":0,"qwenprm":0,"laconic":0}
     total_samples = 0
+    skywork, skywork_tokenizer = init_skywork(device=device)
+    qwen_prm, qwen_tokenizer = init_qwen_prm(device=device)
     for sample in tqdm(samples):
         multi_sample = [sample[0]]*N
         multi_gold = [sample[1]]*N
-        eval = grade_answers(answers=multi_sample, gold_standard=multi_gold, dataset_n=dataset_n)
-        if len([1 for e in eval if e])>8:
-            break
-        total_samples += 1
         answers = run_with_vLLM(llm=model, params=params, queries=multi_sample, tokenizer=tokenizer)
+        eval = grade_answers(answers=answers, gold_standard=multi_gold, dataset_n=dataset_n)
+        if len([1 for e in eval if e])>8:
+            continue
+        total_samples += 1
+        
         #truth_values = grade_answers(answers=answers, gold_standard=multi_gold, dataset_n=dataset_n)
         # for each evaluation technique, we need to do evaluate the N answers and pick one
-        skywork, skywork_tokenizer = init_skywork(device=device)
-        skywork_scores = run_skywork(model=skywork, tokenizer=skywork_tokenizer, device=device)
+        
+        skywork_scores = run_skywork(model=skywork, tokenizer=skywork_tokenizer, prompt=sample[0], responses=answers, device=device)
         ind_best_skywork = get_best(skywork_scores)
         best_skywork = answers[ind_best_skywork]
-        qwen_prm, qwen_tokenizer = init_qwen_prm(device=device)
-        qwen_scores = run_qwen_prm(model=qwen_prm, tokenizer=qwen_tokenizer, device=device)
+        
+        qwen_scores = run_qwen_prm(model=qwen_prm, tokenizer=qwen_tokenizer, prompt=sample[0], reponses=answers, device=device)
         ind_best_qwen = get_best(qwen_scores)
         best_qwen = answers[ind_best_qwen]
         # The following function might have a problem
@@ -317,7 +351,10 @@ def test_baselines(dataset_n:int, lrm_n:int, N:int, parent_dir:str, width:int, n
             correct_answers_per_model["laconic"] += 1
     accuracy_per_baseline = {}
     for baseline in correct_answers_per_model:
-        accuracy_per_baseline = correct_answers_per_model[baseline]/N
+        accuracy_per_baseline[baseline] = correct_answers_per_model[baseline]/total_samples
+    row = {"correct_answers_count": correct_answers_per_model, "total_samples":total_samples}
+    with open(os.path.join("../.local/baseline_scores",f"{ds_names[dataset_n]}_{lrm_names[lrm_n]}_{split}.json"), "w+") as f:
+        f.write(json.dumps(row, ensure_ascii=False))
     return accuracy_per_baseline
 
 
@@ -325,8 +362,15 @@ def test_baselines(dataset_n:int, lrm_n:int, N:int, parent_dir:str, width:int, n
 
 
 
-parent_dir = "/".join(os.getcwd().split("/")[:-1])
-math_500 = load_MATH_500(parent_dir)
-print(math_500[0])
-lcb = load_LCB_v6(parent_dir)
-print(lcb[0])
+pwd = "/".join(os.getcwd().split("/")[:-1])
+parser = ArgumentParser()
+parser.add_argument("-f", type=str, help="The name of the file from which to read the samples, to be added to the directory name.")
+parser.add_argument("-l", type=int)
+parser.add_argument("-d", type=int)
+parser.add_argument("-N",type=int, default=10)
+args = parser.parse_args()
+split_dataset_directory = "../.local/split_datasets/"
+file_path = os.path.join(split_dataset_directory, args.f)
+split_id = int(args.f.split('_')[-1].split('.')[0])
+accuracy_per_baseline = test_baselines(args.d, args.l, args.N, file_path, split_id)
+print(accuracy_per_baseline)

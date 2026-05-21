@@ -2,6 +2,7 @@ import os
 from datasets import load_dataset, Dataset
 from typing import List, Tuple, Dict, Union
 import json
+from argparse import ArgumentParser
 
 def load_MATH_500(parent_dir:str)->List[Tuple[str,str]]:
     dataset = load_dataset(os.path.join(parent_dir, ".cache/huggingface/hub/datasets--simplescaling--openaimath/"))
@@ -82,5 +83,3 @@ def retrieve_split_dataset_samples(file_path:str):
 #split_and_save_dataset(samples_lcb, output_dir, "lcb")
 
 samples = retrieve_split_dataset_samples("../.local/split_datasets/math_0.jsonl")
-print(samples[0])
-print(len(samples))
