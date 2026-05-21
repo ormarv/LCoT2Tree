@@ -27,12 +27,13 @@ module load miniforge/24.9.0
 # Note: On Jean Zay, it is generally safer to use `conda activate` even if you install with mamba
 conda activate /lustre/fswork/projects/rech/rqn/ugy38tw/triplecot
 
-LINE_DATA=$(sed -n "${SLURM_ARRAY_TASK_ID}p" jobs.txt)
+LINE_DATA=$(sed -n "${SLURM_ARRAY_TASK_ID}p" src/array_input.txt)
 
 # Read the parameters directly
 FILE=$(echo "$LINE_DATA" | awk '{print $1}')
 LRM=$(echo "$LINE_DATA" | awk '{print $2}')
 DATASET=$(echo "$LINE_DATA" | awk '{print $3}') # Integer assignment
+
 chmod +x src/cot2tree/baselines.py
 srun src/cot2tree/baselines.py -d $DATASET -l $LRM -f $FILE
 
