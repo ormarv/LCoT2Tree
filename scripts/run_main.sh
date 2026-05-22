@@ -9,7 +9,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
 #SBATCH --time=02:00:00
-#SBATCH --account=rqn@v100
+#SBATCH --account=yye@v100
 echo "Starting job on node: $(hostname)"
 echo "Job started at: $(date)"
 
