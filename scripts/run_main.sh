@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=main
-#SBATCH --output=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/main/%x_%j_%a.out
-#SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/main/%x_%j_%a.err
+#SBATCH --output=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/main/%x_%j.out
+#SBATCH --error=/lustre/fswork/projects/rech/rqn/ugy38tw/.local/main/%x_%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=32
+#SBATCH --cpus-per-task=10
 #SBATCH -C v100
 #SBATCH --gres=gpu:1
 #SBATCH --hint=nomultithread
