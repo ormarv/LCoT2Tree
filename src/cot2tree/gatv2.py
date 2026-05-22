@@ -97,7 +97,7 @@ def build_dataloader(all_features:List[torch.Tensor], graphs:List[nx.DiGraph], l
         #sampler = prepare(rank=rank, world_size=world_size)
         #loader = DataLoader(datas, batch_size=batch_size, sampler=sampler, pin_memory=False, drop_last=False, shuffle=False)
     else:
-        loader = DataLoader(datas, batch_size=batch_size)
+        loader = DataLoader(datas, batch_size=batch_size, shuffle=True)
     return loader
 
 def train(train_dataloader:DataLoader, val_loader:DataLoader, in_channels:int, out_channels:int, hidden:int, parent_dir:str, epochs:int=100, lr=1e-3):
