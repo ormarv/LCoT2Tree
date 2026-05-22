@@ -45,7 +45,7 @@ def get_edge_index(graph:nx.DiGraph):
 def build_features(graph:nx.DiGraph, all_features:List[List[float]], wanted_features:Dict[str, int])->List[List[float]]:
     # compute the number of children per node
     # compute the distance to the last node, computed as the number of words and given
-    if len(all_features) ==0 or len(graph.nodes == 0):
+    if len(all_features) ==0 or len(graph.nodes) == 0:
         print("Empty graph detected, skipping feature building.")
         return torch.tensor([])
     dict_graph = nx.to_dict_of_dicts(graph)
