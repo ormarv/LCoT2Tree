@@ -59,10 +59,11 @@ def intelligent_split(lcot:str, n_first:int, logfile:TextIOWrapper, fusion=False
         #augmented_keywords.append(re.escape(keyword+","))
         augmented_keywords.append(re.escape(keyword+" "))
         augmented_keywords.append(re.escape(keyword+","))
-    #print(augmented_keywords, file=logfile)
+    print(augmented_keywords, file=logfile)
     string = '|'.join(augmented_keywords)
-    #print(f"Regex string: {string}")
+    print(f"Regex string: {string}")
     steps = re.finditer(string,lcot, flags=re.IGNORECASE)
+    
     split_indices = []
     for match in steps:
         start = match.start()

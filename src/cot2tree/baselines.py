@@ -134,20 +134,23 @@ def weighted_majority_voting(answers, scores):
 
 def length_filtered_vote(answers:List, lengths:List[int], width:int, nb_groups:int, nb_selected_groups:int):
     all_answers = np.unique(np.array(answers)).tolist()
-    buckets_combinations = combinations(range(nb_groups), nb_selected_groups)
+    buckets_combinations = list(combinations(range(nb_groups), nb_selected_groups))
     entropies = []
     buckets = []
-    for j in range(1,nb_groups):
-        l = [answer for answer, length in zip(answers, lengths) if length <= width * j and length > width * (j-1)]
+    for j in range(nb_groups):
+        l = [answer for answer, length in zip(answers, lengths) if length < width * (j+1) and length >= width * j]
         buckets.append(l)
-        answer_freq = []
-        for answer in all_answers:
-            answer_freq.append(len([1 for a in l if a == answer])/len(l))
-        entropies.append(entropy(np.array(answer_freq))) 
+        if len(l) == 0:
+            entropies.append(float('inf'))
+        else:
+            answer_freq = []
+            for answer in all_answers:
+                answer_freq.append(l.count(answer)/len(l))
+            entropies.append(entropy(np.array(answer_freq))) 
     sum_entropies = []
     for i, combination in enumerate(buckets_combinations):
         sum_entropies.append(sum([entropies[k] for k in combination]))
-    idx_max = np.argmin(np.array(entropies))
+    idx_max = np.argmin(np.array(sum_entropies))
     best_combination = buckets_combinations[idx_max]    
     selected_answers = [buckets[bucket_idx] for bucket_idx in best_combination]
     return list(chain.from_iterable(selected_answers))
@@ -232,9 +235,13 @@ def run_with_vLLM(llm:LLM, params:SamplingParams, queries:List[str], tokenizer)-
     answers = [output.outputs[0].text for output in outputs]
     return answers
 
-def grade_math(answer:str, gold_standard:str):
+def extract_final_math_answer(answer:str)->str:
     cleaned_answer = last_boxed_only_string(answer)
     rm_ans = remove_boxed(cleaned_answer)
+    return rm_ans 
+
+def grade_math(rm_ans:str, gold_standard:str):
+    
     equiv = is_equiv(rm_ans, gold_standard)
     print(f"Answer: {rm_ans}")
     print("\n")
@@ -270,8 +277,11 @@ def run_test_isolated(sample, code, timeout=60):
     else:
         return [False], {"error":"Process crashed silently"}
 
-def grade_lcb(answer:str, sample):
+def extract_final_lcb_answer(answer:str)->str:
     code = extract_test_output_code(answer)
+    return code
+
+def grade_lcb(code:str, sample):
     print(f"Code: {code}\n")
     if not code:
         print(f"No code found.")
@@ -303,7 +313,7 @@ def retrieve_split_dataset_samples(file_path:str):
                 samples.append((data["query"], data["gold"]))
     return samples
 
-def test_baselines(dataset_n:int, lrm_n:int, N:int, filepath:str, split:int):
+def test_baselines(dataset_n:int, lrm_n:int, N:int, filepath:str, split:int, width:int=2, nb_groups:int=8, nb_selected_groups:int=3):
     ds_names = ["lcb","math"]
     lrm_names = ["llama", "qwen", "qwq"]
     samples = retrieve_split_dataset_samples(filepath)
@@ -314,15 +324,22 @@ def test_baselines(dataset_n:int, lrm_n:int, N:int, filepath:str, split:int):
     else:
         model, params, tokenizer, max_model_len = initialize_model_with_vLLM("/lustre/fswork/projects/rech/rqn/ugy38tw/.cache/huggingface/hub/models--Qwen--QwQ-32B/snapshots/976055f8c83f394f35dbd3ab09a285a984907bd0/")
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    correct_answers_per_model = {"skywork":0,"qwenprm":0,"laconic":0}
+    if dataset_n==0:
+        correct_answers_per_model = {"qwenprm":0,"laconic":0}
+    else:
+        correct_answers_per_model = {"qwenprm":0,"laconic":0,"lengthvote":0,"prmvote":0,"majvote":0}
     total_samples = 0
-    skywork, skywork_tokenizer = init_skywork(device=device)
+    #skywork, skywork_tokenizer = init_skywork(device=device)
     qwen_prm, qwen_tokenizer = init_qwen_prm(device=device)
     for sample in tqdm(samples):
         multi_sample = [sample[0]]*N
         multi_gold = [sample[1]]*N
         answers = run_with_vLLM(llm=model, params=params, queries=multi_sample, tokenizer=tokenizer)
-        eval = grade_answers(answers=answers, gold_standard=multi_gold, dataset_n=dataset_n)
+        if dataset_n==0:
+            clean_ans = [extract_final_lcb_answer(answer) for answer in answers]
+        else:
+            clean_ans = [extract_final_math_answer(answer) for answer in answers]
+        eval = grade_answers(answers=clean_ans, gold_standard=multi_gold, dataset_n=dataset_n)
         if len([1 for e in eval if e])>8:
             continue
         total_samples += 1
@@ -330,22 +347,42 @@ def test_baselines(dataset_n:int, lrm_n:int, N:int, filepath:str, split:int):
         #truth_values = grade_answers(answers=answers, gold_standard=multi_gold, dataset_n=dataset_n)
         # for each evaluation technique, we need to do evaluate the N answers and pick one
         
-        skywork_scores = run_skywork(model=skywork, tokenizer=skywork_tokenizer, prompt=sample[0], responses=answers, device=device)
-        ind_best_skywork = get_best(skywork_scores)
-        best_skywork = answers[ind_best_skywork]
+        #skywork_scores = run_skywork(model=skywork, tokenizer=skywork_tokenizer, prompt=sample[0], responses=answers, device=device)
+        #ind_best_skywork = get_best(skywork_scores)
+        #best_skywork = answers[ind_best_skywork]
         
         qwen_scores = run_qwen_prm(model=qwen_prm, tokenizer=qwen_tokenizer, prompt=sample[0], reponses=answers, device=device)
         ind_best_qwen = get_best(qwen_scores)
         best_qwen = answers[ind_best_qwen]
         # The following function might have a problem
-        lengths = tokenize_and_measure(answers=answers, tokenizer=tokenizer, max_model_len=max_model_len)
+        #lengths = tokenize_and_measure(answers=answers, tokenizer=tokenizer, max_model_len=max_model_len)
+        lengths = []
+        for a in answers:
+            lines = [step for step in a.split('\n') if len(step)>0]
+            lengths.append(len(lines))
         ind_min = np.argmin(np.array(lengths))
-        best_laconic = answers[ind_min]
 
+        best_laconic = answers[ind_min]
+        if dataset_n==1:
+            prm_maj_chosen = weighted_majority_voting(clean_ans, qwen_scores)  # the answer, not the index
+            # we find the index
+            ind_maj_prm = clean_ans.index(prm_maj_chosen)
+            if eval[ind_maj_prm]:
+                correct_answers_per_model["prmvote"] += 1
+            maj_chosen = majority_voting(clean_ans)
+            ind_maj_vote = clean_ans.index(maj_chosen)
+            if eval[ind_maj_vote]:
+                correct_answers_per_model["majvote"]
+            selected_answers = length_filtered_vote(clean_ans, lengths, width, nb_groups, nb_selected_groups)
+            best_ans_len_vote = majority_voting(selected_answers)
+            ind_len_vote = clean_ans.index(best_ans_len_vote)
+            if eval[ind_len_vote]:
+                correct_answers_per_model["lengthvote"] += 1
+            
         # We evaluate the answers
         
-        if eval[ind_best_skywork]:
-            correct_answers_per_model["skywork"] += 1
+        #if eval[ind_best_skywork]:
+        #    correct_answers_per_model["skywork"] += 1
         if eval[ind_best_qwen]:
             correct_answers_per_model["qwenprm"] += 1
         if eval[ind_min]:
@@ -366,9 +403,9 @@ def test_baselines(dataset_n:int, lrm_n:int, N:int, filepath:str, split:int):
 pwd = "/".join(os.getcwd().split("/")[:-1])
 parser = ArgumentParser()
 parser.add_argument("-f", type=str, help="The name of the file from which to read the samples, to be added to the directory name.")
-parser.add_argument("-l", type=int)
-parser.add_argument("-d", type=int)
-parser.add_argument("-N",type=int, default=10)
+parser.add_argument("-l", type=int, choices=[0,1,2], help="The lrm identifier: 0 for DeepSeek-R1-Distill-Llama-70B, 1 for DeepSeek-R1-Distill-Qwen-32B, 2 for QwQ-32B.")
+parser.add_argument("-d", type=int, choices=[0,1], help="The dataset identifier: 0 for LiveCodeBench-v6, 1 for MATH500.")
+parser.add_argument("-N",type=int, default=10, help="The N in Best-of-N.")
 args = parser.parse_args()
 split_dataset_directory = "../.local/split_datasets/"
 file_path = os.path.join(split_dataset_directory, args.f)

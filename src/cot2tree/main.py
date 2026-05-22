@@ -14,6 +14,7 @@ from toy_explainer import get_explanations
 from tqdm import tqdm
 from readlog import readlog
 import sys
+from collections import Counter
 # This file aggregates all the functions from the other files
 # It is the one that collects all the parameters from the user
 
@@ -231,6 +232,8 @@ if "test" in actions:
                         print(f"Loading test graphs on subject {subject} from file {path}.")
                     contents = f.read()
                     test_graphs_with_full_features[subject] = [(nx.from_dict_of_dicts(ast.literal_eval(content.split("&&&&&&&&&&&&")[0])), torch.tensor(ast.literal_eval(content.split("&&&&&&&&&&&&")[1])), eval(content.split("&&&&&&&&&&&&")[2])) for content in contents.split("############")]
+        test_graphs_with_full_features_true = [sample for sample in test_graphs_with_full_features if sample[2]==1]
+        test_graphs_with_full_features_false = [sample for sample in test_graphs_with_full_features if sample[2]==0]
     else:
         if args.use_existing_lcots:  # If we use pre-existing LCoTs
             if fin_mmlu_lcots and fin_math_lcots and fin_lcb_lcots and fin_gpqa_lcots:
